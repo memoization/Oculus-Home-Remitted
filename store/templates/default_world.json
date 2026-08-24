@@ -1,0 +1,2145 @@
+{
+  "data": {
+    "node": {
+      "__typename": "World",
+      "name": "",
+      "id": "1000000000000001",
+      "objects": {
+        "nodes": [
+          {
+            "id": "1840137454063503",
+            "updated_time": 1784341736,
+            "inventory_item": {
+              "id": "211264186277717"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1746732968957267"
+            },
+            "position": {
+              "x": "C304B7A0",
+              "y": "C2C706D6",
+              "z": "4037DAC0"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137450730170",
+            "updated_time": 1784341736,
+            "inventory_item": {
+              "id": "182143079228793"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1641958152489299"
+            },
+            "position": {
+              "x": "C3E57AB7",
+              "y": "438C9916",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BB209F5B",
+              "w": "3F7FFFCE"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137447396837",
+            "updated_time": 1784341736,
+            "inventory_item": {
+              "id": "2032866053595757"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "171633596712616"
+            },
+            "position": {
+              "x": "C3298422",
+              "y": "43889686",
+              "z": "3E6701DA"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3E9C5C31",
+              "w": "3F73C528"
+            },
+            "scale": {
+              "x": "3F90BBBA",
+              "y": "3F90BBBA",
+              "z": "3F90BBBA"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137444063504",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "169625043661067"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "485156441838272"
+            },
+            "position": {
+              "x": "C330C71A",
+              "y": "4388368B",
+              "z": "3EE561F6"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE39FF92",
+              "w": "3F7BBDD4"
+            },
+            "scale": {
+              "x": "3F6C7831",
+              "y": "3F6C7831",
+              "z": "3F6C7831"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137440730171",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "2032848133649763"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "683145331887502"
+            },
+            "position": {
+              "x": "C3CE8EB1",
+              "y": "42C2987C",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3C393F2A",
+              "w": "3F7FFBD0"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137437396838",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "377862235957186"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1325394930903807"
+            },
+            "position": {
+              "x": "C3CF1F08",
+              "y": "4401C271",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE5EBA2C",
+              "w": "3F79DEFC"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137434063505",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "411303902664461"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "506632246342130"
+            },
+            "position": {
+              "x": "442D7F2C",
+              "y": "433C6403",
+              "z": "41E395AC"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3EC06A36",
+              "w": "3F6D3BFD"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137430730172",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "411303902664461"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "506632246342130"
+            },
+            "position": {
+              "x": "44273888",
+              "y": "43D0FDDD",
+              "z": "41E395AC"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE0F10F9",
+              "w": "3F7D7D39"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137417396840",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "2032866053595757"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "171633596712616"
+            },
+            "position": {
+              "x": "443B484F",
+              "y": "43A5CCDF",
+              "z": "41E395AC"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F7A2930",
+              "w": "3E597588"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137410730174",
+            "updated_time": 1784341735,
+            "inventory_item": {
+              "id": "127463384745040"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1796150347361844"
+            },
+            "position": {
+              "x": "C2CAE061",
+              "y": "4422B08B",
+              "z": "434A4CBE"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F5F414E",
+              "w": "3EFA8B6E"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137407396841",
+            "updated_time": 1784341734,
+            "inventory_item": {
+              "id": "182143079228793"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1641958152489299"
+            },
+            "position": {
+              "x": "42CF7B20",
+              "y": "C4273F4E",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F3504D4",
+              "w": "3F350512"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137397396842",
+            "updated_time": 1784341734,
+            "inventory_item": {
+              "id": "160876314714933"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "697989370401939"
+            },
+            "position": {
+              "x": "42C99950",
+              "y": "C3D57369",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F35AA7F",
+              "w": "3F345ED0"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137394063509",
+            "updated_time": 1784341734,
+            "inventory_item": {
+              "id": "411303902664461"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "506632246342130"
+            },
+            "position": {
+              "x": "4378C978",
+              "y": "C38CB95D",
+              "z": "3F800000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF6803C1",
+              "w": "3ED86192"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137387396843",
+            "updated_time": 1784341734,
+            "inventory_item": {
+              "id": "294241677769722"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1694318247263990"
+            },
+            "position": {
+              "x": "42BF7408",
+              "y": "C3D45260",
+              "z": "3EE561F6"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F3504FF",
+              "w": "3F3504E8"
+            },
+            "scale": {
+              "x": "3F6C7831",
+              "y": "3F6C7831",
+              "z": "3F6C7831"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137380730177",
+            "updated_time": 1784341734,
+            "inventory_item": {
+              "id": "2101664320067979"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1474567532600097"
+            },
+            "position": {
+              "x": "C3D3797F",
+              "y": "C3899B9E",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137377396844",
+            "updated_time": 1784341734,
+            "inventory_item": {
+              "id": "2013979218923385"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "501781036840048"
+            },
+            "position": {
+              "x": "C360E0F4",
+              "y": "442364C8",
+              "z": "4342D329"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF3504FF",
+              "w": "3F3504E6"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137374063511",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "2013979218923385"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "501781036840048"
+            },
+            "position": {
+              "x": "C360E0F4",
+              "y": "442364C9",
+              "z": "431685D7"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF3504FF",
+              "w": "3F3504E6"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137370730178",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "2013979218923385"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "501781036840048"
+            },
+            "position": {
+              "x": "C360E0F4",
+              "y": "442364C9",
+              "z": "42D5207A"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF3504FF",
+              "w": "3F3504E6"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137367396845",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "157323068304589"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "785313498304992"
+            },
+            "position": {
+              "x": "C3203F1F",
+              "y": "441C268C",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF3504ED",
+              "w": "3F3504F9"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137364063512",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "1965273723790107"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "862677427244276"
+            },
+            "position": {
+              "x": "C3C76EE7",
+              "y": "440F1E9C",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE5EBA2C",
+              "w": "3F79DEFC"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137360730179",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "377862235957186"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1325394930903807"
+            },
+            "position": {
+              "x": "433739DF",
+              "y": "441D3338",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF4B44DF",
+              "w": "3F1B9ED0"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137357396846",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "1965273723790107"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "862677427244276"
+            },
+            "position": {
+              "x": "4300D36A",
+              "y": "441F3D85",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF4B44DF",
+              "w": "3F1B9ED0"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137354063513",
+            "updated_time": 1784341733,
+            "inventory_item": {
+              "id": "606728496428479"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "138650246769954"
+            },
+            "position": {
+              "x": "C3E79E9E",
+              "y": "438D0E04",
+              "z": "434AD973"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137350730180",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "1842508715819486"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "470470293287903"
+            },
+            "position": {
+              "x": "C3D7FDE0",
+              "y": "C34B6A10",
+              "z": "403E3C60"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137347396847",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "794012237454295"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "249351395569302"
+            },
+            "position": {
+              "x": "C3D5318E",
+              "y": "C35A2C83",
+              "z": "4284A6A2"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137340730181",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "197617714159857"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "108222729797190"
+            },
+            "position": {
+              "x": "C3D35C1C",
+              "y": "C350DC6E",
+              "z": "428249E9"
+            },
+            "rotation": {
+              "x": "3F240F2B",
+              "y": "BE990126",
+              "z": "BE99011D",
+              "w": "3F240F21"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137337396848",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "794012237454295"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "249351395569302"
+            },
+            "position": {
+              "x": "C3DC88A3",
+              "y": "C349E82B",
+              "z": "4284A6A2"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137334063515",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "959106854245075"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1965372510361566"
+            },
+            "position": {
+              "x": "C3D50F09",
+              "y": "C332792F",
+              "z": "42841BD5"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137330730182",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "1788937668078247"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1488891734562411"
+            },
+            "position": {
+              "x": "42A56C49",
+              "y": "441929D4",
+              "z": "BFD5B000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF4B44DF",
+              "w": "3F1B9ED0"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137327396849",
+            "updated_time": 1784341732,
+            "inventory_item": {
+              "id": "1788937668078247"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1488891734562411"
+            },
+            "position": {
+              "x": "443F0D36",
+              "y": "439EC1BB",
+              "z": "429FB87E"
+            },
+            "rotation": {
+              "x": "BF1B9EC5",
+              "y": "BF4B44EB",
+              "z": "359434C6",
+              "w": "3700CA2C"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137324063516",
+            "updated_time": 1784341731,
+            "inventory_item": {
+              "id": "377862235957186"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1325394930903807"
+            },
+            "position": {
+              "x": "C2B1C401",
+              "y": "C4195AB0",
+              "z": "B8600000"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137320730183",
+            "updated_time": 1784341731,
+            "inventory_item": {
+              "id": "148476492499136"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1436369339744498"
+            },
+            "position": {
+              "x": "42A5E771",
+              "y": "4419E83E",
+              "z": "423EAC1F"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F7330CF",
+              "w": "3E9FEDC2"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137317396850",
+            "updated_time": 1784341731,
+            "inventory_item": {
+              "id": "151798495630343"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "505721069766942"
+            },
+            "position": {
+              "x": "4337BDE7",
+              "y": "441CCAB9",
+              "z": "424BF870"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BDB2803D",
+              "w": "3F7F0699"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137314063517",
+            "updated_time": 1784341731,
+            "inventory_item": {
+              "id": "407607142986747"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "742922672558302"
+            },
+            "position": {
+              "x": "431406EB",
+              "y": "44144F65",
+              "z": "41B09C1C"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3E73B41B",
+              "w": "3F78A4F7"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137310730184",
+            "updated_time": 1784341731,
+            "inventory_item": {
+              "id": "151798495630343"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "505721069766942"
+            },
+            "position": {
+              "x": "C3CE45C0",
+              "y": "4401D0CC",
+              "z": "424BF870"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F12D5D1",
+              "w": "3F51B403"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137307396851",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "407607142986747"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "742922672558302"
+            },
+            "position": {
+              "x": "C3B9287F",
+              "y": "4406593F",
+              "z": "41C3C533"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF7746E1",
+              "w": "3E848438"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137304063518",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "1568634213235121"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1940478426276126"
+            },
+            "position": {
+              "x": "C3CF04F2",
+              "y": "42D3B0B1",
+              "z": "429B7DD7"
+            },
+            "rotation": {
+              "x": "3E006962",
+              "y": "BD3F33B1",
+              "z": "3F6F15E7",
+              "w": "3EA9B6BD"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137300730185",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "2067374566854458"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "743744799161429"
+            },
+            "position": {
+              "x": "C3C5633D",
+              "y": "440EA9F1",
+              "z": "4235122C"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF12D5B1",
+              "w": "3F51B419"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137297396852",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "2067374566854458"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "743744799161429"
+            },
+            "position": {
+              "x": "42FF7B5E",
+              "y": "441E2767",
+              "z": "4235122C"
+            },
+            "rotation": {
+              "x": "3CB288DC",
+              "y": "3D99AD14",
+              "z": "BF77D8FD",
+              "w": "3E738DFC"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137294063519",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "2067374566854458"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "743744799161429"
+            },
+            "position": {
+              "x": "C2B0F8B1",
+              "y": "C418D36B",
+              "z": "423EBB80"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3E7D1584",
+              "w": "3F780EDA"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137290730186",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "685162864941273"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "102477927122728"
+            },
+            "position": {
+              "x": "C260661F",
+              "y": "4423321C",
+              "z": "42C25483"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BED8616C",
+              "w": "3F6803C9"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137287396853",
+            "updated_time": 1784341730,
+            "inventory_item": {
+              "id": "2038407216399352"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1900673836854715"
+            },
+            "position": {
+              "x": "C1FF4D0A",
+              "y": "4421D90C",
+              "z": "42AFA660"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF6B7ED5",
+              "w": "3EC8C70A"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137274063521",
+            "updated_time": 1784341729,
+            "inventory_item": {
+              "id": "2011739055816972"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "287769988358570"
+            },
+            "position": {
+              "x": "C32EC6C2",
+              "y": "438898EA",
+              "z": "421B9C14"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BEF492AD",
+              "w": "3F60E78B"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137267396855",
+            "updated_time": 1784341729,
+            "inventory_item": {
+              "id": "2011739055816972"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "287769988358570"
+            },
+            "position": {
+              "x": "42C4050D",
+              "y": "C3D340AA",
+              "z": "420072D3"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F05A19F",
+              "w": "3F5A5ABD"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137264063522",
+            "updated_time": 1784341729,
+            "inventory_item": {
+              "id": "2059297847428444"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1595641460510741"
+            },
+            "position": {
+              "x": "445E02B3",
+              "y": "C41E2E40",
+              "z": "41E49980"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE27F110",
+              "w": "3F7C889B"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137260730189",
+            "updated_time": 1784341729,
+            "inventory_item": {
+              "id": "287301375134611"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "599444123777304"
+            },
+            "position": {
+              "x": "445C4542",
+              "y": "C41735F9",
+              "z": "42FB9D95"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F7BBF63",
+              "w": "3E39DDDC"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137257396856",
+            "updated_time": 1784341729,
+            "inventory_item": {
+              "id": "163924707744717"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "122503268381876"
+            },
+            "position": {
+              "x": "44993210",
+              "y": "C416487D",
+              "z": "4393605F"
+            },
+            "rotation": {
+              "x": "BD825413",
+              "y": "BE27C9A7",
+              "z": "BCE150AC",
+              "w": "3F7BEA66"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137254063523",
+            "updated_time": 1784341729,
+            "inventory_item": {
+              "id": "163924707744717"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "122503268381876"
+            },
+            "position": {
+              "x": "449C089F",
+              "y": "C475882B",
+              "z": "43290D7F"
+            },
+            "rotation": {
+              "x": "3CE1E972",
+              "y": "3D9A865D",
+              "z": "BED57671",
+              "w": "3F67C76A"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137250730190",
+            "updated_time": 1784341728,
+            "inventory_item": {
+              "id": "163924707744717"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "122503268381876"
+            },
+            "position": {
+              "x": "44A6822C",
+              "y": "C46CF725",
+              "z": "43EBB201"
+            },
+            "rotation": {
+              "x": "BCF2131A",
+              "y": "BE67918F",
+              "z": "BEB3F21D",
+              "w": "3F6872BD"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137247396857",
+            "updated_time": 1784341728,
+            "inventory_item": {
+              "id": "959106854245075"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1965372510361566"
+            },
+            "position": {
+              "x": "44541343",
+              "y": "C42E5612",
+              "z": "42FF0B59"
+            },
+            "rotation": {
+              "x": "BEAF1D52",
+              "y": "80000000",
+              "z": "00000000",
+              "w": "3F708FAF"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137240730191",
+            "updated_time": 1784341728,
+            "inventory_item": {
+              "id": "959106854245075"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1965372510361566"
+            },
+            "position": {
+              "x": "445531F1",
+              "y": "C42DDFD3",
+              "z": "42FF0B59"
+            },
+            "rotation": {
+              "x": "BE1FE242",
+              "y": "BE35B6B6",
+              "z": "3F729D35",
+              "w": "3E5B8FEC"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137237396858",
+            "updated_time": 1784341728,
+            "inventory_item": {
+              "id": "959106854245075"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1965372510361566"
+            },
+            "position": {
+              "x": "445359AE",
+              "y": "C42BB856",
+              "z": "42FF0B59"
+            },
+            "rotation": {
+              "x": "3F109925",
+              "y": "3EA225B8",
+              "z": "3ECA7F1E",
+              "w": "3F26BE30"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137234063525",
+            "updated_time": 1784341728,
+            "inventory_item": {
+              "id": "555814444783265"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "521878381477484"
+            },
+            "position": {
+              "x": "445ACBDD",
+              "y": "C42A79D3",
+              "z": "42FB9D9A"
+            },
+            "rotation": {
+              "x": "BF07B5B8",
+              "y": "3E9CB3BF",
+              "z": "BECA6EEB",
+              "w": "3F2F507D"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137227396859",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "445AF180",
+              "y": "C42083F2",
+              "z": "42FB9D97"
+            },
+            "rotation": {
+              "x": "BE3B67A4",
+              "y": "3F2ED9E5",
+              "z": "BF2ED9F2",
+              "w": "3E3B67B3"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137224063526",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C318D069",
+              "y": "441FCC45",
+              "z": "42E37976"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137220730193",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C3135922",
+              "y": "441F5EAC",
+              "z": "42E37976"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137214063527",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C30DEB44",
+              "y": "44204F4E",
+              "z": "42E37976"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137210730194",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C30B7116",
+              "y": "441FF85F",
+              "z": "42EE44C6"
+            },
+            "rotation": {
+              "x": "BF06A53A",
+              "y": "3EF1FB13",
+              "z": "BEF1FAF8",
+              "w": "3F06A529"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137207396861",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C30D863A",
+              "y": "44200C38",
+              "z": "42E37976"
+            },
+            "rotation": {
+              "x": "BF00001B",
+              "y": "3EFFFFE8",
+              "z": "BEFFFFD2",
+              "w": "3F000008"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137204063528",
+            "updated_time": 1784341727,
+            "inventory_item": {
+              "id": "555814444783265"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "521878381477484"
+            },
+            "position": {
+              "x": "C31E3B7E",
+              "y": "441F84CB",
+              "z": "42E37976"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137197396862",
+            "updated_time": 1784341726,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C3A66523",
+              "y": "441FCC45",
+              "z": "434A2614"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137190730196",
+            "updated_time": 1784341726,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C3A3A97F",
+              "y": "441F5EAC",
+              "z": "434A2614"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137187396863",
+            "updated_time": 1784341726,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C39B41BD",
+              "y": "44204F4E",
+              "z": "434C3EA2"
+            },
+            "rotation": {
+              "x": "3E1589DE",
+              "y": "BE158A1F",
+              "z": "BF311DBB",
+              "w": "3F311E1A"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137180730197",
+            "updated_time": 1784341726,
+            "inventory_item": {
+              "id": "555814444783265"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "521878381477484"
+            },
+            "position": {
+              "x": "C3A91AAD",
+              "y": "441F84CB",
+              "z": "434A2614"
+            },
+            "rotation": {
+              "x": "B442452B",
+              "y": "B427C4BE",
+              "z": "BF3504CD",
+              "w": "3F350519"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137177396864",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "1187749351328431"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "288949424936696"
+            },
+            "position": {
+              "x": "C25F0F3A",
+              "y": "44233A93",
+              "z": "4297527A"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137170730198",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "391689324576478"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "952545168216863"
+            },
+            "position": {
+              "x": "C1FD3B36",
+              "y": "44215F1C",
+              "z": "42809BDF"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BF5104FE",
+              "w": "3F13CE8A"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137164063532",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "1802480286724796"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "364937200622026"
+            },
+            "position": {
+              "x": "43142634",
+              "y": "44143F8A",
+              "z": "377BA882"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "00000000",
+              "z": "00000000",
+              "w": "3F800000"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137157396866",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "1802480286724796"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "364937200622026"
+            },
+            "position": {
+              "x": "C3BA292C",
+              "y": "4406AED9",
+              "z": "00000000"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE5EB9E5",
+              "w": "3F79DF00"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137154063533",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "391689324576478"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "952545168216863"
+            },
+            "position": {
+              "x": "C3CF9079",
+              "y": "42D450F5",
+              "z": "425C0004"
+            },
+            "rotation": {
+              "x": "80000000",
+              "y": "00000000",
+              "z": "BE76D408",
+              "w": "3F7873A1"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137144063534",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "767174176810549"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "1865272607067800"
+            },
+            "position": {
+              "x": "C3BD96F3",
+              "y": "429B4A5F",
+              "z": "425C0000"
+            },
+            "rotation": {
+              "x": "BF240F2E",
+              "y": "BE990131",
+              "z": "3E990121",
+              "w": "3F240F1C"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          },
+          {
+            "id": "1840137140730201",
+            "updated_time": 1784341725,
+            "inventory_item": {
+              "id": "2261118520782412"
+            },
+            "item_definition": {
+              "__typename": "WorldsItemDefinition",
+              "id": "168636150455009"
+            },
+            "position": {
+              "x": "43A8AE17",
+              "y": "C427A865",
+              "z": "3F8EDA00"
+            },
+            "rotation": {
+              "x": "00000000",
+              "y": "80000000",
+              "z": "3F3504F2",
+              "w": "3F3504F4"
+            },
+            "scale": {
+              "x": "3F800000",
+              "y": "3F800000",
+              "z": "3F800000"
+            },
+            "animation_offset": 0,
+            "simulate_physics": "DEFAULT",
+            "customization": ""
+          }
+        ]
+      },
+      "customizations": "{\"CeilingMaterialIndex\": \"1307410099367935\", \"WallsMaterialIndex\": \"268649833656140\", \"FloorMaterialIndex\": \"395295614222659\", \"TrimIndex\": \"1997259783886885\", \"SkyboxIndex\": \"1594405190615066\", \"MusicIndex\": \"134810140648857\", \"AmbientSoundIndex\": \"2138994519491875\"}",
+      "reported_object_ids": []
+    }
+  }
+}

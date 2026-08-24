@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{acec4853-27d2-4bd7-87a9-21acd6318727}</ProjectGuid>
+    <RootNamespace>Home2Remitted</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Home2Remitted</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <TargetName>Home2Remitted</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)shared;$(SolutionDir)dependencies\cpr;$(SolutionDir)dependencies\json11;$(SolutionDir)dependencies\picopng;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\cpr\lib;$(SolutionDir)dependencies\glfw\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cpr.lib;glfw3.lib;opengl32.lib;Comctl32.lib;Shlwapi.lib;kernel32.lib;user32.lib;gdi32.lib;gdiplus.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Pathcch.lib;SetupAPI.lib;ws2_32.lib;mfplat.lib;mfreadwrite.lib;mfuuid.lib;mf.lib;Dwmapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)shared;$(SolutionDir)dependencies\cpr;$(SolutionDir)dependencies\json11;$(SolutionDir)dependencies\picopng;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\cpr\lib;$(SolutionDir)dependencies\glfw\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cpr.lib;glfw3.lib;opengl32.lib;Comctl32.lib;Shlwapi.lib;kernel32.lib;user32.lib;gdi32.lib;gdiplus.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Pathcch.lib;SetupAPI.lib;ws2_32.lib;mfplat.lib;mfreadwrite.lib;mfuuid.lib;mf.lib;Dwmapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="dependencies\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="dependencies\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="dependencies\imgui\imconfig.h" />
+    <ClInclude Include="dependencies\imgui\imgui.h" />
+    <ClInclude Include="dependencies\imgui\imgui_internal.h" />
+    <ClInclude Include="dependencies\imgui\imstb_rectpack.h" />
+    <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
+    <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
+    <ClInclude Include="dependencies\picopng\picopng.h" />
+    <ClInclude Include="shared\BroadcastSourceShared.h" />
+    <ClInclude Include="src\AppLibraries.h" />
+    <ClInclude Include="src\BroadcastSource.h" />
+    <ClInclude Include="src\FetchWorlds.h" />
+    <ClInclude Include="src\HomeLogger.h" />
+    <ClInclude Include="src\IconPak.h" />
+    <ClInclude Include="src\IconPak_asset.h" />
+    <ClInclude Include="src\ImageConv.h" />
+    <ClInclude Include="src\Injector.h" />
+    <ClInclude Include="src\Prefs.h" />
+    <ClInclude Include="src\resource.h" />
+    <ClInclude Include="src\TexLoader.h" />
+    <ClInclude Include="src\Tray.h" />
+    <ClInclude Include="src\UI.h" />
+    <ClInclude Include="src\Watcher.h" />
+    <ClInclude Include="src\Worlds.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dependencies\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="dependencies\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_demo.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_draw.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_tables.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="dependencies\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="dependencies\json11\json11.cpp" />
+    <ClCompile Include="dependencies\picopng\picopng.cpp" />
+    <ClCompile Include="src\AppLibraries.cpp" />
+    <ClCompile Include="src\BroadcastSource.cpp" />
+    <ClCompile Include="src\FetchWorlds.cpp" />
+    <ClCompile Include="src\HomeLogger.cpp" />
+    <ClCompile Include="src\ImageConv.cpp" />
+    <ClCompile Include="src\Injector.cpp" />
+    <ClCompile Include="src\IconPak.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Prefs.cpp" />
+    <ClCompile Include="src\TexLoader.cpp" />
+    <ClCompile Include="src\Tray.cpp" />
+    <ClCompile Include="src\UI.cpp" />
+    <ClCompile Include="src\Watcher.cpp" />
+    <ClCompile Include="src\Worlds.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="home2-remitted.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <!-- Resolve APP_VERSION from "git describe" into src\version.gen.h before every compile. The always flag falls back to a short commit if there are no tags. -->
+  <Target Name="GenerateVersionHeader" BeforeTargets="ClCompile">
+    <Exec Command="git describe --always --tags --abbrev=0"
+          WorkingDirectory="$(ProjectDir)"
+          ConsoleToMSBuild="true"
+          ContinueOnError="true"
+          StandardOutputImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitVersion" />
+    </Exec>
+    <PropertyGroup>
+      <GitVersion>$(GitVersion.Trim())</GitVersion>
+      <GitVersion Condition="'$(GitVersion)' == ''">0.0.0-dev</GitVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <_VersionHeaderLines Include="#pragma once" />
+      <_VersionHeaderLines Include="#define APP_VERSION &quot;$(GitVersion)&quot;" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(ProjectDir)src\version.gen.h"
+                      Lines="@(_VersionHeaderLines)"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true" />
+  </Target>
+  <!-- Stage runtime dependencies beside the built exe: the cpr runtime DLLs (config-specific folder and names) plus the store, images and fonts asset folders. Post-build action into $(OutDir). -->
+  <Target Name="CopyRuntimeDependencies" AfterTargets="Build">
+    <ItemGroup>
+      <RuntimeDll Condition="'$(Configuration)' == 'Release'" Include="$(ProjectDir)dependencies\cpr\bin\cpr.dll" />
+      <RuntimeDll Condition="'$(Configuration)' == 'Release'" Include="$(ProjectDir)dependencies\cpr\bin\libcurl.dll" />
+      <RuntimeDll Condition="'$(Configuration)' == 'Release'" Include="$(ProjectDir)dependencies\cpr\bin\zlib1.dll" />
+      <RuntimeDll Condition="'$(Configuration)' == 'Debug'" Include="$(ProjectDir)dependencies\cpr\debug\bin\cpr.dll" />
+      <RuntimeDll Condition="'$(Configuration)' == 'Debug'" Include="$(ProjectDir)dependencies\cpr\debug\bin\libcurl-d.dll" />
+      <RuntimeDll Condition="'$(Configuration)' == 'Debug'" Include="$(ProjectDir)dependencies\cpr\debug\bin\zlibd1.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RuntimeDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <StoreFiles Include="$(ProjectDir)store\**\*" />
+      <ImageFiles Include="$(ProjectDir)images\**\*" />
+      <FontFiles Include="$(ProjectDir)fonts\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(StoreFiles)" DestinationFiles="@(StoreFiles->'$(OutDir)store\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ImageFiles)" DestinationFiles="@(ImageFiles->'$(OutDir)images\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(FontFiles)" DestinationFiles="@(FontFiles->'$(OutDir)fonts\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

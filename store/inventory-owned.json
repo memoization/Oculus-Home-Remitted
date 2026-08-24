@@ -1,0 +1,3544 @@
+{
+  "owned": [
+    {
+      "item_def_id": "2655877044424432",
+      "asset_key": "ART_ANALOG_CLOCK_01_STREAMING",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2126936550696148",
+      "asset_key": "ART_BACK_BAR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1891691987595035",
+      "asset_key": "ART_BAR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2093236044125327",
+      "asset_key": "ART_BAR_CART_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1984761971642218",
+      "asset_key": "ART_BAR_STOOL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2107098042669255",
+      "asset_key": "ART_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "138863885997405789",
+      "asset_key": "ART_CEILING_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2092225620845517",
+      "asset_key": "ART_CENTERPIECE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2196551027068911",
+      "asset_key": "ART_CHAMPAGNE_BOTTLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2019316051439137",
+      "asset_key": "ART_COCKTAIL_GLASS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2359201124165137",
+      "asset_key": "ART_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2012620018821579",
+      "asset_key": "ART_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1744328325671282",
+      "asset_key": "ART_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2102830156448589",
+      "asset_key": "ART_DESK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2575056472534958",
+      "asset_key": "ART_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1932387093546726",
+      "asset_key": "ART_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2039792169435209",
+      "asset_key": "ART_DIVIDER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2184614154933903",
+      "asset_key": "ART_EAGLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2225343680829336",
+      "asset_key": "ART_END_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1904521462978974",
+      "asset_key": "ART_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2021500501311667",
+      "asset_key": "ART_LION_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2236673819710558",
+      "asset_key": "ART_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1864514833659475",
+      "asset_key": "ART_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "118936684908038105",
+      "asset_key": "ART_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1910590382401639",
+      "asset_key": "ART_SCONCE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2252290644815958",
+      "asset_key": "ART_SHAKER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2691845820833043",
+      "asset_key": "ART_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2087001834749053",
+      "asset_key": "ART_SHELF_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2027734250648687",
+      "asset_key": "ART_TABLE_LAMP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "114965899834264811",
+      "asset_key": "ART_VICTROLA_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2084023168355145",
+      "asset_key": "ART_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2274699545873936",
+      "asset_key": "ART_WALL_ART_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2098708410189210",
+      "asset_key": "ART_WALL_ART_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2613444922059071",
+      "asset_key": "ART_WALL_ART_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1952957648086198",
+      "asset_key": "ART_WALL_ART_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1851991241578715",
+      "asset_key": "ART_WALL_ART_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2054741971272684",
+      "asset_key": "ART_WALL_ART_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1714370085334725",
+      "asset_key": "ART_WARDROBE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "168636150455009",
+      "asset_key": "AVATAR_EDITOR_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1749778261988556",
+      "asset_key": "BASE_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "251917181965467",
+      "asset_key": "BASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "599444123777304",
+      "asset_key": "BASE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "521878381477484",
+      "asset_key": "BASE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1865272607067800",
+      "asset_key": "BASE_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "412458069155458",
+      "asset_key": "BASE_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2478827538900171",
+      "asset_key": "BOHO_ANALOG_CLOCK_01_STREAMING",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1933667843389169",
+      "asset_key": "BOHO_BENCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1093198154138136",
+      "asset_key": "BOHO_BOOKCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1980027612055375",
+      "asset_key": "BOHO_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1713605205416534",
+      "asset_key": "BOHO_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1913578132061415",
+      "asset_key": "BOHO_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2342968522411942",
+      "asset_key": "BOHO_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2276128089095670",
+      "asset_key": "BOHO_DEERHEAD_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2372214866152325",
+      "asset_key": "BOHO_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1934465926635734",
+      "asset_key": "BOHO_DIVIDER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1956047021118862",
+      "asset_key": "BOHO_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2318301194853019",
+      "asset_key": "BOHO_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2059993237358705",
+      "asset_key": "BOHO_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2196373530404510",
+      "asset_key": "BOHO_PALLET_BOX_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1861566973930002",
+      "asset_key": "BOHO_PILLOW_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1812125592235301",
+      "asset_key": "BOHO_PILLOW_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "173744005247439485",
+      "asset_key": "BOHO_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "880249618765852",
+      "asset_key": "BOHO_POUFFE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2171284809590867",
+      "asset_key": "BOHO_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2097301836969311",
+      "asset_key": "BOHO_RUG_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2238026416268886",
+      "asset_key": "BOHO_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1707299789380125",
+      "asset_key": "BOHO_SHELF_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1845733115525209",
+      "asset_key": "BOHO_SUITCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1909573405774999",
+      "asset_key": "BOHO_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1854593284657828",
+      "asset_key": "BOHO_WALL_ART_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1923441731069428",
+      "asset_key": "BOHO_WALL_ART_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2198631100183000",
+      "asset_key": "CAFE_BAR_STOOL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2417278818343773",
+      "asset_key": "CAFE_BAR_STOOL_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2490535991021248",
+      "asset_key": "CAFE_BAR_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "148133396635040069",
+      "asset_key": "CAFE_BOTTLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "171490971325509688",
+      "asset_key": "CAFE_BOTTLE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "133287650200361175",
+      "asset_key": "CAFE_BOTTLE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "191235167130461173",
+      "asset_key": "CAFE_BOTTLE_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "169469134269567542",
+      "asset_key": "CAFE_BOTTLE_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2087327511313453",
+      "asset_key": "CAFE_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2216872188375159",
+      "asset_key": "CAFE_ESPRESSO_MACHINE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "198927093542653656",
+      "asset_key": "CAFE_MUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2335367996488098",
+      "asset_key": "CAFE_PROJECTOR_SCREEN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "149171734040267018",
+      "asset_key": "CAFE_REGISTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2262055293913991",
+      "asset_key": "CAFE_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2062554837166004",
+      "asset_key": "CAFE_TAPS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2042023865873712",
+      "asset_key": "CAFE_TV_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1943953515821008",
+      "asset_key": "CEILING_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "158413211417995",
+      "asset_key": "CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "817065641751650",
+      "asset_key": "CEILING_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1677927088945609",
+      "asset_key": "CEILING_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "157905908303327",
+      "asset_key": "CEILING_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "134961063841779",
+      "asset_key": "CEILING_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "552923528428243",
+      "asset_key": "CEILING_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "806618469462212",
+      "asset_key": "CEILING_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1482679841785847",
+      "asset_key": "DREAMDECK_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "170619422117619725",
+      "asset_key": "DREAMDECK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "120989541950122",
+      "asset_key": "DREAMDECK_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1724173517888357",
+      "asset_key": "DREAMDECK_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "116919546268245611",
+      "asset_key": "DREAMDECK_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "527572527576631",
+      "asset_key": "DREAMDECK_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1940849879506391",
+      "asset_key": "DREAMDECK_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "563590323973090",
+      "asset_key": "DREAMDECK_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1449564598491748",
+      "asset_key": "DREAMDECK_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "520951774918402",
+      "asset_key": "DREAMDECK_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "177981029507874",
+      "asset_key": "EVENT_POSTER_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2716044938437551",
+      "asset_key": "EVENT_THANKSGIVING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "3026281367398055",
+      "asset_key": "EVENT_WOMEN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2075292239172926",
+      "asset_key": "FAERIE_BASKETBALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2240314152656813",
+      "asset_key": "FAERIE_BASKETBALL_HOOP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2081320278620167",
+      "asset_key": "FAERIE_BIG_CRYSTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2198668650156454",
+      "asset_key": "FAERIE_BOOKCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "181832854663803872",
+      "asset_key": "FAERIE_BOW_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1946445535481303",
+      "asset_key": "FAERIE_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2124944557552161",
+      "asset_key": "FAERIE_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2081542311893092",
+      "asset_key": "FAERIE_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2536674813071834",
+      "asset_key": "FAERIE_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2110793465635301",
+      "asset_key": "FAERIE_DIGITAL_CLOCK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2320765397987451",
+      "asset_key": "FAERIE_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2243775772349391",
+      "asset_key": "FAERIE_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2329860227044459",
+      "asset_key": "FAERIE_END_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2008597522584048",
+      "asset_key": "FAERIE_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2063600627063195",
+      "asset_key": "FAERIE_FLOOR_LAMP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2342117922479006",
+      "asset_key": "FAERIE_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2102067793212363",
+      "asset_key": "FAERIE_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2355151587848887",
+      "asset_key": "FAERIE_PLANTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "182513627712134045",
+      "asset_key": "FAERIE_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1866843033425588",
+      "asset_key": "FAERIE_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1918847228242114",
+      "asset_key": "FAERIE_SCULPTURE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2071699899572198",
+      "asset_key": "FAERIE_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2184887711571952",
+      "asset_key": "FAERIE_SHELF_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2263598826994552",
+      "asset_key": "FAERIE_SWORD_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2226635680691772",
+      "asset_key": "FAERIE_TABLE_LAMP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2009656029153834",
+      "asset_key": "FAERIE_TARGET_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1970734313048928",
+      "asset_key": "FAERIE_TREE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2521792957835357",
+      "asset_key": "FAERIE_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2537032746338819",
+      "asset_key": "FAERIE_WALL_ART_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2106166966127401",
+      "asset_key": "FAERIE_WALL_ART_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2049826808417429",
+      "asset_key": "FAERIE_WAND_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "136561056563652302",
+      "asset_key": "FAERIE_WATERING_CAN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "105220654556292026",
+      "asset_key": "FANTASY_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "447713402276969",
+      "asset_key": "FANTASY_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "183812681579947213",
+      "asset_key": "FANTASY_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "148752369035383",
+      "asset_key": "FANTASY_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "109200546403470",
+      "asset_key": "FANTASY_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "142902559622036",
+      "asset_key": "FANTASY_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1038824389585606",
+      "asset_key": "FANTASY_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "477984859222136",
+      "asset_key": "FANTASY_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1754753134549898",
+      "asset_key": "FANTASY_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "146782837389629013",
+      "asset_key": "FANTASY_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "152431700056526172",
+      "asset_key": "FANTASY_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1192449797525743",
+      "asset_key": "FANTASY_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1495259357203031",
+      "asset_key": "FANTASY_12",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "181641382342883951",
+      "asset_key": "FANTASY_13",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "260957460975220",
+      "asset_key": "FANTASY_14",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "484302615252432",
+      "asset_key": "FANTASY_15",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "705429289653534",
+      "asset_key": "FANTASY_16",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "481113102231155",
+      "asset_key": "FANTASY_17",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "122075518409544",
+      "asset_key": "FANTASY_18",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1644593608897858",
+      "asset_key": "FANTASY_19",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "191352137756755412",
+      "asset_key": "FANTASY_20",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "121569008470494",
+      "asset_key": "FANTASY_21",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "250776285431098",
+      "asset_key": "FANTASY_22",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "137443809637997720",
+      "asset_key": "FANTASY_23",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "500893293587929",
+      "asset_key": "FANTASY_24",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "262204447615129",
+      "asset_key": "FANTASY_25",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "120373108670185",
+      "asset_key": "FANTASY_26",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1909290549395496",
+      "asset_key": "FANTASY_27",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "118153882233487",
+      "asset_key": "FANTASY_28",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1907088479349388",
+      "asset_key": "FANTASY_29",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "123922164996320",
+      "asset_key": "FANTASY_30",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1709208779113834",
+      "asset_key": "FANTASY_31",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "117764768900846",
+      "asset_key": "FANTASY_32",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "152273478705341",
+      "asset_key": "FANTASY_33",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1493184297434792",
+      "asset_key": "FANTASY_34",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "182042742353701",
+      "asset_key": "FANTASY_35",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "155222258416253",
+      "asset_key": "FANTASY_36",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "768236093385304",
+      "asset_key": "FANTASY_37",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "673993002795422",
+      "asset_key": "FANTASY_38",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2002469656687600",
+      "asset_key": "FANTASY_39",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "917705351709816",
+      "asset_key": "FANTASY_40",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1876066372420560",
+      "asset_key": "FANTASY_41",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124901908835258668",
+      "asset_key": "FANTASY_42",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2329094947159968",
+      "asset_key": "FANTASY_ANALOG_CLOCK_01_STREAMING",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "129219215252268868",
+      "asset_key": "FANTASY_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "495687620804546",
+      "asset_key": "FARLANDS_FLORA_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1716980091647752",
+      "asset_key": "FARLANDS_FLORA_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2042161026011880",
+      "asset_key": "FARLANDS_FLORA_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124854704844672",
+      "asset_key": "FARLANDS_FLORA_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "220966095105474",
+      "asset_key": "FARLANDS_FLORA_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1739770266327664",
+      "asset_key": "FARLANDS_FLORA_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1943041969267707",
+      "asset_key": "FARLANDS_FLORA_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "117103912319441",
+      "asset_key": "FARLANDS_FLORA_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "389106108173252",
+      "asset_key": "FARLANDS_FLORA_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1971516773126673",
+      "asset_key": "FARLANDS_PAINTINGS_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "297865400692471",
+      "asset_key": "FARLANDS_PAINTINGS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "140182326602885",
+      "asset_key": "FARLANDS_PAINTINGS_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "277815119402739",
+      "asset_key": "FARLANDS_PAINTINGS_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1499655376790325",
+      "asset_key": "FARLANDS_PAINTINGS_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1964686363742889",
+      "asset_key": "FARLANDS_PAINTINGS_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1095628447239950",
+      "asset_key": "FARLANDS_PAINTINGS_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "185206385322304964",
+      "asset_key": "FARLANDS_PAINTINGS_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2083332981888659",
+      "asset_key": "FARLANDS_PAINTINGS_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1919945178323261",
+      "asset_key": "FLOOR_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1325029004273920",
+      "asset_key": "FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "857321697780292",
+      "asset_key": "FLOOR_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "155186785109308",
+      "asset_key": "FLOOR_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "369871383473039",
+      "asset_key": "FLOOR_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1942931445738296",
+      "asset_key": "FLOOR_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1950040635054761",
+      "asset_key": "FLOOR_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "246679895821800",
+      "asset_key": "FX_STATUE_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "153229079766191773",
+      "asset_key": "FX_STATUE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "496410367367341",
+      "asset_key": "FX_STATUE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2688975134464737",
+      "asset_key": "FX_STATUE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "142751519642292",
+      "asset_key": "FX_STATUE_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1846774695339604",
+      "asset_key": "GENERIC_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "219646651898822",
+      "asset_key": "GENERIC_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "140101286587453",
+      "asset_key": "GENERIC_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "114050815926302",
+      "asset_key": "GENERIC_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "109976443027113",
+      "asset_key": "GENERIC_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "269791876855675",
+      "asset_key": "GENERIC_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1930756370500731",
+      "asset_key": "GENERIC_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "288557718330270",
+      "asset_key": "GENERIC_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "103100233782037",
+      "asset_key": "GENERIC_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1935414706722952",
+      "asset_key": "GENERIC_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "151701815435483",
+      "asset_key": "GENERIC_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "354139418344038",
+      "asset_key": "GENERIC_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "195604254501395",
+      "asset_key": "GENERIC_ARCADE_CABINET_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1789344384707026",
+      "asset_key": "GENERIC_ARCADE_CABINET_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "211216709469189",
+      "asset_key": "GENERIC_COMPUTER_MONITOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2085147108394658",
+      "asset_key": "GENERIC_FLATSCREEN_TV_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "201724697285613",
+      "asset_key": "GENERIC_FLATSCREEN_TV_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "195624531063926",
+      "asset_key": "GENERIC_RETRO_TV_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "182322326338797056",
+      "asset_key": "GOLDEN_CV1",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "190914601611926195",
+      "asset_key": "GOLDEN_DK1",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "118295472789692157",
+      "asset_key": "GOLDEN_DK2",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "152519605585187160",
+      "asset_key": "GOLDEN_TOUCHES",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2661354807231864",
+      "asset_key": "INDUSTRIAL_ANALOG_CLOCK_01_STREAMING",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1971617122886157",
+      "asset_key": "INDUSTRIAL_BOOKCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2068408689895004",
+      "asset_key": "INDUSTRIAL_BOOKCASE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1925750947544645",
+      "asset_key": "INDUSTRIAL_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1671220372977531",
+      "asset_key": "INDUSTRIAL_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1908005949315772",
+      "asset_key": "INDUSTRIAL_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1918145158233856",
+      "asset_key": "INDUSTRIAL_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2103218059774638",
+      "asset_key": "INDUSTRIAL_COUNTER_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1803857506391486",
+      "asset_key": "INDUSTRIAL_DESK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2310736458967475",
+      "asset_key": "INDUSTRIAL_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1886600521408847",
+      "asset_key": "INDUSTRIAL_DINING_STOOL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2286745221399829",
+      "asset_key": "INDUSTRIAL_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1999071230171547",
+      "asset_key": "INDUSTRIAL_DIVIDER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1595700630530834",
+      "asset_key": "INDUSTRIAL_END_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1805919459531467",
+      "asset_key": "INDUSTRIAL_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2372512676154078",
+      "asset_key": "INDUSTRIAL_FOSSIL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2550027031736148",
+      "asset_key": "INDUSTRIAL_ISLAND_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2471020216248640",
+      "asset_key": "INDUSTRIAL_LAMP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "919417571515749",
+      "asset_key": "INDUSTRIAL_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2098427193552077",
+      "asset_key": "INDUSTRIAL_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2194358317270287",
+      "asset_key": "INDUSTRIAL_LIVING_TABLE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2391359084240118",
+      "asset_key": "INDUSTRIAL_MAMMOTH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2165269456825019",
+      "asset_key": "INDUSTRIAL_PAINTING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1964548226934025",
+      "asset_key": "INDUSTRIAL_PIPES_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2282153901855064",
+      "asset_key": "INDUSTRIAL_PIPES_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1970096183083607",
+      "asset_key": "INDUSTRIAL_PLANT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "154142178903508757",
+      "asset_key": "INDUSTRIAL_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2192376180794233",
+      "asset_key": "INDUSTRIAL_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1906329306150971",
+      "asset_key": "INDUSTRIAL_SCULPTURE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1922758624512328",
+      "asset_key": "INDUSTRIAL_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2395801230462186",
+      "asset_key": "INDUSTRIAL_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "130018561605719093",
+      "asset_key": "Item2",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "184648507189460014",
+      "asset_key": "Item3",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "164266349537978953",
+      "asset_key": "KITBASH_1",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2246866852073404",
+      "asset_key": "LIGHTSABER_GREEN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2282427555168103",
+      "asset_key": "LIGHTSABER_RED_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "171718103406336",
+      "asset_key": "MAT_CEILING_TEST010",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "574538189336855",
+      "asset_key": "MAT_CEILING_TEST020",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "172510446634678",
+      "asset_key": "MAT_CEILING_TEST030",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1307410099367935",
+      "asset_key": "MAT_CEILING_TEST040",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "496302324082352",
+      "asset_key": "MAT_FLOOR_TEST010",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1281360315307207",
+      "asset_key": "MAT_FLOOR_TEST020",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1864515347211604",
+      "asset_key": "MAT_FLOOR_TEST030",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "123484268353337",
+      "asset_key": "MAT_FLOOR_TEST040",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "152075402053277",
+      "asset_key": "MAT_FLOOR_TEST050",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "395295614222659",
+      "asset_key": "MAT_FLOOR_TEST060",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "288298051655895",
+      "asset_key": "MAT_FLOOR_TEST070",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "128608081220410",
+      "asset_key": "MAT_FLOOR_TEST080",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1895606130456158",
+      "asset_key": "MAT_FLOOR_TEST090",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "123190981650551",
+      "asset_key": "MAT_FLOOR_TEST100",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "268649833656140",
+      "asset_key": "MAT_WALL_TEST010",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "289533974875678",
+      "asset_key": "MAT_WALL_TEST020",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "183255315572670",
+      "asset_key": "MAT_WALL_TEST030",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "316471742161196",
+      "asset_key": "MAT_WALL_TEST040",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "532473933756765",
+      "asset_key": "MAT_WALL_TEST050",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1662203673851040",
+      "asset_key": "MAT_WALL_TEST060",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "351248038634266",
+      "asset_key": "MAT_WALL_TEST070",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1459834927432099",
+      "asset_key": "MAT_WALL_TEST080",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "367452177017362",
+      "asset_key": "MI_SCI_TILE_FLOOR_PANEL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "846530722165392",
+      "asset_key": "MODERN_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "785313498304992",
+      "asset_key": "MODERN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "165390277337782",
+      "asset_key": "MODERN_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "501781036840048",
+      "asset_key": "MODERN_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "698796933647974",
+      "asset_key": "MODERN_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "470470293287903",
+      "asset_key": "MODERN_MISC_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "108514289809131",
+      "asset_key": "MODERN_MISC_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "212589812600677",
+      "asset_key": "MODERN_MISC_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1474567532600097",
+      "asset_key": "MODERN_MISC_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "118803805406722",
+      "asset_key": "MODERN_MISC_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "453077805067678",
+      "asset_key": "MODERN_MISC_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1375461745872683",
+      "asset_key": "MODERN_MISC_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "119110445377112",
+      "asset_key": "MODERN_MISC_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "287769988358570",
+      "asset_key": "MODERN_MISC_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1796150347361844",
+      "asset_key": "MODERN_PLANT_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1900673836854715",
+      "asset_key": "MODERN_PLANT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "462890010755113",
+      "asset_key": "MODERN_PLANT_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "102477927122728",
+      "asset_key": "MODERN_PLANT_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "339253609836402",
+      "asset_key": "MODERN_PLANT_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "743744799161429",
+      "asset_key": "MODERN_PLANT_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1676106465765034",
+      "asset_key": "MODERN_PLANT_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "505721069766942",
+      "asset_key": "MODERN_PLANT_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1436369339744498",
+      "asset_key": "MODERN_PLANT_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1940478426276126",
+      "asset_key": "MODERN_PLANT_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "137016493606919",
+      "asset_key": "MODERN_PLANT_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "764187900432633",
+      "asset_key": "MODERN_PLANT_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1166312126835140",
+      "asset_key": "MODERN_PLANT_12",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "893457384144029",
+      "asset_key": "MODERN_PLANT_13",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "742922672558302",
+      "asset_key": "MODERN_PLANT_14",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1487734294636306",
+      "asset_key": "MODERN_PLANT_15",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "318427495301580",
+      "asset_key": "MODERN_PLANT_16",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "122640208420040",
+      "asset_key": "MODERN_PLANT_17",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1325394930903807",
+      "asset_key": "MODERN_PLANT_18",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1488891734562411",
+      "asset_key": "MODERN_PLANT_19",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "862677427244276",
+      "asset_key": "MODERN_PLANT_20",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "120042153831650406",
+      "asset_key": "MODERN_PLANT_21",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1997029847244885",
+      "asset_key": "MODERN_PLANT_22",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "288949424936696",
+      "asset_key": "MODERN_PLANT_23",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "952545168216863",
+      "asset_key": "MODERN_PLANT_24",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "364937200622026",
+      "asset_key": "MODERN_PLANT_25",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "171633596712616",
+      "asset_key": "MODERN_RUG_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "108683663074383",
+      "asset_key": "MODERN_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "697989370401939",
+      "asset_key": "MODERN_RUG_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "183185502411417342",
+      "asset_key": "MODERN_SPORTS_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1489832921039744",
+      "asset_key": "MODERN_SPORTS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "107404743219926",
+      "asset_key": "MODERN_SPORTS_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1965372510361566",
+      "asset_key": "MODERN_SPORTS_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "249351395569302",
+      "asset_key": "MODERN_SPORTS_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "108222729797190",
+      "asset_key": "MODERN_SPORTS_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "251611442009052",
+      "asset_key": "MODERN_SPORTS_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1872498619736191",
+      "asset_key": "MODERN_STATUE_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "699306283604181",
+      "asset_key": "MODERN_STATUE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "189413848053460366",
+      "asset_key": "MODERN_STATUE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124264663141717345",
+      "asset_key": "MODERN_STATUE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "182018436776001146",
+      "asset_key": "MODERN_STATUE_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "167698825995859167",
+      "asset_key": "MODERN_STATUE_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "137606828999671162",
+      "asset_key": "MODERN_STATUE_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "125319194339574498",
+      "asset_key": "MODERN_STATUE_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "102465064225114533",
+      "asset_key": "MODERN_STATUE_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1239816486140917",
+      "asset_key": "MODERN_VAR1_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "106725403325051",
+      "asset_key": "MODERN_VAR1_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "485156441838272",
+      "asset_key": "MODERN_VAR1_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "490611951290806",
+      "asset_key": "MODERN_VAR1_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "506632246342130",
+      "asset_key": "MODERN_VAR2_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1641958152489299",
+      "asset_key": "MODERN_VAR2_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1694318247263990",
+      "asset_key": "MODERN_VAR2_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "683145331887502",
+      "asset_key": "MODERN_VAR2_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "148212642562121",
+      "asset_key": "MUS_FANTASY_AMBIENT",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "136879933659054",
+      "asset_key": "MUS_FANTASY_NATURAL",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "352658778534513",
+      "asset_key": "MUS_FANTASY_ORCH",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1805336436198873",
+      "asset_key": "MUS_FUTURE_AMBIENT",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1060026304135127",
+      "asset_key": "MUS_FUTURE_MYSTERIOUS",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "285881651936483",
+      "asset_key": "MUS_FUTURE_OPTIMISTIC",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1521066101274080",
+      "asset_key": "MUS_FUTURE_ORCH",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1810526142376524",
+      "asset_key": "MUS_HALLOWEEN_THEME",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "134810140648857",
+      "asset_key": "MUS_MOD_AMBIENT",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1762500827378023",
+      "asset_key": "MUS_MOD_CHILLOUT",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "381664608913746",
+      "asset_key": "MUS_MOD_CONTEMPLATIVE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "433920523689959",
+      "asset_key": "MUS_MOD_DOWNTEMPO",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "442205872848831",
+      "asset_key": "MUS_MOD_DRAMATIC",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1856081441145794",
+      "asset_key": "MUS_PIRATE_THEME",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1941195205943149",
+      "asset_key": "MUS_SUMMER_THEME",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2012146475549453",
+      "asset_key": "MUS_THEME_FAERIE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2261282590579963",
+      "asset_key": "MUS_THEME_WINTER",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "149592608976033164",
+      "asset_key": "NewRow",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "166016108654091403",
+      "asset_key": "OC1_STATUE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "199305321081311964",
+      "asset_key": "OC2_STATUE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "143203914538445598",
+      "asset_key": "OC3_STATUE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "131647112611607911",
+      "asset_key": "OC4_STATUE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "101630728097300545",
+      "asset_key": "OCULUS_PLUSHIE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "178170336629064043",
+      "asset_key": "OCULUS_STATUE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "271899326624194",
+      "asset_key": "PAINTING_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "559602151096629",
+      "asset_key": "PAINTING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "156686574906024",
+      "asset_key": "PAINTING_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "150140365562312",
+      "asset_key": "PAINTING_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "494605354205475",
+      "asset_key": "PAINTING_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "146317155983182",
+      "asset_key": "PAINTING_LARGE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1944461932488133",
+      "asset_key": "PAINTING_LARGE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "138650246769954",
+      "asset_key": "PAINTING_LARGE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "874785409355795",
+      "asset_key": "PAINTING_LARGE_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1510541655681357",
+      "asset_key": "PAINTING_LARGE_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "150245812240502314",
+      "asset_key": "PAINTING_MEDIUM_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1996585107237528",
+      "asset_key": "PAINTING_MEDIUM_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "128005254570573",
+      "asset_key": "PAINTING_MEDIUM_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "502226183476617",
+      "asset_key": "PAINTING_MEDIUM_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1327536934022954",
+      "asset_key": "PAINTING_MEDIUM_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "113660316061331",
+      "asset_key": "PAINTING_MEDIUM_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124254014959669",
+      "asset_key": "PAINTING_MEDIUM_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1517005638392576",
+      "asset_key": "PAINTING_MEDIUM_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "419277578474359",
+      "asset_key": "PAINTING_MEDIUM_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "187336675171942",
+      "asset_key": "PAINTING_MEDIUM_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1490175654403824",
+      "asset_key": "PAINTING_MEDIUM_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1482023138765891",
+      "asset_key": "PAINTING_MEDIUM_12",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1422830397786299",
+      "asset_key": "PAINTING_MEDIUM_13",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "195903785209657530",
+      "asset_key": "PAINTING_MEDIUM_14",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "254265258430147",
+      "asset_key": "PAINTING_MEDIUM_15",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "490609521311100",
+      "asset_key": "PAINTING_MEDIUM_16",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "166695423912667",
+      "asset_key": "PAINTING_SMALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1342307379225885",
+      "asset_key": "PAINTING_SMALL_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1621859214545080",
+      "asset_key": "PAINTING_SMALL_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1367981979990854",
+      "asset_key": "PAINTING_SMALL_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "818316878349179",
+      "asset_key": "PAINTING_SMALL_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "123177871692404",
+      "asset_key": "PAINTING_SMALL_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1901576683493201",
+      "asset_key": "PAINTING_SMALL_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1504194236366605",
+      "asset_key": "PAINTING_SMALL_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "123816028320324",
+      "asset_key": "PAINTING_SMALL_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "100353200729316",
+      "asset_key": "PAINTING_SMALL_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1835946546419646",
+      "asset_key": "PAINTING_SMALL_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "209439046262584",
+      "asset_key": "PAINTING_SMALL_12",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1478535695570758",
+      "asset_key": "PAINTING_SMALL_13",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "137873436851761",
+      "asset_key": "PAINTING_SMALL_14",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1855494194761447",
+      "asset_key": "PAINTING_SMALL_15",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1984472405208997",
+      "asset_key": "PAINTING_SMALL_16",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "121591808511174",
+      "asset_key": "PAINTING_SMALL_17",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1517495865007050",
+      "asset_key": "PAINTING_SMALL_18",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1806746259615809",
+      "asset_key": "PAINTING_SMALL_19",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "321777211629952",
+      "asset_key": "PAINTING_SMALL_20",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124349234896427",
+      "asset_key": "PAINTING_SMALL_21",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "181182435780897",
+      "asset_key": "PAINTING_SMALL_22",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "526788700992534",
+      "asset_key": "PAINTING_SMALL_23",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "215272572345177",
+      "asset_key": "PAINTING_SMALL_24",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "533494030326818",
+      "asset_key": "PAINTING_SMALL_25",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1687874534672092",
+      "asset_key": "PIRATES_ANCHOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1825667254168538",
+      "asset_key": "PIRATES_BOOKEND_01B",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2308540522496269",
+      "asset_key": "PIRATES_BOOKEND_01F",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1620080264764386",
+      "asset_key": "PIRATES_BOOKEND_02B",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1842949669146544",
+      "asset_key": "PIRATES_BOOKEND_02F",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2187745147902873",
+      "asset_key": "PIRATES_CANDLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1852660471485622",
+      "asset_key": "PIRATES_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2267006303369423",
+      "asset_key": "PIRATES_CEILING_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1883452818406661",
+      "asset_key": "PIRATES_CHEST_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1016885448436190",
+      "asset_key": "PIRATES_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2225447817527115",
+      "asset_key": "PIRATES_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2098805763504978",
+      "asset_key": "PIRATES_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1798564356859058",
+      "asset_key": "PIRATES_COUNTER_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2148718138536909",
+      "asset_key": "PIRATES_CROSSBONES_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "120320112060787123",
+      "asset_key": "PIRATES_DESK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1847942971927230",
+      "asset_key": "PIRATES_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2594009317293554",
+      "asset_key": "PIRATES_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2065987653412518",
+      "asset_key": "PIRATES_END_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2098465150185804",
+      "asset_key": "PIRATES_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "3386798754671610",
+      "asset_key": "PIRATES_HOOK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1833977486638992",
+      "asset_key": "PIRATES_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1873697706017784",
+      "asset_key": "PIRATES_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "176304448290635218",
+      "asset_key": "PIRATES_PAINTING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "197259074832855483",
+      "asset_key": "PIRATES_PAINTING_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2140581865954967",
+      "asset_key": "PIRATES_PAINTING_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "160801589038406700",
+      "asset_key": "PIRATES_PAINTING_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "173489038993711858",
+      "asset_key": "PIRATES_PAINTING_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2266697923365134",
+      "asset_key": "PIRATES_PAINTING_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "149327299604071228",
+      "asset_key": "PIRATES_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "888294867961050",
+      "asset_key": "PIRATES_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2061899197175292",
+      "asset_key": "PIRATES_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1896165753832798",
+      "asset_key": "PIRATES_SHELF_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "167078907471136830",
+      "asset_key": "PIRATES_STATUE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "198625496075423798",
+      "asset_key": "PIRATES_STATUE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1836346579775364",
+      "asset_key": "PIRATES_SWORD_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1933726746694296",
+      "asset_key": "PIRATES_THRONE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1908528652568621",
+      "asset_key": "PIRATES_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1962948500430018",
+      "asset_key": "PIRATES_WHEEL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2216581015021733",
+      "asset_key": "PORTAL_DOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2744224358981284",
+      "asset_key": "PRIDE_FLAG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2016905841753345",
+      "asset_key": "PRIDE_FLAG_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2084534321669452",
+      "asset_key": "PRIDE_LAMP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2187484044698203",
+      "asset_key": "PRIDE_PLUSH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2185535784899204",
+      "asset_key": "PRIDE_POSTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2159749047481196",
+      "asset_key": "PRIDE_POSTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2459121637452449",
+      "asset_key": "PRIDE_POSTER_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2365021103536235",
+      "asset_key": "PRIDE_SIGN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "151236633541837064",
+      "asset_key": "PROMOTION_WKND_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2194326167273827",
+      "asset_key": "PROMOTION_WRATH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "166626624255308891",
+      "asset_key": "PresetMap1",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "153288898074538512",
+      "asset_key": "RECORDING_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "160488461163333",
+      "asset_key": "REX_FARLANDS_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1517957274989531",
+      "asset_key": "REX_FARLANDS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "388417434925726",
+      "asset_key": "REX_FARLANDS_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "890762487740918",
+      "asset_key": "REX_FC_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "153636467814708159",
+      "asset_key": "REX_FC_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1595641460510741",
+      "asset_key": "REX_FC_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "354455561653961",
+      "asset_key": "REX_FC_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "162883500948340",
+      "asset_key": "REX_FC_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "192321297504397569",
+      "asset_key": "REX_FC_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "334165453693912",
+      "asset_key": "REX_FC_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "122853918349776",
+      "asset_key": "REX_FC_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "107922419900478",
+      "asset_key": "REX_FC_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "108904646475314",
+      "asset_key": "REX_FC_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "134126757852067241",
+      "asset_key": "REX_FC_POLO_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "118519822131733",
+      "asset_key": "REX_FC_POLO_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "327080724399772",
+      "asset_key": "REX_FC_POLO_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1473781816014863",
+      "asset_key": "REX_FC_POLO_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "712892495578104",
+      "asset_key": "REX_FC_POLO_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "155601197665543659",
+      "asset_key": "REX_FC_POLO_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "228560250999676",
+      "asset_key": "SCIFI_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1430455817024163",
+      "asset_key": "SCIFI_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "144561992334448467",
+      "asset_key": "SCIFI_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "361661244271394",
+      "asset_key": "SCIFI_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1476122852452928",
+      "asset_key": "SCIFI_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "348291252280074",
+      "asset_key": "SCIFI_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "357657488017953",
+      "asset_key": "SCIFI_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "280559219104123",
+      "asset_key": "SCIFI_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "497544297282359",
+      "asset_key": "SCIFI_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "151224298818314",
+      "asset_key": "SCIFI_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "169886595014303365",
+      "asset_key": "SCIFI_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1591290417580665",
+      "asset_key": "SCIFI_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "135237100458132",
+      "asset_key": "SCIFI_12",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "122725088402287",
+      "asset_key": "SCIFI_13",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "121792678490653",
+      "asset_key": "SCIFI_14",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "541019079572858",
+      "asset_key": "SCIFI_15",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "131335897617434",
+      "asset_key": "SCIFI_16",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "122715428418016",
+      "asset_key": "SCIFI_17",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "727576220917064",
+      "asset_key": "SCIFI_18",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1682393351825832",
+      "asset_key": "SCIFI_19",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2053472474750466",
+      "asset_key": "SCIFI_DIGITAL_CLOCK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "167254867394530126",
+      "asset_key": "SCIFI_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "246271432551950",
+      "asset_key": "SCIFI_TOYS_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "128920317709864",
+      "asset_key": "SCIFI_TOYS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "122503268381876",
+      "asset_key": "SCIFI_TOYS_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "264517877377010",
+      "asset_key": "SCIFI_TOYS_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1457233761038931",
+      "asset_key": "SKY_FANTASY",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "105775525268223705",
+      "asset_key": "SKY_MODERN",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1594405190615066",
+      "asset_key": "SKY_MOUNTAINS",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "789829797868756",
+      "asset_key": "SKY_NEO",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1682765545127957",
+      "asset_key": "SKY_SOLAR",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "505864786460759",
+      "asset_key": "SKY_VERTIGO",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "147322868960398683",
+      "asset_key": "SKY_VOID",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1881295968630749",
+      "asset_key": "SOUND_OBJECT_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "159365018566200384",
+      "asset_key": "SOUND_OBJECT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "143673977017840879",
+      "asset_key": "SOUND_OBJECT_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124277073982700588",
+      "asset_key": "SOUND_OBJECT_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "198146953505784928",
+      "asset_key": "SOUND_OBJECT_FLAME_SMALL",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2438034152888431",
+      "asset_key": "SOUND_OBJECT_Halloween_CreatureGrowl",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1742796785846749",
+      "asset_key": "SOUND_OBJECT_Halloween_DaemonWhispers",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2146494048715486",
+      "asset_key": "SOUND_OBJECT_Halloween_Ghosts",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1908994725856074",
+      "asset_key": "SOUND_OBJECT_Halloween_SpookyChildren",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2152035994816393",
+      "asset_key": "SOUND_OBJECT_Halloween_SpookyWind",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1524174297682333",
+      "asset_key": "SOUND_OBJECT_Halloween_SqueakyFloors",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2351228281561283",
+      "asset_key": "SOUND_OBJECT_Halloween_WerewolfHowls",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2076451779086047",
+      "asset_key": "SOUND_OBJECT_Halloween_WitchLaugh",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1946901585403341",
+      "asset_key": "SOUND_OBJECT_MACHINE_HUM",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1948394325199223",
+      "asset_key": "SOUND_OBJECT_SCIFI_DRONE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "175546370117987941",
+      "asset_key": "SOUND_OBJECT_WATER_SMALL",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "192674809313468625",
+      "asset_key": "SOUND_OBJECT_WATER_UNDER",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "132197427343217054",
+      "asset_key": "SOUND_OBJECT_WEATHER_THUNDER",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2350207191763925",
+      "asset_key": "SPOOKY_ANALOG_CLOCK_01_STREAMING",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1646785678767228",
+      "asset_key": "SPOOKY_BOOKCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1703253766449841",
+      "asset_key": "SPOOKY_BOOK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1961451673913914",
+      "asset_key": "SPOOKY_BRANCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1882353731852471",
+      "asset_key": "SPOOKY_CANDLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1865091030234836",
+      "asset_key": "SPOOKY_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2227493017302962",
+      "asset_key": "SPOOKY_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1546674038767380",
+      "asset_key": "SPOOKY_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1934755319894613",
+      "asset_key": "SPOOKY_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1874493959299643",
+      "asset_key": "SPOOKY_COUNTER_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2251569364873064",
+      "asset_key": "SPOOKY_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1933451036713059",
+      "asset_key": "SPOOKY_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2120771771290298",
+      "asset_key": "SPOOKY_END_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1869017593133900",
+      "asset_key": "SPOOKY_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1866536823468490",
+      "asset_key": "SPOOKY_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2093032360707065",
+      "asset_key": "SPOOKY_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1862799743806226",
+      "asset_key": "SPOOKY_MIRROR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "126705666644357594",
+      "asset_key": "SPOOKY_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2006134699426277",
+      "asset_key": "SPOOKY_PORTRAIT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2100536073349966",
+      "asset_key": "SPOOKY_PUMPKIN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1647461558716791",
+      "asset_key": "SPOOKY_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1927178734040021",
+      "asset_key": "SPOOKY_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2398092610206966",
+      "asset_key": "SPOOKY_SHELF_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2206718006027473",
+      "asset_key": "SPOOKY_STATUE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1882693828481251",
+      "asset_key": "SPOOKY_STATUE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2315526445156619",
+      "asset_key": "SPOOKY_STATUE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1851575748244772",
+      "asset_key": "SPOOKY_THRONE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2202250753179965",
+      "asset_key": "SPOOKY_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1917408224981988",
+      "asset_key": "SUMMER_BOOKCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1813287535453527",
+      "asset_key": "SUMMER_BOOKCASE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2134621309943871",
+      "asset_key": "SUMMER_BOOK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1877950248989617",
+      "asset_key": "SUMMER_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1727912183973325",
+      "asset_key": "SUMMER_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2072946526082789",
+      "asset_key": "SUMMER_DESK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2438415509562606",
+      "asset_key": "SUMMER_DIGITAL_CLOCK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1909021222524408",
+      "asset_key": "SUMMER_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2252396564786759",
+      "asset_key": "SUMMER_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1964420006942537",
+      "asset_key": "SUMMER_END_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1809617895774458",
+      "asset_key": "SUMMER_END_TABLE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1881732411883971",
+      "asset_key": "SUMMER_FLOATIE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1456879947746785",
+      "asset_key": "SUMMER_FLOATIE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2305267399513711",
+      "asset_key": "SUMMER_FLOATIE_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1921108581284939",
+      "asset_key": "SUMMER_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1966966200009908",
+      "asset_key": "SUMMER_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1359458054157052",
+      "asset_key": "SUMMER_LOVESEAT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2218818201494188",
+      "asset_key": "SUMMER_PILLOW_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2183848144977108",
+      "asset_key": "SUMMER_PLANTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "120321728650824238",
+      "asset_key": "SUMMER_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1843904382368965",
+      "asset_key": "SUMMER_RECLINER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1762699633826841",
+      "asset_key": "SUMMER_ROOM_DIVIDER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2105964652779296",
+      "asset_key": "SUMMER_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1688619137903504",
+      "asset_key": "SUMMER_SHARK_HEAD_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2046179995412654",
+      "asset_key": "SUMMER_SHELVES_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1347447508691579",
+      "asset_key": "SUMMER_STATUE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1558334804271562",
+      "asset_key": "SUMMER_STATUE_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2627602587265400",
+      "asset_key": "SUMMER_SURFBOARD_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1591195730985662",
+      "asset_key": "SUMMER_UMBRELLA_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1746732968957267",
+      "asset_key": "SYSTEM_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "162058635313615488",
+      "asset_key": "TEST_BOOKSTACK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2133638430064526",
+      "asset_key": "THEATER_BOOTH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2055790494534833",
+      "asset_key": "THEATER_FILM_REEL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2013558765396027",
+      "asset_key": "THEATER_SCREEN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2679081905435624",
+      "asset_key": "THEATER_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "673093836170894",
+      "asset_key": "TRIM_FANTASY",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1997259783886885",
+      "asset_key": "TRIM_MODERN",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "368031213625985",
+      "asset_key": "TRIM_NEO",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2081993181866091",
+      "asset_key": "TRIM_SUMMER",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2034942809906719",
+      "asset_key": "TRIM_WINTER",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1377916668983924",
+      "asset_key": "UGC_1",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1991269714276245",
+      "asset_key": "UGC_AMBIENT_Cafe",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2471205299575127",
+      "asset_key": "UGC_AMBIENT_City",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1116708055120607",
+      "asset_key": "UGC_AMBIENT_DESERT",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2160660850663176",
+      "asset_key": "UGC_AMBIENT_Forest",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2388621201162350",
+      "asset_key": "UGC_AMBIENT_Jungle",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1750850851687405",
+      "asset_key": "UGC_AMBIENT_None",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2140765622682347",
+      "asset_key": "UGC_AMBIENT_ROOM_LARGE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "4210237435702639",
+      "asset_key": "UGC_AMBIENT_Rain",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2138994519491875",
+      "asset_key": "UGC_AMBIENT_Room",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2030047817089684",
+      "asset_key": "UGC_AMBIENT_Snow",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "192423626955172054",
+      "asset_key": "UGC_AMBIENT_Space_Station",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1956064721097750",
+      "asset_key": "UGC_TEST_PLACE",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "125895238115363",
+      "asset_key": "WALL_00",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "516779115324043",
+      "asset_key": "WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1272243786220684",
+      "asset_key": "WALL_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "124742961567298",
+      "asset_key": "WALL_03",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1526037194170359",
+      "asset_key": "WALL_04",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "133998423942443",
+      "asset_key": "WALL_05",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "380467632377727",
+      "asset_key": "WALL_06",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "312942309193504",
+      "asset_key": "WALL_07",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1838915232855042",
+      "asset_key": "WALL_08",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1852066468247918",
+      "asset_key": "WALL_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2174503619288728",
+      "asset_key": "WALL_10",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "104244592186491759",
+      "asset_key": "WALL_11",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1965744876887037",
+      "asset_key": "WALL_12",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "3091980437494223",
+      "asset_key": "WALL_13",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "125880051072069227",
+      "asset_key": "WALL_14",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2937057006308018",
+      "asset_key": "WALL_15",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "163261394728418211",
+      "asset_key": "WALL_16",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2074357949308904",
+      "asset_key": "WALL_17",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2048114561969844",
+      "asset_key": "WALL_18",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1809352005837699",
+      "asset_key": "WALL_19",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "161729589574779528",
+      "asset_key": "WALL_20",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2812036805493807",
+      "asset_key": "WINTER_ANALOG_CLOCK_01_STREAMING",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1984401854969104",
+      "asset_key": "WINTER_ANTLERS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2248038825266846",
+      "asset_key": "WINTER_BOOKCASE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2527414250632001",
+      "asset_key": "WINTER_BOOK_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1801944879902934",
+      "asset_key": "WINTER_CEILING_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1817656648360331",
+      "asset_key": "WINTER_CENTERPIECE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2225215517497085",
+      "asset_key": "WINTER_COUCH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2291196100954931",
+      "asset_key": "WINTER_COUNTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1921823124569960",
+      "asset_key": "WINTER_COUNTER_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1940790285997775",
+      "asset_key": "WINTER_CUP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1951655188246431",
+      "asset_key": "WINTER_DINING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2149630251714165",
+      "asset_key": "WINTER_DINING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1601508949948803",
+      "asset_key": "WINTER_DREIDEL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1740189896086984",
+      "asset_key": "WINTER_FLOOR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1209849129140333",
+      "asset_key": "WINTER_KINARA_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2502793886402367",
+      "asset_key": "WINTER_LIVING_CHAIR_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2451689438205320",
+      "asset_key": "WINTER_LIVING_TABLE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2411343975574341",
+      "asset_key": "WINTER_MENORAH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2055407484549016",
+      "asset_key": "WINTER_MISTLETOE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2281368541933882",
+      "asset_key": "WINTER_MKEKA_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2356784044335267",
+      "asset_key": "WINTER_MUHINDI_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1980999538605552",
+      "asset_key": "WINTER_PILLOW_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1888603741257595",
+      "asset_key": "WINTER_PILLOW_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "142158851508011687",
+      "asset_key": "WINTER_PORTAL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2022543581145426",
+      "asset_key": "WINTER_PRESENT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1977104839037612",
+      "asset_key": "WINTER_REINDEERF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1910376452386844",
+      "asset_key": "WINTER_REINDEERM_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2349553515072215",
+      "asset_key": "WINTER_RUG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2157859044238799",
+      "asset_key": "WINTER_SHELF_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2000469189999392",
+      "asset_key": "WINTER_SHELF_02",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1902219703218674",
+      "asset_key": "WINTER_SNOWDOG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1868645329918724",
+      "asset_key": "WINTER_SNOWMAN_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2518355878182442",
+      "asset_key": "WINTER_STOCKINGS_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2357198667643175",
+      "asset_key": "WINTER_WALL_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2803981559627755",
+      "asset_key": "WINTER_WREATH_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "137226986458264537",
+      "asset_key": "ZODIAC_DOG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "1737204066380773",
+      "asset_key": "ZODIAC_DRAGON_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2138671439488688",
+      "asset_key": "ZODIAC_HORSE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "141134522306184910",
+      "asset_key": "ZODIAC_MONKEY_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2590063874342602",
+      "asset_key": "ZODIAC_OX_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2076250092458123",
+      "asset_key": "ZODIAC_PIG_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2166962223324557",
+      "asset_key": "ZODIAC_RABBIT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2209476745758122",
+      "asset_key": "ZODIAC_RAT_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2159821670749407",
+      "asset_key": "ZODIAC_ROOSTER_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2207294669321451",
+      "asset_key": "ZODIAC_SHEEP_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2265301403519975",
+      "asset_key": "ZODIAC_SNAKE_01",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "2146930845366498",
+      "asset_key": "ZODIAC_TIGER_01",
+      "owned_count": 1
+    }
+  ]
+}

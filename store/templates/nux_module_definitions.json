@@ -1,0 +1,178 @@
+{
+  "data": {
+    "my_world_data": {
+      "nux_module_definitions": [
+        {
+          "id": "2674731612568032",
+          "module_key": "CustomizingOculusHome",
+          "lessons": [
+            {
+              "nux_lesson": "ObjectMove",
+              "nux_step": "ObjectMove"
+            },
+            {
+              "nux_lesson": "ObjectManipulation",
+              "nux_step": "DeleteObject"
+            },
+            {
+              "nux_lesson": "ScaleTool",
+              "nux_step": "ScaleTool_ResetSize"
+            },
+            {
+              "nux_lesson": "Inventory Item Placement",
+              "nux_step": "PlaceInventoryObject"
+            }
+          ],
+          "translated_module_title": "Customize Oculus Home",
+          "prerequisite_modules": [],
+          "possible_item_defs": [
+            {
+              "id": "2309388889112717",
+              "name": "",
+              "item_description": "",
+              "asset_key": "OCULUS_STATUE_01",
+              "is_scalable": true,
+              "is_unlimited": false,
+              "salvage_value": 0,
+              "world_placement_cap": 0,
+              "stackable": true,
+              "tags": [
+                "Decorations"
+              ],
+              "rarity": "RARE",
+              "asset_pack": null
+            }
+          ]
+        },
+        {
+          "id": "2580731121968411",
+          "module_key": "OculusHomeBasics",
+          "lessons": [
+            {
+              "nux_lesson": "Movement",
+              "nux_step": "MovementEnd"
+            },
+            {
+              "nux_lesson": "Three Choices",
+              "nux_step": "ThreeChoicesDialog"
+            },
+            {
+              "nux_lesson": "Reward Collection",
+              "nux_step": "BreakRewardPackOpen"
+            },
+            {
+              "nux_lesson": "Dash Intro",
+              "nux_step": "OpenDash"
+            },
+            {
+              "nux_lesson": "Avatar Editor Setup",
+              "nux_step": "ClickSaveAvatar"
+            }
+          ],
+          "translated_module_title": "Oculus Home Basics",
+          "prerequisite_modules": [],
+          "possible_item_defs": [
+            {
+              "id": "1793878937296801",
+              "name": "",
+              "item_description": "",
+              "asset_key": "REX_FC_05",
+              "is_scalable": true,
+              "is_unlimited": false,
+              "salvage_value": 5,
+              "world_placement_cap": 0,
+              "stackable": true,
+              "tags": [
+                "Object"
+              ],
+              "rarity": "COMMON",
+              "asset_pack": null
+            }
+          ]
+        },
+        {
+          "id": "2410414945686627",
+          "module_key": "Places",
+          "lessons": [
+            {
+              "nux_lesson": "Set Home Privacy",
+              "nux_step": "SetHomePrivacy"
+            },
+            {
+              "nux_lesson": "Visit Recommended Places",
+              "nux_step": "SelectVisitForReturnHome"
+            },
+            {
+              "nux_lesson": "UGC Homes",
+              "nux_step": "CreateHome"
+            }
+          ],
+          "translated_module_title": "Places",
+          "prerequisite_modules": [],
+          "possible_item_defs": [
+            {
+              "id": "1577492172288345",
+              "name": "",
+              "item_description": "",
+              "asset_key": "REX_FC_01",
+              "is_scalable": true,
+              "is_unlimited": false,
+              "salvage_value": 50,
+              "world_placement_cap": 0,
+              "stackable": true,
+              "tags": [
+                "Decorations"
+              ],
+              "rarity": "RARE",
+              "asset_pack": null
+            }
+          ]
+        },
+        {
+          "id": "2572442282829213",
+          "module_key": "Specialtems",
+          "lessons": [
+            {
+              "nux_lesson": "Broadcast Panel",
+              "nux_step": "BroadcastPanelFinalPrompt"
+            },
+            {
+              "nux_lesson": "Portals",
+              "nux_step": "PlacePortalObject"
+            },
+            {
+              "nux_lesson": "UGC Items",
+              "nux_step": "ImportUGCObject"
+            },
+            {
+              "nux_lesson": "Camera",
+              "nux_step": "Camera_Capture"
+            }
+          ],
+          "translated_module_title": "Special Items",
+          "prerequisite_modules": [
+            "2674731612568032"
+          ],
+          "possible_item_defs": [
+            {
+              "id": "2044503918961545",
+              "name": "",
+              "item_description": "Forget the hard edges, this plushie version of T0B1 is as soft as his little robotic heart. ",
+              "asset_key": "OCULUS_PLUSHIE_01",
+              "is_scalable": true,
+              "is_unlimited": false,
+              "salvage_value": 0,
+              "world_placement_cap": 0,
+              "stackable": true,
+              "tags": [
+                "Object"
+              ],
+              "rarity": "RARE",
+              "asset_pack": null
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
