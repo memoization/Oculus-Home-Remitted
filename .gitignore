@@ -1,0 +1,14 @@
+# All other files/folders
+**
+
+# Only the primary project
+!/
+!/**
+/.vs/**
+/x64/**
+
+/injector/x64/**
+/backend/x64/**
+/backend/x64/**
+/backend/store/**
+/src/version.gen.h
