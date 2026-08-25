@@ -145,7 +145,7 @@ namespace worlds
 
         if (HasAnyWorldFolder(worldsRoot)) return;
 
-        // Fallback default world: empty objects and hardcoded default room customizations. The furnished default ships as a prebuilt world. This only fires on a truly empty store\worlds where an empty home is fine
+        // Fallback default world
         json11::Json customizations = json11::Json::object{
             {"CeilingMaterialIndex", std::string("1307410099367935")},
             {"WallsMaterialIndex",   std::string("268649833656140")},
@@ -155,6 +155,40 @@ namespace worlds
             {"MusicIndex",           std::string("134810140648857")},
             {"AmbientSoundIndex",    std::string("2138994519491875")}
         };
+        json11::Json objects = json11::Json::array{};
+
+        // Seed the object layout / customizations from "store\templates\default_world.json" if present
+        // Only its "objects" array and "customizations" values are used.
+        fs::path templatePath = appDir / "store" / "templates" / "default_world.json";
+        std::string raw = ReadFileUtf8(templatePath.wstring());
+        if (!raw.empty())
+        {
+            std::string err;
+            json11::Json parsed = json11::Json::parse(raw, err);
+            if (!err.empty())
+            {
+                homeLogger.write() << "Worlds: default_world.json parse failed, using empty object list and default customizations. Err - " << err.c_str() << std::endl;
+            }
+            else
+            {
+                const json11::Json& node = parsed["data"]["node"];
+
+                if (node["objects"]["nodes"].is_array())
+                {
+                    objects = node["objects"]["nodes"];
+                }
+
+                if (node["customizations"].is_string())
+                {
+                    std::string cerr;
+                    json11::Json cparsed = json11::Json::parse(node["customizations"].string_value(), cerr);
+                    if (cerr.empty() && cparsed.is_object())
+                    {
+                        customizations = cparsed;
+                    }
+                }
+            }
+        }
 
         std::string worldId = MintWorldId();
         json11::Json cfg = json11::Json::object{
@@ -173,7 +207,7 @@ namespace worlds
             {"invited_users_list", json11::Json::array{}},
             {"cubemap_id", std::string("0")},
             {"customizations", customizations},
-            {"objects", json11::Json::array{}}
+            {"objects", objects}
         };
 
         fs::path folder = worldsRoot / ("world_" + worldId);
@@ -207,7 +241,7 @@ namespace worlds
         std::error_code ec;
         fs::path worldsRoot = fs::path(prefs::AppDir()) / "store" / "worlds";
 
-        // Nothing left on disk, recreate a new default (also sets it default)
+        // Nothing left on disk, recreate a new default
         if (!HasAnyWorldFolder(worldsRoot))
         {
             SeedDefaultIfEmpty();
