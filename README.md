@@ -5,7 +5,7 @@
 # About
 Oculus Home Remitted is a project to revive Oculus Home (or known as Rift Core 2.0) experiences for full use offline. This aims to work with modern *Meta Link* software for newer headsets which eliminates the need of tethering to an old version of the Oculus client.
 
-Meta shutdown access to Oculus Home years ago evicting many users of their digital spaces which often many consist of custom UGC assets. The base app is heavily dependent on a remote backend to start and to perform vital functions. The tool mimics vital parts of the backend allowing game functionality fully local and offline.
+Meta shutdown access to Oculus Home years ago evicting many users of their digital spaces which often many consist of custom UGC assets. The base app is heavily dependent on a remote backend to start and to perform vital functions. The tool mimics those vital parts of the backend allowing game functionality fully local and offline.
 
 ### Notable features:
 - Set a custom profile name and icon. Both can appear in VR.
@@ -21,7 +21,7 @@ This tool only supports a specific version of Oculus Home. It can be downloaded 
 2. Download the latest version of the [tool](https://github.com/memoization/Oculus-Home-Remitted/releases/latest). The tool is portable as there is no installer.
 3. Extract and launch *Home2Remitted.exe*.
 4. Use the *Set Executable* option then navigate to the *oculus-worlds* folder you extracted and select `Home2-Win64-Shipping.exe` located at `Home2\Binaries\Win64`. `Home2.exe` at the root should be ignored.
-5. Launch the Meta Link software and have its dash running.
+5. Launch the Meta Link software and have its dash running. You will need to enable "Unknown sources" in the settings page.
 6. Use the *Launch Home* option in the tool. The Oculus Home process will now start and the tool will spin up its backend to take over.
 7. Now you should find yourself inside Oculus Home in a default home layout fully offline.
 
