@@ -1,4 +1,4 @@
-## Oculus Home Remitted [![Github All Releases](https://img.shields.io/github/downloads/memoization/Oculus-Home-Remitted/total.svg)](https://github.com/memoization/Oculus-Home-Remitted/releases/latest)
+## Oculus Home Remitted [![Github All Releases](https://img.shields.io/github/downloads/memoization/Oculus-Home-Remitted/total)](https://github.com/memoization/Oculus-Home-Remitted/releases/latest)
 <img width="1280" height="720" alt="remitted_cover_thumb_720" src="https://github.com/user-attachments/assets/fa2b7058-b1a9-48cc-bfdf-cf5268e703b3" />
 
 
