@@ -16,6 +16,8 @@
 #include "IconPak.h"
 #include "AppLibraries.h"
 #include "BroadcastSource.h"
+#include "Watcher.h"
+#include "Injector.h"
 #include <shobjidl.h>
 #include <cpr/cpr.h>
 
@@ -1124,10 +1126,48 @@ void UI::DrawSidebar()
 
     ImGui::SetCursorPos(ImVec2((sidebarWidth - btnWidth) / 2, launchTop));
 
-    pushedStyles = PushLaunchButtonStyle();
-    if (ImGui::Button("Launch Home", ImVec2(btnWidth, launchHeight)))
+
+    bool homeRunning = g_homeWatcher.HomeRunning();
+
+    if (homeRunning)
     {
-        DoLaunchHome();
+        pushedStyles = PushButtonStyleGrey();
+
+        // Any time the home process is up, set the launch button to exit
+        launchPending = false;
+        if (closePending.load())
+        {
+            // A close is already in progress, keep the button off until the process exits.
+            ImGui::BeginDisabled();
+            ImGui::Button("Exit Home", ImVec2(btnWidth, launchHeight));
+            ImGui::EndDisabled();
+        }
+        else if (ImGui::Button("Exit Home", ImVec2(btnWidth, launchHeight)))
+        {
+            DoExitHome();
+        }
+    }
+    else
+    {
+        // Home is not running so any close request has finished.
+        closePending.store(false);
+        if (launchPending)
+        {
+            pushedStyles = PushButtonStyleGrey();
+
+            // Launch requested but the process will not appeared instantly. Set it disabled so a second click cannot spawn a duplicate.
+            ImGui::BeginDisabled();
+            ImGui::Button("Launch Home", ImVec2(btnWidth, launchHeight));
+            ImGui::EndDisabled();
+        }
+        else
+        {
+            pushedStyles = PushLaunchButtonStyle();
+            if (ImGui::Button("Launch Home", ImVec2(btnWidth, launchHeight)))
+            {
+                DoLaunchHome();
+            }
+        }
     }
     ImGui::PopStyleColor(pushedStyles);
 
@@ -1261,7 +1301,7 @@ void UI::DoLaunchHome()
         dir = dir.substr(0, slash);
     }
 
-    std::wstring cmd = L"\"" + exeW;// +L"\"" + L" -windowed -HideAllWindows -UNATTENDED";
+    std::wstring cmd = L"\"" + exeW +L"\"" + L" -windowed -HideAllWindows -UNATTENDED";
     STARTUPINFOW si = {};
     si.cb = sizeof(si);
     PROCESS_INFORMATION pi = {};
@@ -1269,6 +1309,7 @@ void UI::DoLaunchHome()
     {
         CloseHandle(pi.hThread);
         CloseHandle(pi.hProcess);
+        launchPending = true;
         homeLogger.write() << "Launched Home! Injection happens automatically" << std::endl;
     }
     else
@@ -1277,6 +1318,88 @@ void UI::DoLaunchHome()
         env.noticeMessage = "Could not launch the Home2 executable. Check the path in Set Executable.";
         env.nextPopup = "Notice";
     }
+}
+
+namespace
+{
+    struct EnumWindowContext
+    {
+        DWORD pid;
+        bool sentClose;
+    };
+
+    // Post WM_CLOSE to each visible top-level window owned by the target pid
+    BOOL CALLBACK CloseWindowForPid(HWND hwnd, LPARAM lParam)
+    {
+        auto* context = reinterpret_cast<EnumWindowContext*>(lParam);
+        DWORD windowPid = 0;
+        GetWindowThreadProcessId(hwnd, &windowPid);
+
+        if (windowPid == context->pid && IsWindowVisible(hwnd))
+        {
+            PostMessageW(hwnd, WM_CLOSE, 0, 0);
+            context->sentClose = true;
+        }
+        return TRUE;
+    }
+
+    // Ask the home process to close by posting WM_CLOSE to its window, wait up to waitMs for a clean exit, then fall back to TerminateProcess only if it is still alive
+    bool RequestCloseThenKill(DWORD pid, DWORD waitMs)
+    {
+        HANDLE process = OpenProcess(PROCESS_TERMINATE | SYNCHRONIZE, FALSE, pid);
+        if (!process)
+        {
+            return false;
+        }
+
+        EnumWindowContext context{ pid, false };
+        EnumWindows(CloseWindowForPid, reinterpret_cast<LPARAM>(&context));
+
+        if (context.sentClose && WaitForSingleObject(process, waitMs) == WAIT_OBJECT_0)
+        {
+            CloseHandle(process);
+            return true;
+        }
+
+        // No window took the close, so force it down as a last resort.
+        BOOL terminated = TerminateProcess(process, 0);
+        if (terminated)
+        {
+            WaitForSingleObject(process, waitMs);
+        }
+        CloseHandle(process);
+        return terminated == TRUE;
+    }
+}
+
+void UI::DoExitHome()
+{
+    DWORD pid = injector::FindProcessId(L"Home2-Win64-Shipping.exe");
+    if (pid == 0)
+    {
+        // Already gone
+        homeLogger.write() << "Exit Home: no Home process found." << std::endl;
+        return;
+    }
+
+    closePending.store(true);
+    homeLogger.write() << "Exit Home: requesting clean close of Home (pid " << pid << ") ..." << std::endl;
+
+    // The watcher notices the process is gone and re-arms. Now flip the button back to "Launch Home".
+    std::thread([this, pid]()
+    {
+        bool closed = RequestCloseThenKill(pid, 6000);
+        if (closed)
+        {
+            homeLogger.write() << "Exit Home: Home closed (pid " << pid << ")." << std::endl;
+        }
+        else
+        {
+            // Could not open or kill the process
+            closePending.store(false);
+            homeLogger.write() << "Exit Home: could not close Home (pid " << pid << ")." << std::endl;
+        }
+    }).detach();
 }
 
 void UI::DoSetExecutable()

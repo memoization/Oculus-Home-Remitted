@@ -76,7 +76,7 @@ struct UIConst
     const ImVec4 NavItemActive = ImVec4(0.180f, 0.180f, 0.216f, 1);
     const ImVec4 NavItemHover = ImVec4(0.180f, 0.180f, 0.216f, 1);
     const ImVec4 LaunchButtonFill = ImVec4(0.204f, 0.451f, 0.965f, 1);
-    const ImVec4 LaunchButtonHover = ImVec4(0.302f, 0.541f, 1.0f, 1);
+    const ImVec4 LaunchButtonHover = ImVec4(0.204f, 0.451f, 0.965f, 1);
     const ImVec4 LaunchButtonClick = ImVec4(0.153f, 0.353f, 0.800f, 1);
     const ImVec4 ContentOverlay = ImVec4(0.047f, 0.047f, 0.063f, 0.55f);
     const int SidebarWidth = 220;
@@ -147,6 +147,7 @@ struct UI
     void DoPopups(Env& rs);
 
     void DoLaunchHome();
+    void DoExitHome();
     void DoSetExecutable();
     void RebuildAppsLibrary(); // re-scan library roots into store\apps-library.json, refreshes appsFoundCount
     bool BrowseForFolder(std::string& outPath); // shell folder picker, true if the user chose a folder
@@ -158,6 +159,8 @@ struct UI
     std::string profileImagePath; // abs path to the user's profile.png (from prefs), "" means default
     bool reloadProfileOnOpen = true; // re-read prefs when the Profile page is (re)opened (no poll)
     std::string home2ExePath; // Home2 exe for the Launch Home button (from preferences.json)
+    bool launchPending = false; // set when Launch Home is clicked, cleared once the watcher sees the process
+    std::atomic<bool> closePending; // set when Exit Home is clicked and cleared once the watcher sees the home process is gone
     std::string iconPakStatus;// last result of building the profile override pak (shown on Profile page)
     const char* appVersion = "0.0.0";
 
