@@ -63,6 +63,9 @@
     <ClCompile Include="src\OafCapture.cpp">
       <Filter>Source Files\Capture Tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShaCapPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Certs.h">
