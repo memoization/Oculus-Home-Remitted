@@ -168,6 +168,7 @@
     <ClCompile Include="src\OafCapture.cpp" />
     <ClCompile Include="src\OafRewrite.cpp" />
     <ClCompile Include="src\LoginPatch.cpp" />
+    <ClCompile Include="src\ShaCapPatch.cpp" />
     <ClCompile Include="src\OvrRuntime.cpp" />
     <ClCompile Include="src\BackendLogger.cpp" />
     <ClCompile Include="src\ProbePrefs.cpp" />

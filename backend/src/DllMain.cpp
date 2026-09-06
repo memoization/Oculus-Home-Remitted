@@ -163,6 +163,9 @@ static DWORD WINAPI InitThread(LPVOID)
     // Applied early, well before OnLoginComplete fires in Init.
     InstallLoginPatch();
 
+    // Resolve the startup crash on newer CPUs
+    InstallShaCapPatch();
+
     // Direct-launch survival: spawn a waiter that hooks OVRPlugin's ShouldQuit the moment OVRPlugin.dll loads so the app doesn't quit when launched outside OVRServer's app-launch flow.
     InstallOvrRuntimeHooks();
 
