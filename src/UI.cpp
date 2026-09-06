@@ -345,6 +345,7 @@ void UI::Create()
     texLoader.LoadPng("images/home.png");
     texLoader.LoadPng("images/desktop.png");
     texLoader.LoadPng("images/library.png");
+    texLoader.LoadPng("images/achievement.png");
     texLoader.LoadPng("images/world-default.png");
 
     // Profile-picture presets for the selector modal (images/profiles/1.png .. 32.png)
@@ -864,6 +865,76 @@ void UI::DoApps()
     ImGui::PopStyleColor(pushedStyles);
 }
 
+void UI::DoAchievements()
+{
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+
+    // On page open, load the saved achievement index and refresh the app-library count
+    if (reloadAchievementsOnOpen)
+    {
+        achievementList = fetchworlds::LoadAchievements();
+        achievementRowLabels.clear();
+        achievementRowLabels.reserve(achievementList.size());
+        for (const auto& a : achievementList)
+        {
+            std::string app = a.appTitle.empty() ? a.appCanonical : a.appTitle;
+            achievementRowLabels.push_back(app + "   |   " + a.title);
+        }
+        libraryAppCount = fetchworlds::CountAppsInLibrary();
+        reloadAchievementsOnOpen = false;
+    }
+
+    ImGui::Dummy(iScale.Vec2(0, 25));
+
+    ImGui::PushFont(fontTitle);
+    ImGui::TextUnformatted("App Achievements");
+    ImGui::PopFont();
+
+    ImGui::Dummy(iScale.Vec2(0, 25));
+
+    ImGui::PushFont(fontHeader);
+    ImGui::Text("Found Achievements: %d", (int)achievementList.size());
+    ImGui::PopFont();
+
+    ImGui::Dummy(iScale.Vec2(0, 14));
+
+    // Row per entry: "App name|Achievement title".
+    const int kAchievementsKind = 2;
+    std::vector<SourceRowVM> rows;
+    rows.reserve(achievementRowLabels.size());
+    for (size_t i = 0; i < achievementRowLabels.size(); ++i)
+    {
+        rows.push_back({ (uint64_t)(i + 1), achievementRowLabels[i].c_str() });
+    }
+
+    float listW = iScale.F(800);
+    float listH = iScale.F(240);
+    SourceColumn("Achievements", kAchievementsKind, rows, ImVec2(listW, listH), (int)iScale.F(760));
+
+    ImGui::SetCursorPosY(avail.y - iScale.F(85));
+    float btnH = iScale.F(40);
+    float btnW = iScale.F(180);
+    ImGui::SetCursorPosX(((avail.x - btnW) / 2) - UIConsts.PageContentPadding);
+
+    pushedStyles = PushButtonStyleGrey();
+    if (ImGui::Button("Fetch Achievements", ImVec2(btnW, btnH)))
+    {
+        if (libraryAppCount > 0)
+        {
+            // Achievements are looked up per app so an empty library can't fetch.
+            env.noticeMessage = "Add your Oculus apps first on the \"Apps Library\" page. Achievements are fetched for the apps found there.";
+            env.nextPopup = "Notice";
+        }
+        else
+        {
+            fetchResultMsg.clear();
+            fetchResultOk = false;
+            env.nextPopup = "Fetch Achievements";
+        }
+    }
+    ImGui::PopStyleColor(pushedStyles);
+}
+
 // Re-scan the default CoreData location and the user's added roots into store\apps-library.json
 // The backend feeds this to the worlds_apps_and_achievements graphql request on next launch.
 void UI::RebuildAppsLibrary()
@@ -1047,6 +1118,12 @@ bool UI::NavItem(const char* label, const std::string& iconPath, PageType page)
             reloadAppsOnOpen = true;
         }
 
+        // Reload the saved achievement index on switch-to
+        if (page == PageType::AppAchievements && env.currentPage != PageType::AppAchievements)
+        {
+            reloadAchievementsOnOpen = true;
+        }
+
         env.currentPage = page;
     }
 
@@ -1115,6 +1192,7 @@ void UI::DrawSidebar()
     NavItem("Homes", "images/home.png", PageType::Worlds);
     NavItem("Screen Sources", "images/desktop.png", PageType::ScreenSources);
     NavItem("Apps Library", "images/library.png", PageType::AppsLibrary);
+    NavItem("App Achievements", "images/achievement.png", PageType::AppAchievements);
 
     // Pinned bottom of nav: Launch Home (blue) and Set Executable
     float launchHeight = iScale.F(44);
@@ -1276,6 +1354,7 @@ void UI::DrawContent()
     case PageType::Worlds:        DoWorlds(); break;
     case PageType::ScreenSources: DoScreens(); break;
     case PageType::AppsLibrary:   DoApps(); break;
+    case PageType::AppAchievements:   DoAchievements(); break;
     }
 
     ImGui::EndChild();
@@ -1570,7 +1649,7 @@ void UI::DoPopups(Env& env)
             else if (!fetchResultMsg.empty())
             {
                 ImGui::PushTextWrapPos(iScale.F(780));
-                ImGui::TextColored(fetchResultOk ? ImVec4(0.42f, 0.85f, 0.42f, 1.0f) : UIConsts.ErrorText, "%s", fetchResultMsg.c_str());
+                ImGui::TextColored(fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText, "%s", fetchResultMsg.c_str());
                 ImGui::PopTextWrapPos();
             }
 
@@ -1596,6 +1675,135 @@ void UI::DoPopups(Env& env)
                 fetchFuture = std::async(std::launch::async,
                     [token = fetchToken, userId = fetchUserId, this]()
                     { return fetchworlds::FetchMyWorlds(token, userId, &fetchProgress); });
+            }
+
+            ImGui::PopStyleColor(pushedStyles);
+            ImGui::EndDisabled();
+        }
+        ImGui::EndChild();
+
+        ImGui::PopStyleVar();
+
+        ImGui::SameLine();
+        ImGui::EndPopup();
+    }
+
+    // Fetch Achievements: download them from graphql request into store\achievements
+    ImGui::SetNextWindowPos(center, ImGuiCond_Always, pivot);
+    ImGui::SetNextWindowSize(iScale.Vec2(780, 520), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Fetch Achievements", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+    {
+        ImGui::Dummy(iScale.Vec2(0, 10));
+        float headerTop = ImGui::GetCursorPosY();
+
+        // X close (top-right)
+        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - iScale.F(38), headerTop));
+        pushedStyles = PushButtonStyleGrey();
+        if (ImGui::Button("X", iScale.Vec2(26, 26)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::PopStyleColor(pushedStyles);
+
+        // Centered title on the same header row
+        ImGui::SetCursorPos(ImVec2(0.0f, headerTop));
+        ImGui::PushFont(fontHeader);
+        CenteredText("Fetch Achievements");
+        ImGui::PopFont();
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        // Poll the background worker for completion (runs every frame while the popup is open)
+        // Close is disabled mid-fetch so the modal stays up until retrieves the result
+        if (fetchRunning && fetchFuture.valid() && fetchFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+        {
+            fetchworlds::Result r = fetchFuture.get();
+            fetchRunning = false;
+            fetchResultOk = r.ok && r.achievementsSaved > 0;
+            if (fetchResultOk)
+            {
+                fetchResultMsg = "Downloaded " + std::to_string(r.achievementsSaved) + " achievement(s).";
+                reloadAchievementsOnOpen = true; // refresh the Achievements list to include them
+            }
+            else
+            {
+                fetchResultMsg = r.error.empty() ? std::string("No achievements were found.") : r.error;
+            }
+        }
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(10, 10));
+
+        ImGui::BeginChild("AccountFields", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
+        {
+            ImGui::TextWrapped("Download your app achievements from the Oculus backend while they still exist. Achievements are saved locally and show up in the \"App Items\" category. One credential from your Meta (Oculus) account is required.");
+            ImGui::Spacing();
+
+            ImGui::PushTextWrapPos(iScale.F(780));
+            ImGui::TextColored(UIConsts.SubText, "1. Open your Meta Horizon Link app."
+                "\n2. Press \"CTRL + SHIFT + I\" to show dev tools."
+                "\n3. Go under \"Network\" tab."
+                "\n4. In the link app, click on your profile page."
+                "\n5. In the captured network list, look for requests titled with \"graphql\"."
+                "\n6. Observe these requests and look for the field \"access_token\" in the \"Payload\" tab of each request."
+                "\n7. Copy the token and paste into the field below and click \"Submit\".");
+            ImGui::Spacing();
+            ImGui::TextColored(UIConsts.SubText, "Do not share your FRL token with anyone!");
+            ImGui::PopTextWrapPos();
+
+            ImGui::Spacing();
+
+            ImGui::BeginDisabled(fetchRunning);
+
+            ImGui::TextUnformatted("FRL Token");
+            ImGui::SetNextItemWidth(iScale.F(430));
+            pushedStyles = PushTextInputStyle();
+            ImGui::InputText("##fetchToken", &fetchToken, ImGuiInputTextFlags_Password);
+            ImGui::PopStyleColor(pushedStyles);
+
+            ImGui::EndDisabled();
+
+            ImGui::Spacing();
+
+            if (fetchRunning)
+            {
+                int done = fetchProgress.done.load();
+                int total = fetchProgress.total.load();
+                if (total > 0)
+                    ImGui::Text("Fetching achievements...  %d / %d", done, total);
+                else
+                    ImGui::TextUnformatted("Contacting the backend...");
+            }
+            else if (!fetchResultMsg.empty())
+            {
+                ImGui::PushTextWrapPos(iScale.F(780));
+                ImGui::TextColored(fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText, "%s", fetchResultMsg.c_str());
+                ImGui::PopTextWrapPos();
+            }
+
+            float windowHeight = ImGui::GetWindowSize().y;
+            float footerOffset = windowHeight - iScale.F(58);
+
+            ImGui::SetCursorPosY(footerOffset);
+
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            ImGui::BeginDisabled(fetchRunning || fetchToken.empty());
+            pushedStyles = PushButtonStyleGrey();
+            if (CenteredButton("Submit", iScale.Vec2(140, 34)))
+            {
+                fetchProgress.total.store(0);
+                fetchProgress.done.store(0);
+                fetchResultMsg.clear();
+                fetchResultOk = false;
+                fetchRunning = true;
+
+                fetchFuture = std::async(std::launch::async,
+                    [token = fetchToken, this]()
+                    { return fetchworlds::FetchMyAchievements(token, &fetchProgress); });
             }
 
             ImGui::PopStyleColor(pushedStyles);
