@@ -83,6 +83,10 @@ namespace home2hook {
         json11::Json appLibrary; // the object with "apps": array
         bool appLibraryLoaded = false;
 
+        // Fetched achievement definitions grouped by app id, from store\achievements\app-achievements.json
+        // An app's entries are attached to that app's Achievements, with the icon in a file:// UnlockedURI so the achievement renders offline.
+        std::unordered_map<std::string, std::vector<json11::Json>> appAchievements;
+
         // served inventory-entry id (node "id", DeriveInventoryEntryId(def id)) maps to def id. Built at Load from ownedItems, and lets the create path recover item_definition.id from the wire inventory_item_id, which is now the entry id, not the def id.
         std::unordered_map<std::string, std::string> inventoryEntryToDefId;
 
@@ -147,6 +151,9 @@ namespace home2hook {
     
         // Build a wire app-object (base64-encodes its raw URI fields) for def id, or Json() if the library has no such app. requestedIds filters the library to what the world actually placed.
         json11::Json buildAppNode(const json11::Json& libApp) const;
+
+        // Return a copy of a library app with its Achievements filled from appAchievements, filling each icon uri into a file:// UnlockedURI.
+        json11::Json appWithAchievements(const json11::Json& libApp) const;
 
         // One OAF LIBRARY_UPDATE entitlement node (full ~60-field schema, per-app fields from libApp, rest constant defaults captured from a live library reply).
         json11::Json buildOafEntitlement(const json11::Json& libApp) const;
