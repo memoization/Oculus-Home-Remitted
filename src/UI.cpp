@@ -934,6 +934,10 @@ void UI::DoAchievements()
         }
     }
     ImGui::PopStyleColor(pushedStyles);
+
+    pushedStyles = PushSubTextStyle();
+    CenteredText("To load any new achievement(s) earned from an app, you will need to fetch them again.", true);
+    ImGui::PopStyleColor(pushedStyles);
 }
 
 // Re-scan the default CoreData location and the user's added roots into store\apps-library.json
