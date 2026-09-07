@@ -46,7 +46,8 @@ enum class PageType
     Profile,
     Worlds,
     ScreenSources,
-    AppsLibrary
+    AppsLibrary,
+    AppAchievements
 };
 
 struct UIConst
@@ -63,6 +64,7 @@ struct UIConst
     const ImVec4 SubText = ImVec4(0.47f, 0.494f, 0.505f, 1);
     const ImVec4 WarnText = ImVec4(0.98f, 0.76f, 0.22f, 1.0f);
     const ImVec4 ErrorText = ImVec4(1, 0, 0, 1);
+    const ImVec4 SuccessText = ImVec4(0.42f, 0.85f, 0.42f, 1.0f);
 
     const ImVec4 ListItemHover = ImVec4(0.27f, 0.28f, 0.28f, 1.0f);
     const ImVec4 ListItemActive = ImVec4(0.33f, 0.34f, 0.34f, 1.0f);
@@ -141,6 +143,7 @@ struct UI
     void DoWorlds();
     void DoScreens();
     void DoApps();
+    void DoAchievements();
     void RefreshSources();
     void SourceColumn(const char* title, int kind, const std::vector<SourceRowVM>& items, ImVec2 size, int entryTextWidth);
     bool SourceRow(const char* label, bool selected, int textWidth);
@@ -164,6 +167,11 @@ struct UI
     std::string iconPakStatus;// last result of building the profile override pak (shown on Profile page)
     const char* appVersion = "0.0.0";
 
+    // "Changes have been saved!" toast above Launch Home. Flashes up when preferences.json is written to
+    unsigned lastSavedTick = 0;
+    bool savedTickInit = false;
+    double savedToastStart = -1000.0;// ImGui time the toast was last triggered
+
     // scanned per-world folders (list, select, Set Default). Re-scanned on page (re)open (one-shot, mirrors reloadProfileOnOpen, no background poll).
     std::vector<worlds::WorldCardInfo> worldList;
     bool reloadWorldsOnOpen = true;
@@ -173,6 +181,12 @@ struct UI
     std::vector<std::string> libraryPaths;
     int appsFoundCount = 0;
     bool reloadAppsOnOpen = true;
+
+    // The saved index from store\achievements\app-achievements.json loaded on page open.
+    std::vector<fetchworlds::AchievementInfo> achievementList;
+    std::vector<std::string> achievementRowLabels; // "App name  |  Achievement title" per entry
+    int libraryAppCount = 0; // apps present in store\apps-library.json
+    bool reloadAchievementsOnOpen = true;
 
     // "Fetch My Homes": download the user's remote worlds from graph.oculus.com into store\worlds.
     std::string fetchToken;

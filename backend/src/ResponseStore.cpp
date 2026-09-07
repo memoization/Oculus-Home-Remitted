@@ -458,6 +458,23 @@ namespace home2hook {
             }
         }
 
+        // Fetched achievement definitions linked to library apps.
+        // The icon is composed into a file:// UnlockedURI
+        std::string achText;
+        if (ReadFileText(root / "achievements" / "app-achievements.json", achText))
+        {
+            std::string aerr;
+            json11::Json aj = json11::Json::parse(achText, aerr);
+            if (aerr.empty())
+            {
+                for (const auto& e : aj["achievements"].array_items())
+                {
+                    std::string appId = e["app_id"].string_value();
+                    if (!appId.empty()) appAchievements[appId].push_back(e);
+                }
+            }
+        }
+
         // Load the user's uploaded-UGC catalog once. Seeded into ugcDefs each loadWorlds so item-defs resolve every UGC def even if a world's own manifest is incomplete.
         // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldUgc" and not from this catalog.
         std::string gtext;
@@ -1877,6 +1894,38 @@ namespace home2hook {
         return ids;
     }
 
+    // Returns a copy of a library app with its Achievements filled from the fetched index.
+    // Each achievement icon is composed into a file:// UnlockedURI.
+    json11::Json ResponseStore::appWithAchievements(const json11::Json& libApp) const
+    {
+        auto it = appAchievements.find(libApp["ID"].string_value());
+        if (it == appAchievements.end() || it->second.empty()) return libApp;
+
+        std::vector<json11::Json> achs;
+        achs.reserve(it->second.size());
+        for (const auto& e : it->second)
+        {
+            std::string iconUri;
+            std::string iconRel = e["icon"].string_value();
+            if (!iconRel.empty())
+            {
+                iconUri = FileUriIfExists(std::filesystem::path(appDir) / iconRel);
+            }
+
+            achs.push_back(json11::Json::object{
+                { "ID", e["id"].string_value() },
+                { "Title", e["title"].string_value() },
+                { "Description", e["description"].string_value() },
+                { "UnlockTime", e["unlock_time"].is_number() ? e["unlock_time"] : json11::Json(0) },
+                { "UnlockedURI", iconUri }
+            });
+        }
+
+        json11::Json::object app = libApp.object_items();
+        app["Achievements"] = achs;
+        return json11::Json(app);
+    }
+
     // Transform a library app, or achievement, object into its delivery form.
     // Every URI field holds a raw url in the manifest and is base64-encoded.
     // Nested Achievements are transformed the same way. Non-URI fields (ID/Canonical/Title/AcquiredTime/Description/UnlockTime) pass through unchanged.
@@ -1926,7 +1975,7 @@ namespace home2hook {
                 if (!app.is_object()) continue;
                 if (!want.empty() && want.count(app["ID"].string_value()) == 0) continue; // serve only the apps this world actually placed
 
-                json11::Json node = buildAppNode(app);
+                json11::Json node = buildAppNode(appWithAchievements(app));
                 if (node.is_object())
                 {
                     elems.push_back(json11::Json(node.dump()));
@@ -1954,7 +2003,7 @@ namespace home2hook {
                 if (!app.is_object()) continue;
                 if (!want.empty() && want.count(app["ID"].string_value()) == 0) continue;
 
-                json11::Json node = buildAppNode(app);
+                json11::Json node = buildAppNode(appWithAchievements(app));
                 if (!node.is_object()) continue;
 
                 apps.push_back(node);

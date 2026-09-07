@@ -8,6 +8,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 #include <set>
 #include <vector>
 
@@ -20,6 +21,7 @@ namespace fetchworlds
     static const char* kDocWorldsList   = "2517010291730152"; // user node (full), returns node.worlds.nodes
     static const char* kDocWorldContent = "2021902227865170"; // world content, returns objects and customizations
     static const char* kDocItemDefs     = "2340400929361818"; // item definitions (incl UGC and asset uris)
+    static const char* kDocWorldsApps   = "3420023344706951"; // worlds_apps_and_achievements, returns apps with nested Achievements
 
     static bool WriteFileAtomic(const fs::path& path, const std::string& content)
     {
@@ -326,6 +328,240 @@ namespace fetchworlds
         res.ok = true;
         res.worldsSaved = saved;
         if (saved == 0) res.error = "No worlds were downloaded (the account may have none).";
+        return res;
+    }
+
+    static std::string ReadFile(const fs::path& path)
+    {
+        std::ifstream f(path, std::ios::binary);
+        if (!f) return std::string();
+        std::ostringstream ss;
+        ss << f.rdbuf();
+        return ss.str();
+    }
+
+    // Read the app ids the game would place, taken from the offline apps-library.json the Apps Library page builds.
+    static std::vector<std::string> ReadLibraryAppIds()
+    {
+        std::vector<std::string> ids;
+        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "apps-library.json");
+        if (txt.empty()) return ids;
+
+        std::string perr;
+        json11::Json j = json11::Json::parse(txt, perr);
+        if (!perr.empty()) return ids;
+
+        for (const auto& app : j["apps"].array_items())
+        {
+            std::string id = app["ID"].string_value();
+            if (!id.empty()) ids.push_back(id);
+        }
+        return ids;
+    }
+
+    // Guess a file extension from an image url. Strips the query then reads the last dot of the final path segment.
+    // Defaults file extension to .png
+    static std::string GuessImageExt(const std::string& url)
+    {
+        std::string u = url;
+        size_t q = u.find('?');
+        if (q != std::string::npos) u = u.substr(0, q);
+
+        size_t slash = u.find_last_of('/');
+        std::string seg = (slash == std::string::npos) ? u : u.substr(slash + 1);
+
+        size_t dot = seg.find_last_of('.');
+        if (dot != std::string::npos && dot + 1 < seg.size())
+        {
+            std::string ext = seg.substr(dot);
+            if (ext.size() <= 5) return ext;
+        }
+        return ".png";
+    }
+
+    int CountAppsInLibrary()
+    {
+        return (int)ReadLibraryAppIds().size();
+    }
+
+    std::vector<AchievementInfo> LoadAchievements()
+    {
+        std::vector<AchievementInfo> out;
+        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "achievements" / "app-achievements.json");
+        if (txt.empty()) return out;
+
+        std::string perr;
+        json11::Json j = json11::Json::parse(txt, perr);
+        if (!perr.empty()) return out;
+
+        for (const auto& a : j["achievements"].array_items())
+        {
+            AchievementInfo info;
+            info.id = a["id"].string_value();
+            info.title = a["title"].string_value();
+            info.description = a["description"].string_value();
+            info.unlockTime = a["unlock_time"].is_number() ? (long long)a["unlock_time"].number_value() : 0;
+            info.iconPath = a["icon"].string_value();
+            info.appId = a["app_id"].string_value();
+            info.appTitle = a["app_title"].string_value();
+            info.appCanonical = a["app_canonical"].string_value();
+            info.appSquarePath = a["app_square"].string_value();
+            out.push_back(std::move(info));
+        }
+        return out;
+    }
+
+    Result FetchMyAchievements(std::string token, Progress* progress)
+    {
+        Result res;
+        if (token.empty())
+        {
+            res.error = "The FRL token is required.";
+            return res;
+        }
+
+        std::vector<std::string> appIds = ReadLibraryAppIds();
+        if (appIds.empty())
+        {
+            res.error = "No apps in the library. Rebuild the Apps Library first.";
+            return res;
+        }
+
+        // The request wants app_ids_json. Example being a string {app_ids: ['id','id',...]} with an unquoted key and single-quoted ids.
+        std::string idList;
+        for (size_t i = 0; i < appIds.size(); ++i)
+        {
+            if (i) idList += ",";
+            idList += "'" + appIds[i] + "'";
+        }
+        std::string pseudo = "{app_ids: [" + idList + "]}";
+        std::string variables = json11::Json(json11::Json::object{ { "app_ids_json", pseudo } }).dump();
+
+        std::string err;
+        json11::Json resp = GraphQL(token, kDocWorldsApps, variables, err);
+        if (!err.empty())
+        {
+            res.error = "Fetching achievements failed: " + err;
+            return res;
+        }
+
+        // data.worlds_apps_and_achievements is a json string that holds an array of string app objects.
+        std::string waaStr = resp["data"]["worlds_apps_and_achievements"].string_value();
+        if (waaStr.empty())
+        {
+            res.error = "The backend returned no apps or achievements.";
+            return res;
+        }
+
+        std::string aerr;
+        json11::Json appsArr = json11::Json::parse(waaStr, aerr);
+        if (!aerr.empty() || !appsArr.is_array())
+        {
+            res.error = "Could not parse the achievements response.";
+            return res;
+        }
+
+        // Each array element is a string app object. Parse each back into an object.
+        std::vector<json11::Json> apps;
+        for (const auto& el : appsArr.array_items())
+        {
+            if (el.is_object())
+            {
+                apps.push_back(el);
+            }
+            else if (el.is_string())
+            {
+                std::string oerr;
+                json11::Json a = json11::Json::parse(el.string_value(), oerr);
+                if (oerr.empty() && a.is_object()) apps.push_back(a);
+            }
+        }
+
+        int totalAch = 0;
+        for (const auto& a : apps) totalAch += (int)a["Achievements"].array_items().size();
+        if (progress) progress->total.store(totalAch);
+
+        fs::path achDir = fs::path(prefs::AppDir()) / "store" / "achievements";
+        fs::path iconDir = achDir / "icons";
+        std::error_code ec;
+        fs::create_directories(iconDir, ec);
+
+        json11::Json::array index;
+        int done = 0;
+
+        for (const auto& app : apps)
+        {
+            const auto& achs = app["Achievements"].array_items();
+            if (achs.empty()) continue;// apps without achievements do not go on a plaque
+
+            std::string appId = app["ID"].string_value();
+            std::string appTitle = app["Title"].string_value();
+            std::string appCanon = app["Canonical"].string_value();
+
+            // The app square thumbnail is shared by all of this app's achievements, so download it once. URIs arrive base64-encoded.
+            std::string appSquareRel;
+            {
+                std::string url = Base64Decode(app["SquareURI"].string_value());
+                if (!url.empty())
+                {
+                    std::string bytes = Download(url);
+                    if (!bytes.empty())
+                    {
+                        std::string name = "app_" + appId + GuessImageExt(url);
+                        if (WriteFileAtomic(iconDir / name, bytes))
+                            appSquareRel = "store/achievements/icons/" + name;
+                    }
+                }
+            }
+
+            for (const auto& ach : achs)
+            {
+                std::string achId = ach["ID"].string_value();
+                std::string title = ach["Title"].string_value();
+                std::string desc = ach["Description"].string_value();
+                long long unlockTime = ach["UnlockTime"].is_number() ? (long long)ach["UnlockTime"].number_value() : 0;
+
+                std::string iconRel;
+                std::string iconUrl = Base64Decode(ach["UnlockedURI"].string_value());
+                if (!iconUrl.empty())
+                {
+                    std::string bytes = Download(iconUrl);
+                    if (!bytes.empty())
+                    {
+                        std::string name = "ach_" + (achId.empty() ? std::to_string(index.size()) : achId) + GuessImageExt(iconUrl);
+                        if (WriteFileAtomic(iconDir / name, bytes))
+                            iconRel = "store/achievements/icons/" + name;
+                    }
+                }
+
+                index.push_back(json11::Json::object{
+                    { "id", achId },
+                    { "title", title },
+                    { "description", desc },
+                    { "unlock_time", (double)unlockTime },
+                    { "icon", iconRel },
+                    { "app_id", appId },
+                    { "app_title", appTitle },
+                    { "app_canonical", appCanon },
+                    { "app_square", appSquareRel }
+                });
+
+                ++done;
+                if (progress) progress->done.store(done);
+            }
+        }
+
+        json11::Json out = json11::Json::object{ { "achievements", json11::Json(index) } };
+        if (!WriteFileAtomic(achDir / "app-achievements.json", out.dump()))
+        {
+            res.error = "Could not write app-achievements.json.";
+            return res;
+        }
+
+        res.ok = true;
+        res.achievementsSaved = (int)index.size();
+        if (res.achievementsSaved == 0) res.error = "None of your apps have achievements.";
+        homeLogger.write() << "FetchAchievements: saved " << res.achievementsSaved << " achievement(s) from " << apps.size() << " app(s)." << std::endl;
         return res;
     }
 
