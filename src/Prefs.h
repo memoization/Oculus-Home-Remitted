@@ -27,6 +27,8 @@ namespace prefs
     // Writes the full settings schema if preferences.json does not yet exist
     void SeedDefaultsIfMissing();
 
+    unsigned SaveTick();
+
     std::wstring Widen(const std::string& utf8);
     std::string Narrow(const std::wstring& wide);
 }

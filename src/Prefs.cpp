@@ -3,10 +3,19 @@
 #include <windows.h>
 #include <fstream>
 #include <sstream>
+#include <atomic>
 #include "json11.hpp"
 
 namespace prefs
 {
+
+    // Bumped after every successful settings write. SaveTick exposes it so the UI can flash a saved toast on change.
+    static std::atomic<unsigned> g_saveTick{ 0 };
+
+    unsigned SaveTick()
+    {
+        return g_saveTick.load(std::memory_order_relaxed);
+    }
 
     std::wstring Widen(const std::string& utf8)
     {
@@ -78,7 +87,11 @@ namespace prefs
         root["wrapper"] = wrapper;
 
         std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
-        if (f) f << json11::Json(root).dump();
+        if (f)
+        {
+            f << json11::Json(root).dump();
+            g_saveTick.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 
     std::string GetDisplayName()
@@ -106,7 +119,11 @@ namespace prefs
         root["identity"] = identity;
 
         std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
-        if (f) f << json11::Json(root).dump();
+        if (f)
+        {
+            f << json11::Json(root).dump();
+            g_saveTick.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 
     std::string GetProfileImagePath()
@@ -132,7 +149,11 @@ namespace prefs
         root["wrapper"] = wrapper;
 
         std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
-        if (f) f << json11::Json(root).dump();
+        if (f)
+        {
+            f << json11::Json(root).dump();
+            g_saveTick.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 
     std::string GetDefaultWorldId()
@@ -164,7 +185,10 @@ namespace prefs
             f << json11::Json(root).dump();
         }
 
-        MoveFileExW(tmp.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
+        if (MoveFileExW(tmp.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+        {
+            g_saveTick.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 
     std::vector<std::string> GetOculusLibraryPaths()
@@ -214,6 +238,7 @@ namespace prefs
         if (f)
         {
             f << json11::Json(root).dump();
+            g_saveTick.fetch_add(1, std::memory_order_relaxed);
         }
     }
 

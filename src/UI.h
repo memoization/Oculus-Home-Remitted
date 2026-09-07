@@ -167,6 +167,11 @@ struct UI
     std::string iconPakStatus;// last result of building the profile override pak (shown on Profile page)
     const char* appVersion = "0.0.0";
 
+    // "Changes have been saved!" toast above Launch Home. Flashes up when preferences.json is written to
+    unsigned lastSavedTick = 0;
+    bool savedTickInit = false;
+    double savedToastStart = -1000.0;// ImGui time the toast was last triggered
+
     // scanned per-world folders (list, select, Set Default). Re-scanned on page (re)open (one-shot, mirrors reloadProfileOnOpen, no background poll).
     std::vector<worlds::WorldCardInfo> worldList;
     bool reloadWorldsOnOpen = true;

@@ -1202,6 +1202,44 @@ void UI::DrawSidebar()
     float launchTop = fullHeight - bottomPad - setExecHeight - gap - launchHeight;
     int btnWidth = availWidth - iScale.F(40);
 
+    // "Changes have been saved!" flash above the launch button. Shows on every successful preferences.json write
+    unsigned tick = prefs::SaveTick();
+    if (!savedTickInit)
+    {
+        lastSavedTick = tick; // to ignore any startup writes
+        savedTickInit = true;
+    }
+    else if (tick != lastSavedTick)
+    {
+        lastSavedTick = tick;
+        savedToastStart = ImGui::GetTime();
+    }
+
+    const double kFadeIn = 0.35, kHold = 4.0, kFadeOut = 0.6;
+    double elapsed = ImGui::GetTime() - savedToastStart;
+    if (savedToastStart > 0.0 && elapsed >= 0.0 && elapsed < (kFadeIn + kHold + kFadeOut))
+    {
+        float alpha = 1.0f;
+        if (elapsed < kFadeIn)
+        {
+            alpha = (float)(elapsed / kFadeIn);
+        }
+        else if (elapsed >= kFadeIn + kHold)
+        {
+            alpha = 1.0f - (float)((elapsed - (kFadeIn + kHold)) / kFadeOut);
+        }
+
+        if (alpha < 0.0f) alpha = 0.0f;
+        if (alpha > 1.0f) alpha = 1.0f;
+
+        const char* msg = "Changes have been saved!";
+        ImVec2 sz = ImGui::CalcTextSize(msg);
+        ImGui::SetCursorPos(ImVec2((sidebarWidth - sz.x) / 2.0f, launchTop - sz.y - iScale.F(8)));
+        ImVec4 col = UIConsts.SuccessText;
+        col.w = alpha;
+        ImGui::TextColored(col, "%s", msg);
+    }
+
     ImGui::SetCursorPos(ImVec2((sidebarWidth - btnWidth) / 2, launchTop));
 
 
