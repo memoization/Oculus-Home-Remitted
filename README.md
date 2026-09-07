@@ -11,7 +11,8 @@ Meta shutdown access to Oculus Home years ago evicting many users of their digit
 - Set a custom profile name and icon. Both can appear in VR.
 - Locally stored list of homes which allows setting what default home you land in at startup. Editing a home's object layout or changing its information persists offline. VR actions such as naming a home, creating a home, or deleting a home are supported.
 - Includes a feature for fetching your old homes from your Oculus (Meta) account. This will only work while Meta has these endpoints and data still available. ***Best to act on that now if you want to preserve your old experiences!***
-- Supports loading your Oculus library offline.
+- Supports loading your Oculus app library offline.
+- Supports fetching all of your Oculus app achievements.
 - Allows usage of embedded-panels (or broadcasting to screens). This enables viewing your desktop with officially interactive screen objects in VR.
 
 # Setup Guide
@@ -25,9 +26,16 @@ This tool only supports a specific version of Oculus Home. It can be downloaded 
 6. Use the *Launch Home* option in the tool. The Oculus Home process will now start and the tool will spin up its backend to take over.
 7. Now you should find yourself inside Oculus Home in a default home layout fully offline.
 
+## Revive setup for using a SteamVR headset
+1. Grab a copy of [Revive](https://github.com/LibreVR/Revive/releases) and install it. Using Revive with Oculus Home is confirmed working as of its version `3.2.0`.
+2. Go to the Oculus program files *Support* directory in explorer: `C:\Program Files\Oculus\Support`
+3. Take the *oculus-worlds* folder you downloaded earlier and place it into the Oculus directory in explorer.
+4. Launch Revive Dashboard. It should show an Oculus Home icon similar to the snapshot. <img width="1019" height="281" alt="image" src="https://github.com/user-attachments/assets/65d8575b-f914-4127-bf21-5e8463f1985d" />
+5. As long as both the *Oculus Home Remitted* tool is running and Meta Link is active, launching Oculus Home through the *Revive Dashboard* should get you running in your SteamVR headset. Do keep in mind, controller inputs may be a bit off compared to running a native Oculus headset.
+
 # Caveats
 The following features of Oculus Home are not supported by the tool at this time. Offline support for some may drop later..
 - Editing and customizing avatars.
-- Bringing in your Oculus app library achievements.
+- Launching Oculus app titles from the game cartridge feature.
 - Uploading new UGC content (at least a UX-friendly way from in VR). You can possibly add new UGC by manually configuring your home's `config.json` and adding entries to its `ugc-hashes.json`.
 - Any multiplayer features are out of scope of this project and unlikely to ever be supported in this repository. Reversing the *VertsClient.dll* via thorough capture of verts traffic in a live multiplayer session would be needed as a rough start. There are capture tools provided in the repository for those who are adventurous.
