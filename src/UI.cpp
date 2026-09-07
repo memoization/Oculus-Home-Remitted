@@ -936,7 +936,7 @@ void UI::DoAchievements()
     ImGui::PopStyleColor(pushedStyles);
 
     pushedStyles = PushSubTextStyle();
-    CenteredText("To load any new achievement(s) earned from an app, you will need to fetch them again.", true);
+    CenteredText("To load any new achievement(s) earned from an app, you will need to fetch your achievements again.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
