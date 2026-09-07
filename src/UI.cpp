@@ -18,6 +18,7 @@
 #include "BroadcastSource.h"
 #include "Watcher.h"
 #include "Injector.h"
+#include "UpdateCheck.h"
 #include <shobjidl.h>
 #include <cpr/cpr.h>
 
@@ -1198,7 +1199,7 @@ void UI::DrawSidebar()
     float launchHeight = iScale.F(44);
     float setExecHeight = iScale.F(30);
     float gap = iScale.F(5);
-    float bottomPad = iScale.F(34);
+    float bottomPad = iScale.F(update::IsUpdateAvailable() ? 45 : 34);
     float launchTop = fullHeight - bottomPad - setExecHeight - gap - launchHeight;
     int btnWidth = availWidth - iScale.F(40);
 
@@ -1297,11 +1298,40 @@ void UI::DrawSidebar()
     }
     ImGui::PopStyleColor(pushedStyles);
 
-    // Version stamp
+    // Version stamp with an update button to its right when the startup check found a newer release.
     ImGui::SetWindowFontScale(0.7f);
-    pushedStyles = PushSubTextStyle();
-    CenteredText(appVersion);
-    ImGui::PopStyleColor(pushedStyles);
+    if (update::IsUpdateAvailable())
+    {
+        ImGui::Dummy(ImVec2(0, gap / 2));
+
+        const char* btnLabel = "Update Available!";
+        ImVec2 verSize = ImGui::CalcTextSize(appVersion);
+        ImVec2 labelSize = ImGui::CalcTextSize(btnLabel);
+        float pad = iScale.F(8);
+        ImVec2 btnSize(labelSize.x + iScale.F(16), verSize.y + iScale.F(6));
+        float totalWidth = verSize.x + pad + btnSize.x;
+
+        // Center the version text and the button together as a pair.
+        ImGui::SetCursorPosX((sidebarWidth - totalWidth) / 2.0f);
+        pushedStyles = PushSubTextStyle();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted(appVersion);
+        ImGui::PopStyleColor(pushedStyles);
+
+        ImGui::SameLine(0.0f, pad);
+        pushedStyles = PushLaunchButtonStyle();
+        if (ImGui::Button(btnLabel, btnSize))
+        {
+            update::OpenReleasesPage();
+        }
+        ImGui::PopStyleColor(pushedStyles);
+    }
+    else
+    {
+        pushedStyles = PushSubTextStyle();
+        CenteredText(appVersion);
+        ImGui::PopStyleColor(pushedStyles);
+    }
     ImGui::SetWindowFontScale(1.0f);
 
     ImGui::EndChild();

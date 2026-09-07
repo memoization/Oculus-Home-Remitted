@@ -14,6 +14,7 @@
 #include "Watcher.h"
 #include "Prefs.h"
 #include "Tray.h"
+#include "UpdateCheck.h"
 
 // APP_VERSION comes from src\version.gen.h generated before each build by the GenerateVersionHeader target in the vcxproj, which runs "git describe" for the remote repo tag
 #if __has_include("version.gen.h")
@@ -67,6 +68,9 @@ int main(int argc, char* argv[])
     ui.appVersion = APP_VERSION; // from src\version.gen.h (latest git tag), generated at build time
     #endif
 #endif
+
+    // Check for an update against the latest GitHub release
+    update::StartCheck(ui.appVersion);
 
     // Start the injector: it watches for Home2-Win64-Shipping.exe and injects home2backend.dll, re-arms on home process exit
     {
