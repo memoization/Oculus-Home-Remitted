@@ -5,6 +5,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+#include <shellapi.h>
 #include <bcrypt.h>
 
 #include <algorithm>
@@ -17,6 +18,7 @@
 #include <vector>
 
 #pragma comment(lib, "bcrypt.lib")
+#pragma comment(lib, "shell32.lib")
 
 namespace iconpak {
 
@@ -308,7 +310,7 @@ namespace iconpak {
 
     struct PakFile { std::string name; const vector<u8>* data; };
 
-    static bool WritePak(const std::wstring& path, const std::string& mount, const vector<PakFile>& files)
+    static vector<u8> BuildPakBytes(const std::string& mount, const vector<PakFile>& files)
     {
         const uint32_t kMagic = 0x5A6F12E1u;
         vector<u8> body;
@@ -318,7 +320,7 @@ namespace iconpak {
         {
             uint64_t off = body.size();
             u8 sha[20]; Sha1(f.data->data(), f.data->size(), sha);
-            PutEntry(body, 0, f.data->size(), sha);          // in-body header uses offset 0
+            PutEntry(body, 0, f.data->size(), sha);// in-body header uses offset 0
             body.insert(body.end(), f.data->begin(), f.data->end());
             Rec r; r.name = f.name; r.off = off; r.size = f.data->size(); std::memcpy(r.sha, sha, 20);
             recs.push_back(r);
@@ -336,20 +338,63 @@ namespace iconpak {
         uint64_t indexOff = body.size();
         u8 idxSha[20]; Sha1(index.data(), index.size(), idxSha);
         vector<u8> footer;
-        footer.insert(footer.end(), 16, 0);   // EncryptionKeyGuid
-        footer.push_back(0);                  // bEncryptedIndex
+        footer.insert(footer.end(), 16, 0); // EncryptionKeyGuid
+        footer.push_back(0); // bEncryptedIndex
         Put<uint32_t>(footer, kMagic);
-        Put<uint32_t>(footer, 5);             // version
+        Put<uint32_t>(footer, 5); // version
         Put<uint64_t>(footer, indexOff);
         Put<uint64_t>(footer, index.size());
         footer.insert(footer.end(), idxSha, idxSha + 20);
 
+        vector<u8> out;
+        out.reserve(body.size() + index.size() + footer.size());
+        out.insert(out.end(), body.begin(), body.end());
+        out.insert(out.end(), index.begin(), index.end());
+        out.insert(out.end(), footer.begin(), footer.end());
+        return out;
+    }
+
+    static bool WriteBytes(const std::wstring& path, const vector<u8>& bytes)
+    {
         std::ofstream out(path, std::ios::binary | std::ios::trunc);
         if (!out) return false;
-        out.write(reinterpret_cast<const char*>(body.data()), body.size());
-        out.write(reinterpret_cast<const char*>(index.data()), index.size());
-        out.write(reinterpret_cast<const char*>(footer.data()), footer.size());
+        out.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
         return static_cast<bool>(out);
+    }
+
+    // Put at a staging path in the temp folder. It is used to build the pak before an elevated copy into a write-protected destination.
+    static std::wstring TempPakPath()
+    {
+        wchar_t temp[MAX_PATH] = {0};
+        DWORD n = GetTempPathW(MAX_PATH, temp);
+        std::wstring dir = (n > 0 && n < MAX_PATH) ? std::wstring(temp) : std::wstring(L".\\");
+        return dir + L"Home2-WindowsNoEditor_Q.pak";
+    }
+
+    // Copy src into dst through an elevated shell. Primarily used when the destination is a write protected folder that refuses a normal write.
+    // This runs the trusted system cmd.exe with "copy /Y" under runas so the user gets a UAC prompt. Returns true only when the copy reports success. A cancelled UAC prompt returns false.
+    static bool ElevatedCopyFile(const std::wstring& src, const std::wstring& dst)
+    {
+        wchar_t sysDir[MAX_PATH] = {0};
+        if (GetSystemDirectoryW(sysDir, MAX_PATH) == 0) return false;
+        std::wstring cmdExe = std::wstring(sysDir) + L"\\cmd.exe";
+
+        // Note: the quotes keep paths with spaces intact, and Windows paths cannot contain a quote so there is nothing to escape.
+        std::wstring params = L"/c copy /Y \"" + src + L"\" \"" + dst + L"\"";
+
+        SHELLEXECUTEINFOW sei = { sizeof(sei) };
+        sei.fMask = SEE_MASK_NOCLOSEPROCESS;
+        sei.lpVerb = L"runas";// asks for elevation through UAC
+        sei.lpFile = cmdExe.c_str();
+        sei.lpParameters = params.c_str();
+        sei.nShow = SW_HIDE;
+        if (!ShellExecuteExW(&sei) || !sei.hProcess) return false; // launch failed or the user declined UAC
+
+        WaitForSingleObject(sei.hProcess, INFINITE);
+        DWORD code = 1;
+        GetExitCodeProcess(sei.hProcess, &code);
+        CloseHandle(sei.hProcess);
+        return code == 0;
     }
 
     static std::wstring Widen(const std::string& s)
@@ -464,9 +509,26 @@ namespace iconpak {
         };
         
         std::wstring pakPath = pakDir + L"\\Home2-WindowsNoEditor_Q.pak";
-        if (!WritePak(pakPath, "../../../", files))
+        vector<u8> pakBytes = BuildPakBytes("../../../", files);
+
+        // Try a normal write first. When the destination refuses it, stage the pak in temp and copy it into the dest with elevation.
+        if (WriteBytes(pakPath, pakBytes))
         {
-            errOut = "failed to write " + NarrowW(pakPath);
+            return true;
+        }
+
+        std::wstring temp = TempPakPath();
+        if (!WriteBytes(temp, pakBytes))
+        {
+            errOut = "could not stage the pak file for writing";
+            return false;
+        }
+
+        bool copied = ElevatedCopyFile(temp, pakPath);
+        DeleteFileW(temp.c_str());
+        if (!copied)
+        {
+            errOut = "writing to " + NarrowW(pakPath) + " needs administrator access and elevation was cancelled or failed.";
             return false;
         }
 

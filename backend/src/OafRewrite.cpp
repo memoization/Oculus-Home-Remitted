@@ -18,54 +18,51 @@
 #include "BroadcastSourceShared.h"
 #include "ResponseStore.h"
 
-// OAF reply rewriter.
+// OAF reply provider for the OafIpc.dll.
 //
-// On a direct/third-party launch the OafIpc.dll world-plugin calls are rejected by
-// OVRServer with an application-level error (payloadType "NOTIFICATION",
-// notificationType "ERROR"): "Method not allowed for third party clients (1971049)"
-// and, fatally, "Must call get_signature first (1971051)" for /features/check (the GK
-// fetch) which triggers GK Fetch Error then LoginFailed. The transport itself succeeds,
-// only the payload is an error. So intercept at the OafIpc API and swap those error
-// payloads for the success replies captured from a working dashboard session.
+// Originally, the game talks to OVRServer over OafIpc, a loopback IPC. This backend fill-in answers those requests itself so Home works with or without OVRServer running.
 //
-// Mechanism, verified from OafIpc.dll disassembly, all by-name exports:
-//   OafIpc_Send(const char* requestJson)      request carries requestName and sequenceId,
-//                                               record map[sequenceId]=requestName.
-//   OafIpc_GetReply(wchar_t** out, int* stat) dequeues next reply, out is a UTF16 JSON buf
-//                                               (alloc'd by the DLL, freed by
-//                                               FreeReplyMessage). If the reply is a
-//                                               NOTIFICATION error and we have a canned
-//                                               success for that route, free the DLL
-//                                               buffer and hand back a new buffer instead.
-//   OafIpc_FreeReplyMessage(void* p)          This substitutes buffers, sentinel
-//                                               set, so free ours and forward theirs.
+// Without OVRServer, the loopback connect fails and the game never sends, so now OafIpc_Connect, OafIpc_ConnectLoosePerms, OafIpc_IsConnected and OafIpc_GetServerProcessId are forced to report connected. The game then proceeds to send its OAF requests.
 //
-// The success replies live in store\oaf_replies.tsv (one line "<route>\t<full reply
-// json>"), captured from a working session, so it can be edited without recompiling.
-// Private: those replies, especially /library/fetchall, carry the user's library/account data.
+// Answering:
+//   OafIpc_Send              the request carries requestName and sequenceId. For a known route the reply is built now and queued, and the sequenceId is recorded so a late real reply is dropped.
+//   OafIpc_GetReply          hands back the queued replies first. The out buffer is a UTF16 JSON block we allocate and free in FreeReplyMessage. A real reply for an already answered or panel sequenceId is swallowed.
+//   OafIpc_FreeReplyMessage  frees our substitute buffers and forwards the DLL's own buffers to the original.
+//
+// Known routes: 
+// /features/check is the fetch answered from oaf_gk.tsv
+// /library/fetchall is built from the local apps library, and the rest come from store\oaf_replies.tsv one line per route holding the route then a tab then the full reply json.
+// panel_embedding is answered on send with its three panel messages.
 namespace home2backend {
 
     typedef void*(*OafSendFn)(const char*);
     typedef int(*OafGetReplyFn)(wchar_t**, int*);
     typedef void(*OafFreeFn)(void*);
+    typedef int(*OafConnectFn)(); // OafIpc_Connect / OafIpc_ConnectLoosePerms, returns bool (1 = success)
+    typedef int(*OafIsConnectedFn)();// returns bool (1 = connected)
+    typedef unsigned(*OafGetPidFn)();// returns the server process id
 
     static OafSendFn GOrigSend = nullptr;
     static OafGetReplyFn GOrigGetReply = nullptr;
     static OafFreeFn GOrigFree = nullptr;
+    static OafConnectFn GOrigConnect = nullptr;
+    static OafConnectFn GOrigConnectLoose = nullptr;
+    static OafIsConnectedFn GOrigIsConnected = nullptr;
+    static OafGetPidFn GOrigGetServerPid = nullptr;
 
     static std::mutex GMutex;
     static std::unordered_map<std::string, std::string> GReplies;  // route to full reply json
-    static std::unordered_map<std::string, std::string> GSeqRoute; // sequenceId to route
     static std::unordered_map<std::string, std::string> GGkMap; // gatekeeper to "true"/"false"
-    static std::unordered_map<std::string, std::vector<std::string>> GSeqProjects; // seq to requested GKs
     static std::deque<std::string> GInjectQueue; // synthetic messages to deliver via GetReply
     static std::unordered_set<std::string> GPanelSeqs; // panel_embedding seqs whose real reply to drop
+    static std::unordered_set<std::string> GAnsweredSeqs; // seqs answered on send whose real reply to drop if one ever arrives
+    static volatile long GProactiveCount = 0;
+    static volatile long GProactiveMiss = 0;
     static volatile long GPanelIdCounter = 0;
     static const char kPanelMonitorId[] = "65537"; // captured monitor handle
     static std::unordered_set<void*> GMine; // the substitute buffers
     static volatile long GRewriteInstalled = 0;
     static volatile long GRepliesLoaded = 0;
-    static volatile long GRewrites = 0;
 
     static std::string GetField(const std::string& j, const char* key)
     {
@@ -379,6 +376,31 @@ namespace home2backend {
         LogLine("oaf-rewrite: broadcast start, restored and foregrounded the frontend window");
     }
 
+    // Force the OafIpc channel to report connected so the game proceeds to send its OAF requests
+    // The originals are still called first so OafIpc sets up its internal state and only the success result is forced. DetourSend then answers the requests that follow.
+    static int DetourConnect()
+    {
+        if (GOrigConnect) GOrigConnect();
+        return 1;
+    }
+
+    static int DetourConnectLoose()
+    {
+        if (GOrigConnectLoose) GOrigConnectLoose();
+        return 1;
+    }
+
+    static int DetourIsConnected()
+    {
+        return 1;
+    }
+
+    static unsigned DetourGetServerPid()
+    {
+        unsigned real = GOrigGetServerPid ? GOrigGetServerPid() : 0;
+        return real ? real : GetCurrentProcessId(); // a nonzero id so the game does not treat the channel as serverless!
+    }
+
     static void* DetourSend(const char* req)
     {
         if (req)
@@ -427,9 +449,6 @@ namespace home2backend {
                 }
 
                 std::lock_guard<std::mutex> l(GMutex);
-                GSeqRoute[seq] = route;
-                if (route == "/features/check")
-                    GSeqProjects[seq] = std::move(projects);
                 if (!start.empty())
                 {
                     GInjectQueue.push_back(start);
@@ -437,6 +456,53 @@ namespace home2backend {
                     GInjectQueue.push_back(finish);
                     GPanelSeqs.insert(seq);
                     LogLine("oaf-rewrite: panel_embedding/start seq " + seq + " injecting START/CHANGE/FINISH (source " + pd + ")");
+                }
+                else
+                {
+                    // Answer every known route on Send so the game never waits on OVRServer. This keeps Home working with or without Meta Link active.
+                    // Any late real reply for this seq is dropped and routes with no canned answer fall through to the real channel.
+                    std::string ts = NowMsStr();
+                    std::string synth;
+                    if (route == "/features/check")
+                    {
+                        synth = SynthGkReply(projects, seq, ts);
+                    }
+                    else if (route == "/library/fetchall")
+                    {
+                        synth = home2hook::GStore.BuildOafLibraryReply(seq, ts);
+                    }
+                    else
+                    {
+                        auto it = GReplies.find(route);
+                        if (it != GReplies.end())
+                        {
+                            synth = it->second;
+                            SetField(synth, "sequenceId", seq);
+                            if (!ts.empty())
+                            {
+                                SetField(synth, "timestamp", ts);
+                            }
+                        }
+                    }
+
+                    if (!synth.empty())
+                    {
+                        GInjectQueue.push_back(synth);
+                        GAnsweredSeqs.insert(seq);
+                        long n = InterlockedIncrement(&GProactiveCount);
+                        if (n <= 80)
+                        {
+                            LogLine("oaf-rewrite: proactively answered " + route + " seq " + seq);
+                        }
+                    }
+                    else
+                    {
+                        long n = InterlockedIncrement(&GProactiveMiss);
+                        if (n <= 80)
+                        {
+                            LogLine("oaf-rewrite: no canned reply for " + route + " seq " + seq + ", left unanswered");
+                        }
+                    }
                 }
             }
         }
@@ -472,7 +538,7 @@ namespace home2backend {
             {
                 std::string rseq = GetField(Utf8FromWide(*outReply), "sequenceId");
                 std::lock_guard<std::mutex> l(GMutex);
-                swallow = GPanelSeqs.count(rseq) > 0;
+                swallow = GPanelSeqs.count(rseq) > 0 || GAnsweredSeqs.count(rseq) > 0;
             }
 
             if (!swallow) break;
@@ -481,70 +547,7 @@ namespace home2backend {
             ret = GOrigGetReply(outReply, outStatus);
         }
 
-        if (!outReply || !*outReply) return ret;
-
-        std::string reply = Utf8FromWide(*outReply);
-        // Only touch application-level error replies. A working session has none, so this rewriter is a no-op there.
-        if (reply.find("\"payloadType\":\"NOTIFICATION\"") == std::string::npos) return ret;
-
-        std::string seq = GetField(reply, "sequenceId");
-        std::string ts = GetField(reply, "timestamp");
-        std::string route, tmpl;
-        {
-            std::lock_guard<std::mutex> l(GMutex);
-            auto rit = GSeqRoute.find(seq);
-            if (rit == GSeqRoute.end())
-                return ret;
-            route = rit->second;
-        }
-
-        if (route == "/features/check")
-        {
-            // Synthesize a GK reply matching THIS request's exact project set.
-            std::vector<std::string> projects;
-            {
-                std::lock_guard<std::mutex> l(GMutex);
-                auto pit = GSeqProjects.find(seq);
-                if (pit != GSeqProjects.end())
-                    projects = pit->second;
-            }
-            tmpl = SynthGkReply(projects, seq, ts);
-        }
-        else if (route == "/library/fetchall")
-        {
-            // Populate from the user's local apps library (apps-library.json) so the in-Home App Library lists the games instead of being empty.
-            tmpl = home2hook::GStore.BuildOafLibraryReply(seq, ts);
-        }
-        else
-        {
-            {
-                std::lock_guard<std::mutex> l(GMutex);
-                auto tit = GReplies.find(route);
-                if (tit == GReplies.end())
-                    return ret;
-                tmpl = tit->second;
-            }
-            // Patch the canned reply's sequenceId (and timestamp) to this exchange's.
-            SetField(tmpl, "sequenceId", seq);
-            if (!ts.empty())
-                SetField(tmpl, "timestamp", ts);
-        }
-
-        wchar_t* mine = WideDupUtf8(tmpl);
-        if (!mine)
-            return ret;
-        {
-            std::lock_guard<std::mutex> l(GMutex);
-            GMine.insert(mine);
-        }
-        GOrigFree(*outReply); // free the DLL's original error buffer (real free)
-        *outReply = mine;
-
-        long n = InterlockedIncrement(&GRewrites);
-        if (n <= 60)
-        {
-            LogLine("oaf-rewrite: " + route + " seq " + seq + " NOTIFICATION error swapped for canned success");
-        }
+        // Anything still here is a real reply for a route that did not answer on send
         return ret;
     }
 
@@ -629,7 +632,13 @@ namespace home2backend {
         void* pSend = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_Send"));
         void* pGet = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_GetReply"));
         void* pFree = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_FreeReplyMessage"));
-        
+
+        // Connection surface is forced to report connected so the game sends its OAF requests without OVRServer needing to be active
+        void* pConnect = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_Connect"));
+        void* pConnectLoose = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_ConnectLoosePerms"));
+        void* pIsConn = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_IsConnected"));
+        void* pPid = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_GetServerProcessId"));
+
         bool ok = pSend && pGet && pFree;
         if (ok)
         {
@@ -642,9 +651,25 @@ namespace home2backend {
             MH_QueueEnableHook(pSend);
             MH_QueueEnableHook(pGet);
             MH_QueueEnableHook(pFree);
+
+            // These connection hooks are not guaranteed. A missing one is skipped rather than failing the whole install :shrugs:
+            if (pConnect && MH_CreateHook(pConnect, reinterpret_cast<void*>(&DetourConnect), reinterpret_cast<void**>(&GOrigConnect)) == MH_OK)
+                MH_QueueEnableHook(pConnect);
+            if (pConnectLoose && MH_CreateHook(pConnectLoose, reinterpret_cast<void*>(&DetourConnectLoose), reinterpret_cast<void**>(&GOrigConnectLoose)) == MH_OK)
+                MH_QueueEnableHook(pConnectLoose);
+            if (pIsConn && MH_CreateHook(pIsConn, reinterpret_cast<void*>(&DetourIsConnected), reinterpret_cast<void**>(&GOrigIsConnected)) == MH_OK)
+                MH_QueueEnableHook(pIsConn);
+            if (pPid && MH_CreateHook(pPid, reinterpret_cast<void*>(&DetourGetServerPid), reinterpret_cast<void**>(&GOrigGetServerPid)) == MH_OK)
+                MH_QueueEnableHook(pPid);
+
             ok &= MH_ApplyQueued() == MH_OK;
         }
-        LogLine(std::string("oaf-rewrite: hooks installed on OafIpc.dll (") + (ok ? "all ok, single-freeze" : "failed") + "), NOTIFICATION errors will be swapped for canned successes");
+        LogLine(std::string("oaf-rewrite: hooks installed on OafIpc.dll (") + (ok ? "all ok, single-freeze" : "failed") + "), connect/is_connected forced so now the game sends its OAF requests without needing OVRServer and requests are answered on send!");
+    }
+
+    bool OafHooksInstalled()
+    {
+        return GRewriteInstalled != 0;
     }
 
     static DWORD WINAPI RewriteWaiter(LPVOID)
