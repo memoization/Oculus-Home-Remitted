@@ -185,7 +185,6 @@ struct UI
     // The saved index from store\achievements\app-achievements.json loaded on page open.
     std::vector<fetchworlds::AchievementInfo> achievementList;
     std::vector<std::string> achievementRowLabels; // "App name  |  Achievement title" per entry
-    int libraryAppCount = 0; // apps present in store\apps-library.json
     bool reloadAchievementsOnOpen = true;
 
     // "Fetch My Homes": download the user's remote worlds from graph.oculus.com into store\worlds.
