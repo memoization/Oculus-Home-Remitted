@@ -31,7 +31,7 @@ This tool only supports a specific version of Oculus Home. It can be downloaded 
 2. Go to the Oculus program files *Support* directory in explorer: `C:\Program Files\Oculus\Support`
 3. Take the *oculus-worlds* folder you downloaded earlier and place it into the Oculus directory in explorer.
 4. Launch Revive Dashboard. It should show an Oculus Home icon similar to the snapshot. <img width="1019" height="281" alt="image" src="https://github.com/user-attachments/assets/65d8575b-f914-4127-bf21-5e8463f1985d" />
-5. As long as both the *Oculus Home Remitted* tool is running, launching Oculus Home through the *Revive Dashboard* should get you running in your SteamVR headset. Having Meta Link software running is not required!
+5. As long as the *Oculus Home Remitted* tool is running, launching Oculus Home through the *Revive Dashboard* should get you running in your SteamVR headset. Having Meta Link software running is not required!
 
 *While using Revive, controller inputs may be a bit off by default compared to running a native Oculus headset. Adjust your bindings using SteamVR's *Manage Controller Bindings* for the *Home2-Win64-Shipping* app while it is running.*
 
