@@ -11124,7 +11124,7 @@
     "is_scalable": true,
     "is_unlimited": true,
     "salvage_value": 0,
-    "world_placement_cap": 1,
+    "world_placement_cap": 0,
     "stackable": true,
     "tags": [
       "Special"
@@ -13853,10 +13853,10 @@
     "id": "2216581015021733",
     "name": "PORTAL_DOOR_01",
     "item_description": "",
-    "is_scalable": false,
+    "is_scalable": true,
     "is_unlimited": true,
     "salvage_value": 0,
-    "world_placement_cap": 10,
+    "world_placement_cap": 0,
     "stackable": true,
     "tags": [
       "Special"
