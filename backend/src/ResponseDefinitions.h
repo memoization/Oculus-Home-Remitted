@@ -14,7 +14,7 @@ namespace home2hook {
 namespace doc {
 
 // A. Session / login / config
-inline constexpr const char* WorldLogin      = "2474314252665145"; // gates startup
+inline constexpr const char* WorldLogin      = "2474314252665145";
 inline constexpr const char* SetUserOptions  = "2659373614156793";
 inline constexpr const char* NuxUpdate       = "3425891407451837";
 inline constexpr const char* Templates       = "2470834406377364";
@@ -32,6 +32,8 @@ inline constexpr const char* WorldLikeToggle  = "2285528538195458";
 
 // C. Object editing (the core edit action)
 inline constexpr const char* WorldBatchUpdate = "3393266397380374";
+inline constexpr const char* UpsertWorldPortalData = "2421017851295011";
+inline constexpr const char* DeleteWorldPortalData = "2495919857138744";
 
 // D. World content & discovery
 inline constexpr const char* WorldContent     = "2021902227865170";
@@ -72,7 +74,7 @@ struct DocIdInfo
     std::string_view purpose; // one-line human-readable purpose
 };
 
-inline constexpr std::array<DocIdInfo, 38> kDocRegistry = {{
+inline constexpr std::array<DocIdInfo, 40> kDocRegistry = {{
     // A. Session / login / config
     { doc::WorldLogin,       "world_login",            "startup config/login: server_time, limits, default material defs, user_options, nux (failure blocks startup)" },
     { doc::SetUserOptions,   "set_user_options",       "persist client prefs (user_options = base64 JSON)" },
@@ -90,6 +92,8 @@ inline constexpr std::array<DocIdInfo, 38> kDocRegistry = {{
     { doc::WorldLikeToggle,  "world_like_toggle",      "like/unlike a world" },
     // C. Object editing
     { doc::WorldBatchUpdate, "world_batch_update_objects","core edit: create[]/update[]/delete[] objects with world_customizations (b64)" },
+    { doc::UpsertWorldPortalData, "upsert_world_portal_data","set a portal door object's destination (world or application) linked by object_instance" },
+    { doc::DeleteWorldPortalData, "delete_world_portal_data","clear a portal door object's destination linked by object_instance" },
     // D. World content & discovery
     { doc::WorldContent,     "world_content",          "authoritative saved world layout: objects.nodes[] with customizations" },
     { doc::WorldsPoll,       "worlds_poll",            "recurring ~5s worlds-by-node-ids refresh" },
@@ -114,7 +118,7 @@ inline constexpr std::array<DocIdInfo, 38> kDocRegistry = {{
     { doc::UserNodeLight,    "user_node_light",        "light user node (display_name/alias/presence)" },
     { doc::UserFriendReqs,   "user_friend_requests",   "user node: friend_requests (received/sent)" },
     { doc::UsersBatch,       "users_batch",            "batch user profiles (user_ids[])" },
-    { doc::NodeById,         "node_by_id",             "single node fetch (visited world/entity)" },
+    { doc::NodeById,         "node_by_id",             "single node fetch by id, for a WorldObjectInstance it carries portal_data (a portal object)" },
     { doc::RegisterRanking,  "register_world_ranking_event","world-tile impression telemetry" },
 }};
 

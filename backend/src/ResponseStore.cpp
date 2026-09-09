@@ -51,6 +51,9 @@ namespace home2hook {
     static const char* kDocSetDefaultWorld = home2hook::doc::SetDefaultWorld;
     static const char* kDocUpdateNameWorld = home2hook::doc::UpdateNameWorld;
     static const char* kDocWorldBatchUpdate= home2hook::doc::WorldBatchUpdate;
+    static const char* kDocUpsertPortalData= home2hook::doc::UpsertWorldPortalData;
+    static const char* kDocDeletePortalData= home2hook::doc::DeleteWorldPortalData;
+    static const char* kDocNodeById        = home2hook::doc::NodeById;
     static const char* kDocWorldLikeToggle = home2hook::doc::WorldLikeToggle;
     static const char* kDocWorldDelete     = home2hook::doc::WorldDelete;
     static const char* kDocWorldLockedEdit = home2hook::doc::WorldLockedEdit;
@@ -139,6 +142,9 @@ namespace home2hook {
         case ResponseAction::WorldsGuestApps: return "worlds_guest_apps_and_achievements";
         case ResponseAction::Canned:          return "canned";
         case ResponseAction::SetUserOptions:  return "set_user_options";
+        case ResponseAction::UpsertPortalData:return "upsert_world_portal_data";
+        case ResponseAction::DeletePortalData:return "delete_world_portal_data";
+        case ResponseAction::NodeById:        return "node_by_id";
         default:                              return "passthrough";
         }
     }
@@ -635,6 +641,12 @@ namespace home2hook {
             return ResponseAction::UpdateNameWorld;
         if (docId == kDocWorldBatchUpdate)
             return ResponseAction::WorldBatchUpdate;
+        if (docId == kDocUpsertPortalData)
+            return ResponseAction::UpsertPortalData;
+        if (docId == kDocDeletePortalData)
+            return ResponseAction::DeletePortalData;
+        if (docId == kDocNodeById)
+            return worldsLoaded ? ResponseAction::NodeById : (cannedDocIds.count(docId) ? ResponseAction::Canned : ResponseAction::PassThrough);
         if (docId == kDocWorldLikeToggle)
             return ResponseAction::WorldLikeToggle;
         if (docId == kDocWorldDelete)
@@ -1344,6 +1356,22 @@ namespace home2hook {
                     deleted.push_back(oid);
                 }
 
+                // Remove portal records for any deleted objects so the portals map does not keep a stale gate destination.
+                if (!deleted.empty())
+                {
+                    auto pit = cfg.find("portals");
+                    if (pit != cfg.end() && pit->second.is_object())
+                    {
+                        json11::Json::object portals = pit->second.object_items();
+                        bool changed = false;
+                        for (const auto& oid : deleted)
+                        {
+                            if (portals.erase(oid.string_value()) != 0) changed = true;
+                        }
+                        if (changed) cfg["portals"] = json11::Json(portals);
+                    }
+                }
+
                 // world_customizations: came as base64(JSON) stored as the decoded object
                 if (!worldCustomizationsB64.empty())
                 {
@@ -1405,6 +1433,215 @@ namespace home2hook {
                 }}
             }}
         }).dump();
+    }
+
+    // Build the portal_data node served in a response from a stored portals record.
+    // The record keeps destination ids as plain strings, the app wraps a set destination in an {"id":...} object and leaves the unset one null.
+    static json11::Json PortalDataNode(const json11::Json& rec)
+    {
+        json11::Json destWorld; // null when the portal targets an oculus application instead?
+        json11::Json destApp;// null when the portal targets a world instead
+        if (rec["destination_world"].is_string() && !rec["destination_world"].string_value().empty())
+        {
+            destWorld = json11::Json::object{ {"id", rec["destination_world"].string_value()} };
+        }
+            
+        if (rec["destination_application"].is_string() && !rec["destination_application"].string_value().empty())
+        {
+            destApp = json11::Json::object{ {"id", rec["destination_application"].string_value()} };
+        }
+
+        return json11::Json::object{
+            {"id", rec["world_portal_data_id"].string_value()},
+            {"destination_world", destWorld},
+            {"destination_application", destApp}
+        };
+    }
+
+    // Support saving a portal object's destination. The portal record is standalone and linked by the portal object's object_instance id
+    // It is stored in the owning world's config.json under a "portals" array so it is untouched by object edits and never tags in the world_content load.
+    std::string ResponseStore::buildUpsertPortalData(const std::string& clientMutationId, const std::string& objectInstance, const std::string& destinationWorld, const std::string& destinationApplication) const
+    {
+        std::wstring cfgPath;
+        json11::Json newCfg;
+        std::string portalDataId;
+        bool found = false;
+
+        {
+            std::lock_guard<std::mutex> lock(worldsMutex);
+            for (auto& e : worlds)
+            {
+                bool owns = false;
+                for (const auto& node : e.config["objects"].array_items())
+                {
+                    if (node["id"].string_value() == objectInstance)
+                    {
+                        owns = true;
+                        break;
+                    }
+                }
+
+                if (!owns) continue;
+                found = true;
+
+                json11::Json::object cfg = e.config.object_items();
+                json11::Json::object portals;
+                auto pit = cfg.find("portals");
+                if (pit != cfg.end() && pit->second.is_object())
+                {
+                    portals = pit->second.object_items();
+                }
+
+                // Reuse this object's existing portal data id if it has one, so setting a portal keeps the same id else mint one.
+                auto exist = portals.find(objectInstance);
+                if (exist != portals.end() && exist->second["world_portal_data_id"].is_string() && !exist->second["world_portal_data_id"].string_value().empty())
+                {
+                    portalDataId = exist->second["world_portal_data_id"].string_value();
+                }
+                else
+                {
+                    portalDataId = mintNumericId();
+                }
+
+                portals[objectInstance] = json11::Json::object{
+                    {"world_portal_data_id", portalDataId},
+                    {"destination_world", destinationWorld.empty() ? json11::Json() : json11::Json(destinationWorld)},
+                    {"destination_application", destinationApplication.empty() ? json11::Json() : json11::Json(destinationApplication)}
+                };
+
+                cfg["portals"] = json11::Json(portals);
+                e.config = json11::Json(cfg);
+                newCfg = e.config;
+                cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
+                break;
+            }
+        }
+
+        if (found)
+        {
+            std::string dest = destinationWorld.empty() ? ("application " + destinationApplication) : ("world " + destinationWorld);
+            if (writeFileAtomic(cfgPath, newCfg.dump()))
+            {
+                LogLine("store: upsert_world_portal_data: object " + objectInstance + " destination " + dest + " (portal_data id " + portalDataId + ")");
+            }
+            else
+            {
+                LogLine("store: upsert_world_portal_data: config.json write failed for object " + objectInstance);
+            }
+        }
+        else
+        {
+            // The object is not in any loaded world, ack with a minted id so the game does not error though nothing persists now..
+            portalDataId = mintNumericId();
+            LogLine("store: upsert_world_portal_data: object " + objectInstance + " not found in any world, ack only (not persisted)");
+        }
+
+        json11::Json destWorldNode = destinationWorld.empty() ? json11::Json() : json11::Json(json11::Json::object{ {"id", destinationWorld} });
+        json11::Json destAppNode = destinationApplication.empty() ? json11::Json() : json11::Json(json11::Json::object{ {"id", destinationApplication} });
+        return json11::Json(json11::Json::object{
+            {"data", json11::Json::object{
+                {"upsert_world_portal_data", json11::Json::object{
+                    {"client_mutation_id", clientMutationId},
+                    {"world_portal_data", json11::Json::object{
+                        {"id", portalDataId},
+                        {"destination_world", destWorldNode},
+                        {"destination_application", destAppNode}
+                    }}
+                }}
+            }}
+        }).dump();
+    }
+
+    // Remove a portal's destination. Drops the object_instance entry from the owning world's portals array so the destination does not come back on reload.
+    std::string ResponseStore::buildDeletePortalData(const std::string& objectInstance) const
+    {
+        std::wstring cfgPath;
+        json11::Json newCfg;
+        bool removed = false;
+
+        {
+            std::lock_guard<std::mutex> lock(worldsMutex);
+            for (auto& e : worlds)
+            {
+                json11::Json::object cfg = e.config.object_items();
+                auto pit = cfg.find("portals");
+                if (pit == cfg.end() || !pit->second.is_object()) continue;
+
+                json11::Json::object portals = pit->second.object_items();
+                if (portals.erase(objectInstance) == 0) continue;
+
+                cfg["portals"] = json11::Json(portals);
+                e.config = json11::Json(cfg);
+                newCfg = e.config;
+                cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
+                removed = true;
+                break;
+            }
+        }
+
+        if (removed)
+        {
+            if (writeFileAtomic(cfgPath, newCfg.dump()))
+            {
+                LogLine("store: delete_world_portal_data: cleared destination for object " + objectInstance);
+            }
+            else
+            {
+                LogLine("store: delete_world_portal_data: config.json write failed for object " + objectInstance);
+            }
+        }
+        else
+        {
+            // No stored record for this object but still ack so the game does not error.
+            LogLine("store: delete_world_portal_data: no stored destination for object " + objectInstance + ", ack only");
+        }
+
+        return json11::Json(json11::Json::object{
+            {"data", json11::Json::object{
+                {"delete_world_portal_data", json11::Json()}
+            }}
+        }).dump();
+    }
+
+    // Node fetch. For a node that is one of the world objects.
+    // Example: serve a WorldObjectInstance with its portal_data (null when no portal destination is set) so a portal reads back its destination. Any other node id returns "" so the request passes through unchanged.
+    std::string ResponseStore::buildNodeById(const std::string& nodeId) const
+    {
+        if (nodeId.empty()) return "";
+
+        std::lock_guard<std::mutex> lock(worldsMutex);
+        for (const auto& e : worlds)
+        {
+            bool owns = false;
+            for (const auto& node : e.config["objects"].array_items())
+            {
+                if (node["id"].string_value() == nodeId)
+                {
+                    owns = true;
+                    break;
+                }
+            }
+            if (!owns) continue;
+
+            json11::Json portalData; // null unless this object has a stored destination
+            const json11::Json& portals = e.config["portals"];
+            if (portals.is_object() && portals[nodeId].is_object())
+            {
+                portalData = PortalDataNode(portals[nodeId]);
+            }
+
+            return json11::Json(json11::Json::object{
+                {"data", json11::Json::object{
+                    {"node", json11::Json::object{
+                        {"__typename", std::string("WorldObjectInstance")},
+                        {"id", nodeId},
+                        {"portal_data", portalData}
+                    }}
+                }}
+            }).dump();
+        }
+
+        return ""; // not one of known objects, pass through
     }
 
     // Like/unlike toggle with no direction flag: flip is_liked, set like_count to is_liked?1:0, which offline is a user's own like only, persist config.json atomically, update the in-memory entry.
@@ -2223,6 +2460,10 @@ namespace home2hook {
         std::string worldCustomizationsB64; // world_batch_update_objects: base64(JSON) room customizations
         json11::Json createArr, updateArr, deleteArr; // world_batch_update_objects
         bool newUserLockedEdit = false; // world_set_user_locked_edit
+        std::string nodeId; // node_by_id: the object_instance being fetched
+        std::string objectInstance; // upsert_world_portal_data: the portal object
+        std::string destinationWorld; // upsert_world_portal_data: target world id
+        std::string destinationApplication; // upsert_world_portal_data: target application id
 
         if (!variablesJson.empty())
         {
@@ -2261,6 +2502,14 @@ namespace home2hook {
                     newUserLockedEdit = vars["new_user_locked_edit"].bool_value();
                 else if (vars["new_user_locked_edit"].is_string())
                     newUserLockedEdit = (vars["new_user_locked_edit"].string_value() == "true");
+                if (vars["node_id"].is_string())
+                    nodeId = vars["node_id"].string_value();
+                if (vars["object_instance"].is_string())
+                    objectInstance = vars["object_instance"].string_value();
+                if (vars["destination_world"].is_string())
+                    destinationWorld = vars["destination_world"].string_value();
+                if (vars["destination_application"].is_string())
+                    destinationApplication = vars["destination_application"].string_value();
             }
         }
 
@@ -2296,6 +2545,15 @@ namespace home2hook {
             break;
         case ResponseAction::WorldBatchUpdate:
             body = buildWorldBatchUpdate(clientMutationId, worldId, worldCustomizationsB64, createArr, updateArr, deleteArr);
+            break;
+        case ResponseAction::UpsertPortalData:
+            body = buildUpsertPortalData(clientMutationId, objectInstance, destinationWorld, destinationApplication);
+            break;
+        case ResponseAction::DeletePortalData:
+            body = buildDeletePortalData(objectInstance);
+            break;
+        case ResponseAction::NodeById:
+            body = buildNodeById(nodeId);
             break;
         case ResponseAction::WorldLikeToggle:
             body = buildWorldLikeToggle(clientMutationId, worldId);
