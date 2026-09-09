@@ -384,8 +384,8 @@ void UI::Create()
     env.sourceKind = 0;
     env.selectedSourceId = broadcast::PrimaryMonitor();
 
-    // Attempt to scan the user's Oculus app library
-    RebuildAppsLibrary();
+    // Load any saved library paths
+    libraryPaths = prefs::GetOculusLibraryPaths();
 }
 
 #pragma region Rendered Pages
@@ -780,7 +780,6 @@ void UI::DoApps()
     // On page (re)open, reload the user's locations from prefs and rebuild store\apps-library.json so the count and backend feed reflect any apps installed since last time
     if (reloadAppsOnOpen)
     {
-        libraryPaths = prefs::GetOculusLibraryPaths();
         RebuildAppsLibrary();
         reloadAppsOnOpen = false;
     }
@@ -873,6 +872,11 @@ void UI::DoAchievements()
     // On page open, load the saved achievement index and refresh the app-library count
     if (reloadAchievementsOnOpen)
     {
+        if (appsFoundCount == 0)
+        {
+            RebuildAppsLibrary();
+        }
+
         achievementList = fetchworlds::LoadAchievements();
         achievementRowLabels.clear();
         achievementRowLabels.reserve(achievementList.size());
@@ -881,7 +885,6 @@ void UI::DoAchievements()
             std::string app = a.appTitle.empty() ? a.appCanonical : a.appTitle;
             achievementRowLabels.push_back(app + "   |   " + a.title);
         }
-        libraryAppCount = fetchworlds::CountAppsInLibrary();
         reloadAchievementsOnOpen = false;
     }
 
@@ -920,7 +923,7 @@ void UI::DoAchievements()
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Fetch Achievements", ImVec2(btnW, btnH)))
     {
-        if (libraryAppCount > 0)
+        if (appsFoundCount <= 0)
         {
             // Achievements are looked up per app so an empty library can't fetch.
             env.noticeMessage = "Add your Oculus apps first on the \"Apps Library\" page. Achievements are fetched for the apps found there.";

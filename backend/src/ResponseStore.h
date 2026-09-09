@@ -30,7 +30,10 @@ namespace home2hook {
         WorldsApps,      // 3420023344706951 (app/achievement tile metadata, empty-but-valid or library-backed)
         WorldsGuestApps, // 2426930340689946 (guest variant of the above)
         Canned,          // disk template keyed by doc_id (with optional discriminator)
-        SetUserOptions   // 2659373614156793 (base64-decode, persist to prefs, then ack)
+        SetUserOptions,  // 2659373614156793 (base64-decode, persist to prefs, then ack)
+        UpsertPortalData,// 2421017851295011 (persist a portal's destination into the owning world's config.json portals array)
+        DeletePortalData,// 2495919857138744 (remove a portal's destination from the owning world's config.json portals array)
+        NodeById         // 2305014842947625 (node fetch, example: for the world objects returns the WorldObjectInstance with its portal_data)
     };
 
     const char* ActionName(ResponseAction action);
@@ -183,6 +186,9 @@ namespace home2hook {
         std::string buildSetDefaultWorld(const std::string& clientMutationId, const std::string& worldId) const;
         std::string buildUpdateNameWorld(const std::string& clientMutationId, const std::string& worldId, const std::string& nameBase64) const;
         std::string buildWorldBatchUpdate(const std::string& clientMutationId, const std::string& worldId, const std::string& worldCustomizationsB64, const json11::Json& createArr, const json11::Json& updateArr, const json11::Json& deleteArr) const;
+        std::string buildUpsertPortalData(const std::string& clientMutationId, const std::string& objectInstance, const std::string& destinationWorld, const std::string& destinationApplication) const;
+        std::string buildDeletePortalData(const std::string& objectInstance) const;
+        std::string buildNodeById(const std::string& nodeId) const;
         std::string buildWorldLikeToggle(const std::string& clientMutationId, const std::string& worldId) const;
         std::string buildWorldDelete(const std::string& clientMutationId, const std::string& worldId) const;
         std::string buildWorldSetLockedEdit(const std::string& clientMutationId, const std::string& worldId, bool newLockedEdit) const;

@@ -107,13 +107,14 @@ static DWORD WINAPI ResultThread(LPVOID)
         bool accepted = GGameSentRequestPlain || GRequestOverTls;
         std::string verdict;
         if (accepted)
-            verdict = "In-process cert verification defeated! The game accepted the loopback leaf!";
+            verdict = "Backend is active and forwarding requests.";
         else if (GHandshakeOk)
             verdict = "Handshake completed but no request seen yet, waiting...";
         else
             verdict = "No accepted handshake / request yet, waiting (CA not yet trusted, or curl imported roots before injection)";
         
-        LogLine("result so far: sslWriteReq=" + std::string(GGameSentRequestPlain ? "yes" : "no") + " tlsHandshake=" + (GHandshakeOk ? "yes" : "no") + " reqOverTls=" + (GRequestOverTls ? "yes" : "no") + ": " + verdict);
+        bool oafIpcLoaded = GetModuleHandleW(L"OafIpc.dll") != nullptr;
+        LogLine("Backend status: sslWriteReq=" + std::string(GGameSentRequestPlain ? "yes" : "no") + " tlsHandshake=" + (GHandshakeOk ? "yes" : "no") + " reqOverTls=" + (GRequestOverTls ? "yes" : "no") + " oafIpcLoaded=" + (oafIpcLoaded ? "yes" : "no") + " oafHooks=" + (OafHooksInstalled() ? "yes" : "no") + ": " + verdict);
     }
 }
 
