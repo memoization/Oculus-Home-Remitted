@@ -96,11 +96,11 @@ void CenteredText(const std::string& text, bool adjustToPadding = false)
     ImGui::Text(text.c_str());
 }
 
-void CenteredTextWrapped(const std::string& text)
+void CenteredTextWrapped(const std::string& text, bool adjustToPadding = false)
 {
     auto windowWidth = ImGui::GetWindowSize().x;
     auto textWidth = ImGui::CalcTextSize(text.c_str(), nullptr, false, windowWidth).x;
-    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f - (adjustToPadding ? UIConsts.PageContentPadding : 0));
     ImGui::TextWrapped(text.c_str());
 }
 
@@ -777,11 +777,43 @@ void UI::DoApps()
 {
     ImVec2 avail = ImGui::GetContentRegionAvail();
 
-    // On page (re)open, reload the user's locations from prefs and rebuild store\apps-library.json so the count and backend feed reflect any apps installed since last time
-    if (reloadAppsOnOpen)
+    // Pick up a finished background rebuild. It is polled every frame while the page is up.
+    if (appsScanRunning && appsScanFuture.valid() &&
+        appsScanFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        RebuildAppsLibrary();
-        reloadAppsOnOpen = false;
+        applibraries::RebuildResult r = appsScanFuture.get();
+        appsScanRunning = false;
+        appsFoundCount = r.owned;
+        appsInstalledCount = r.installed;
+        if (!r.error.empty())
+        {
+            appsScanResultMsg = r.error;
+            appsScanResultOk = false;
+        }
+        else
+        {
+            appsScanResultMsg = "Refreshed " + std::to_string(r.owned) + " owned app(s), " + std::to_string(r.installed) + " installed.";
+            appsScanResultOk = true;
+        }
+        homeLogger.write() << "Apps Library: build finished, owned " << r.owned << " installed " << r.installed << " image failures " << r.imageFailures << std::endl;
+    }
+
+    // On page open, refresh the counts from the current apps-library.json.
+    // If the file has never been built, kick off a build now so the page is not empty on first visit.
+    // Otherwise a rescan only happens on an explicit action (Add/Remove a location, or Refresh Apps).
+    if (refreshAppCountOnOpen && !appsScanRunning)
+    {
+        if (!applibraries::LibraryFileExists())
+        {
+            RebuildAppsLibrary();
+        }
+        else
+        {
+            applibraries::LibraryCounts counts = applibraries::CountApps();
+            appsFoundCount = counts.owned;
+            appsInstalledCount = counts.installed;
+        }
+        refreshAppCountOnOpen = false;
     }
 
     ImGui::Dummy(iScale.Vec2(0, 25));
@@ -793,7 +825,8 @@ void UI::DoApps()
     ImGui::Dummy(iScale.Vec2(0, 25));
 
     ImGui::PushFont(fontHeader);
-    ImGui::Text("Found Apps: %d", appsFoundCount);
+    ImGui::Text("Owned Apps: %d", appsFoundCount);
+    ImGui::Text("Installed Apps: %d", appsInstalledCount);
     ImGui::PopFont();
 
     ImGui::Dummy(iScale.Vec2(0, 14));
@@ -811,15 +844,46 @@ void UI::DoApps()
     float listH = iScale.F(240);
     SourceColumn("Library Locations", kLibraryKind, rows, ImVec2(listW, listH), (int)iScale.F(560));
 
-    // Footer: Add and Remove (Remove acts on the selected location row).
+    ImGui::TextWrapped("Add any \"Oculus Apps\" folders containing \"Manifests\" and \"Software\" so your installed apps are found.\nOnly installed apps can be launched from Oculus Home portals or game consoles.");
+
     bool hasSelection = env.sourceKind == kLibraryKind && env.selectedSourceId >= 1 && env.selectedSourceId <= libraryPaths.size();
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(85));
+    ImGui::SetCursorPosY(avail.y - iScale.F(120));
+
+    // Live build status
+    if (appsScanRunning)
+    {
+        int done = appsScanProgress.done.load();
+        int total = appsScanProgress.total.load();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
+        if (total > 0)
+        {
+            std::string appFetchProgress = "Fetching apps...  " + std::to_string(done) + " / " + std::to_string(total);
+
+            CenteredText(appFetchProgress, true);
+        }
+        else
+        {
+            CenteredText("Reading the Oculus app cache...", true);
+        }
+        ImGui::PopStyleColor();
+
+    }
+    else if (!appsScanResultMsg.empty())
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, appsScanResultOk ? UIConsts.SuccessText : UIConsts.ErrorText);
+        CenteredTextWrapped(appsScanResultMsg.c_str(), true);
+        ImGui::PopStyleColor();
+    }
+
     float btnH = iScale.F(40);
     float btnW = iScale.F(180);
     float gap = iScale.F(14);
-    ImGui::SetCursorPosX((avail.x - (btnW * 2 + gap)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosX((avail.x - (btnW * 3 + gap * 2)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosY(avail.y - iScale.F(85));
 
+    ImGui::BeginDisabled(appsScanRunning);
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Add Location", ImVec2(btnW, btnH)))
     {
@@ -845,10 +909,11 @@ void UI::DoApps()
         }
     }
     ImGui::PopStyleColor(pushedStyles);
+    ImGui::EndDisabled();
 
     ImGui::SameLine(0, gap);
 
-    ImGui::BeginDisabled(!hasSelection);
+    ImGui::BeginDisabled(appsScanRunning || !hasSelection);
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Remove Selected", ImVec2(btnW, btnH)))
     {
@@ -860,8 +925,20 @@ void UI::DoApps()
     ImGui::PopStyleColor(pushedStyles);
     ImGui::EndDisabled();
 
+    ImGui::SameLine(0, gap);
+
+    // Manual rescan of the library locations into apps-library.json
+    ImGui::BeginDisabled(appsScanRunning);
+    pushedStyles = PushButtonStyleGrey();
+    if (ImGui::Button("Refresh Apps", ImVec2(btnW, btnH)))
+    {
+        RebuildAppsLibrary();
+    }
+    ImGui::PopStyleColor(pushedStyles);
+    ImGui::EndDisabled();
+
     pushedStyles = PushSubTextStyle();
-    CenteredText("Add an \"Oculus Apps\" folder that contains \"Manifests\" and \"Software\\StoreAssets\".", true);
+    CenteredText("Owned apps are detected automatically.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
@@ -874,7 +951,9 @@ void UI::DoAchievements()
     {
         if (appsFoundCount == 0)
         {
-            RebuildAppsLibrary();
+            applibraries::LibraryCounts counts = applibraries::CountApps();
+            appsFoundCount = counts.owned;
+            appsInstalledCount = counts.installed;
         }
 
         achievementList = fetchworlds::LoadAchievements();
@@ -943,13 +1022,24 @@ void UI::DoAchievements()
     ImGui::PopStyleColor(pushedStyles);
 }
 
-// Re-scan the default CoreData location and the user's added roots into store\apps-library.json
+// Re-scan the default CoreData location and the user's added libraries into store\apps\apps-library.json
 // The backend feeds this to the worlds_apps_and_achievements graphql request on next launch.
 void UI::RebuildAppsLibrary()
 {
-    int n = applibraries::Rebuild(libraryPaths);
-    appsFoundCount = (n < 0) ? 0 : n;
-    homeLogger.write() << "Apps Library rebuilt: " << appsFoundCount << " app(s)." << std::endl;
+    if (appsScanRunning) return;
+
+    appsScanProgress.total.store(0);
+    appsScanProgress.done.store(0);
+    appsScanResultMsg.clear();
+    appsScanResultOk = false;
+    appsScanRunning = true;
+
+    homeLogger.write() << "Apps Library: rebuild started." << std::endl;
+
+    // Returns the result which the UI loop picks up.
+    appsScanFuture = std::async(std::launch::async,
+        [paths = libraryPaths, this]()
+        { return applibraries::Rebuild(paths, &appsScanProgress); });
 }
 
 // Modern shell folder picker (IFileOpenDialog with FOS_PICKFOLDERS). Returns true and the chosen filesystem path if the user confirmed a folder.
@@ -965,7 +1055,7 @@ bool UI::BrowseForFolder(std::string& outPath)
         DWORD opts = 0;
         dlg->GetOptions(&opts);
         dlg->SetOptions(opts | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST);
-        dlg->SetTitle(L"Select an Oculus library folder (contains Manifests and Software\\StoreAssets)");
+        dlg->SetTitle(L"Select an Oculus library folder (contains Manifests and Software)");
 
         if (SUCCEEDED(dlg->Show(glfwGetWin32Window(window))))
         {
@@ -1120,10 +1210,11 @@ bool UI::NavItem(const char* label, const std::string& iconPath, PageType page)
             reloadWorldsOnOpen = true;
         }
 
-        // Re-scan the Oculus library on switch-to (rebuilds store\apps-library.json).
+        // Refresh the found total from apps-library.json on open
         if (page == PageType::AppsLibrary && env.currentPage != PageType::AppsLibrary)
         {
-            reloadAppsOnOpen = true;
+            appsScanResultMsg = "";
+            refreshAppCountOnOpen = true;
         }
 
         // Reload the saved achievement index on switch-to

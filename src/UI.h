@@ -27,6 +27,7 @@
 #include "BroadcastSource.h"
 #include "Worlds.h"
 #include "FetchWorlds.h"
+#include "AppLibraries.h"
 
 struct ImScalers
 {
@@ -176,11 +177,18 @@ struct UI
     std::vector<worlds::WorldCardInfo> worldList;
     bool reloadWorldsOnOpen = true;
 
-    // Apps Library: user-added Oculus library roots
-    // On page (re)open the library is re-scanned into store\apps-library.json and the found-count refreshed, and adding/removing a location also rebuilds it.
+    // Apps Library: user's Oculus library roots
     std::vector<std::string> libraryPaths;
-    int appsFoundCount = 0;
-    bool reloadAppsOnOpen = true;
+    int appsFoundCount = 0; // owned apps, the whole library
+    int appsInstalledCount = 0; // owned apps that also have a local manifest, launchable
+    bool refreshAppCountOnOpen = true;
+
+    // Build status of the apps library
+    bool appsScanRunning = false;
+    applibraries::Progress appsScanProgress;
+    std::future<applibraries::RebuildResult> appsScanFuture;
+    std::string appsScanResultMsg; // shown in the app's library page after a run attempt (green success, red error)
+    bool appsScanResultOk = false;
 
     // The saved index from store\achievements\app-achievements.json loaded on page open.
     std::vector<fetchworlds::AchievementInfo> achievementList;

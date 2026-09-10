@@ -11,6 +11,8 @@
 #include <cstring>
 #include <cstdio>
 #include "json11.hpp"
+#include <cpr/cpr.h>
+#include "HomeLogger.h"
 
 namespace fs = std::filesystem;
 
@@ -18,13 +20,13 @@ namespace applibraries {
 
     std::string DefaultRoot()
     {
-        return "C:\\Program Files\\Oculus\\CoreData";
+        return "C:\\Program Files\\Oculus\\Software";
     }
 
     // ---- Extract library display names from the Oculus cache ----
     // %APPDATA%\Oculus\sessions\_oaf\data.sqlite (Objects table) caches the full app catalog
     // A string-scalar field in the blob is <u32 nameLen><name>\x01\x01<u64 valLen><value>. Return the value for `name`, or "" if not present as a string scalar.
-    static std::string BlobStringField(const unsigned char* blob, size_t len, const char* name)
+    static std::string BlobStringField(const unsigned char* blob, size_t len, const char* name, size_t start = 0)
     {
         size_t nlen = std::strlen(name);
         std::string needle;
@@ -36,7 +38,7 @@ namespace applibraries {
         needle.push_back(0x01);
         needle.push_back(0x01);
 
-        for (size_t i = 0; i + needle.size() + 8 <= len; ++i)
+        for (size_t i = start; i + needle.size() + 8 <= len; ++i)
         {
             if (std::memcmp(blob + i, needle.data(), needle.size()) != 0) continue;
 
@@ -55,20 +57,68 @@ namespace applibraries {
         return std::string();
     }
 
-    static std::map<std::string, std::string> LoadOafDisplayNames()
+    // Offset just past the <u32 nameLen><name> marker for `name`, or npos.
+    static size_t BlobFieldNamePos(const unsigned char* blob, size_t len, const char* name)
     {
-        std::map<std::string, std::string> out;
+        size_t nlen = std::strlen(name);
+        std::string needle;
+        needle.push_back((char)(nlen & 0xFF));
+        needle.push_back((char)((nlen >> 8) & 0xFF));
+        needle.push_back((char)((nlen >> 16) & 0xFF));
+        needle.push_back((char)((nlen >> 24) & 0xFF));
+        needle.append(name, nlen);
+
+        for (size_t i = 0; i + needle.size() <= len; ++i)
+        {
+            if (std::memcmp(blob + i, needle.data(), needle.size()) == 0) return i + needle.size();
+        }
+        return (size_t)-1;
+    }
+
+    // A cover field (cover_square_image / cover_landscape_image) holds a nested Image object whose uri is the oculuscdn url. Return that uri.
+    static std::string BlobCoverUri(const unsigned char* blob, size_t len, const char* coverField)
+    {
+        size_t pos = BlobFieldNamePos(blob, len, coverField);
+        if (pos == (size_t)-1) return std::string();
+
+        return BlobStringField(blob, len, "uri", pos);
+    }
+
+    // Per-app info pulled from the oaf cache: canonical name, display name and the two oculuscdn cover uris.
+    struct OafApp
+    {
+        std::string canonicalName;
+        std::string displayName;
+        std::string coverSquareUri;
+        std::string coverLandscapeUri;
+    };
+
+    static std::map<std::string, OafApp> LoadOafApps(std::string* errorOut = nullptr)
+    {
+        std::map<std::string, OafApp> out;
 
         wchar_t appdata[MAX_PATH];
         DWORD n = GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
-        if (n == 0 || n >= MAX_PATH) return out;
+        if (n == 0 || n >= MAX_PATH)
+        {
+            if (errorOut) *errorOut = "Could not locate the Oculus data folder.";
+            return out;
+        }
 
         std::wstring path = std::wstring(appdata) + L"\\Oculus\\sessions\\_oaf\\data.sqlite";
         std::error_code ec;
-        if (!fs::is_regular_file(path, ec)) return out;
+        if (!fs::is_regular_file(path, ec))
+        {
+            if (errorOut) *errorOut = "Oculus app cache not found. Open Meta Link at least once so it can build the cache, then try again.";
+            return out;
+        }
 
         HMODULE h = LoadLibraryW(L"winsqlite3.dll");
-        if (!h) return out;
+        if (!h)
+        {
+            if (errorOut) *errorOut = "Could not load winsqlite3 to read the Oculus app cache.";
+            return out;
+        }
 
         struct sqlite3; struct sqlite3_stmt;
         auto open_v2   = (int(*)(const char*, sqlite3**, int, const char*))GetProcAddress(h, "sqlite3_open_v2");
@@ -110,16 +160,23 @@ namespace applibraries {
                         int blen = col_bytes(st, 1);
 
                         if (!hk || !blob || blen <= 0) continue;
-                        std::string title = BlobStringField(blob, (size_t)blen, "display_name");
-                        
-                        if (!title.empty())
-                        {
-                            out[std::string((const char*)hk)] = title;
-                        }
+
+                        OafApp a;
+                        a.canonicalName = BlobStringField(blob, (size_t)blen, "canonical_name");
+                        a.displayName = BlobStringField(blob, (size_t)blen, "display_name");
+                        a.coverSquareUri = BlobCoverUri(blob, (size_t)blen, "cover_square_image");
+                        a.coverLandscapeUri = BlobCoverUri(blob, (size_t)blen, "cover_landscape_image");
+                        out[std::string((const char*)hk)] = a;
+
+                        homeLogger.write() << "AppLibraries: Found app: " << a.displayName.c_str() << std::endl;
                     }
                     finalize(st);
                 }
                 close_db(db);
+            }
+            else
+            {
+                if (errorOut) *errorOut = "Could not open the Oculus app cache.";
             }
         }
 
@@ -226,9 +283,39 @@ namespace applibraries {
         return enc;
     }
 
-    std::vector<AppEntry> Scan(const std::vector<std::string>& userRoots)
+    // Image extension from a url's path (before the query), defaults to .png.
+    static std::string ImageExtFromUrl(const std::string& url)
     {
-        // Default CoreData first, then each user root. Dedup roots case-insensitively.
+        size_t q = url.find('?');
+        std::string path = (q == std::string::npos) ? url : url.substr(0, q);
+        size_t dot = path.find_last_of('.');
+        size_t slash = path.find_last_of('/');
+        if (dot != std::string::npos && (slash == std::string::npos || dot > slash) && path.size() - dot <= 5)
+            return path.substr(dot);
+        return ".png";
+    }
+
+    // Download url to dest. Skips the fetch if the file already exists. Returns true if the file is present afterward.
+    static bool DownloadImage(const std::string& url, const fs::path& dest)
+    {
+        std::error_code ec;
+        if (fs::is_regular_file(dest, ec)) return true;
+        if (url.empty()) return false;
+
+        cpr::Response r = cpr::Get(cpr::Url{ url }, cpr::Timeout{ 15000 });
+        if (r.status_code != 200 || r.text.empty()) return false;
+
+        std::ofstream f(dest, std::ios::binary);
+        if (!f) return false;
+        f.write(r.text.data(), (std::streamsize)r.text.size());
+        return f.good();
+    }
+
+    std::vector<AppEntry> Scan(const std::vector<std::string>& userRoots, Progress* progress, int* imageFailures, std::string* oafError)
+    {
+        int failures = 0; // covers with a uri that failed to download
+
+        // Default path first, then each user root. Dedup roots case-insensitive.
         std::vector<std::wstring> roots;
         auto addRoot = [&](const std::wstring& r)
         {
@@ -247,10 +334,74 @@ namespace applibraries {
             addRoot(prefs::Widen(u));
         }
 
-        // Real display names from the Oculus offline cache (appId to title). Prettified canonical is the fallback.
-        std::map<std::string, std::string> displayNames = LoadOafDisplayNames();
+        // Owned apps come from the Oculus offline cache. Every cached Application becomes an entry installed or not so that any owned app can be a portal destination.
+        std::string oafErr;
+        std::map<std::string, OafApp> oafApps = LoadOafApps(&oafErr);
+        if (oafError) *oafError = oafErr;
 
-        std::map<std::string, AppEntry> byId; // appId to entry (dedup across roots)
+        // Cover images download into store\apps\images and the stored field is the store-relative path. The backend resolves it to an absolute file:// at serve time so the library remains portable.
+        fs::path imagesDir = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"images";
+        std::error_code ecdir;
+        fs::create_directories(imagesDir, ecdir);
+
+        const long long kUnknownAcquire = 1451606400LL;
+
+        // Owned count is known now, before the slow cover downloads, so the progress bar has a total to count toward.
+        if (progress) progress->total.store((int)oafApps.size());
+
+        // One entry per owned app straight from the oaf cache. Launch fields stay empty here.
+        std::map<std::string, AppEntry> byId; // appId to entry
+        for (const auto& kv : oafApps)
+        {
+            const std::string& id = kv.first;
+            const OafApp& oaf = kv.second;
+
+            std::string base = BaseCanonical(oaf.canonicalName);
+
+            std::string squareUri, landscapeUri;
+            if (!oaf.coverSquareUri.empty())
+            {
+                std::string fn = id + "_square" + ImageExtFromUrl(oaf.coverSquareUri);
+                if (DownloadImage(oaf.coverSquareUri, imagesDir / fn))
+                {
+                    squareUri = "apps/images/" + fn;
+                }
+                else
+                {
+                    ++failures; // a uri was present but the fetch failed, likely an expired oculuscdn link?
+                } 
+            }
+            if (!oaf.coverLandscapeUri.empty())
+            {
+                std::string fn = id + "_landscape" + ImageExtFromUrl(oaf.coverLandscapeUri);
+                if (DownloadImage(oaf.coverLandscapeUri, imagesDir / fn))
+                {
+                    landscapeUri = "apps/images/" + fn;
+                }
+                else
+                {
+                    ++failures;
+                }
+            }
+
+            AppEntry entry;
+            entry.id = id;
+            entry.canonical = base;
+            entry.title = !oaf.displayName.empty() ? oaf.displayName : (!base.empty() ? Prettify(base) : id);
+            entry.acquiredTime = kUnknownAcquire; // an installed manifest overwrites this below
+            entry.squareUri = squareUri;      // cover_square_image
+            entry.portraitUri = squareUri;    // cover_square_image
+            entry.landscapeUri = landscapeUri;// cover_landscape_image
+            entry.iconUri = squareUri;        // cover_square_image
+            entry.screenshot0Uri = landscapeUri; // cover_landscape_image
+            entry.screenshot1Uri = landscapeUri; // cover_landscape_image
+            byId[id] = entry;
+
+            if (progress) progress->done.fetch_add(1);
+        }
+
+        // Scan for manifests under the library roots for inserting launch details into the owned apps that are installed.
+        // A manifest for an app not found in the oaf cache is skipped.
         for (const auto& root : roots)
         {
             std::error_code ec;
@@ -258,21 +409,18 @@ namespace applibraries {
 
             if (!fs::is_directory(maniDir, ec)) continue;
 
-            fs::path assetsDir = fs::path(root) / L"Software" / L"StoreAssets";
-
             for (fs::directory_iterator it(maniDir, ec), end; it != end; it.increment(ec))
             {
                 if (ec) break;
 
                 const fs::path& p = it->path();
-                if (p.extension() != L".json") continue; // skips <name>.json.mini files
+                if (p.extension() != L".json") continue; // skips the <name>.json.mini files
 
-                bool isAssets = false;
-                {
-                    std::string stem = p.filename().string(); // canonicals should be ASCII
-                    const std::string tail = "_assets.json";
-                    isAssets = stem.size() >= tail.size() && stem.compare(stem.size() - tail.size(), tail.size(), tail) == 0;
-                }
+                // Skip the _assets.json manifests. The catalog and its art come from the oaf database
+                std::string stem = p.filename().string(); // canonical titles should be ASCII
+                const std::string tail = "_assets.json";
+                if (stem.size() >= tail.size() && stem.compare(stem.size() - tail.size(), tail.size(), tail) == 0)
+                    continue;
 
                 std::string text = ReadFileUtf8(p);
                 if (text.empty()) continue;
@@ -284,42 +432,26 @@ namespace applibraries {
                 std::string id = AppIdString(m);
                 if (id.empty()) continue; // null appId, a 2D "unknown source" desktop app to ignore
 
+                auto found = byId.find(id);
+                if (found == byId.end()) continue; // owned apps only, this manifest is for something not in the oaf cache
+
+                AppEntry& entry = found->second;
+                if (!entry.launchFile.empty()) continue; // already inserted from an earlier root
+
                 std::string canon = m["canonicalName"].string_value();
                 if (canon.empty()) continue;
-
                 std::string base = BaseCanonical(canon);
-                fs::path folder = assetsDir / (base + "_assets");
-                auto uri = [&](const char* name) -> std::string
+
+                if (entry.canonical.empty()) entry.canonical = base; // fill the canonical title if the oaf cache lacked one
+
+                // Launch info lives in the full <canonical title>.json manifest.
+                entry.launchFile = m["launchFile"].is_string() ? m["launchFile"].string_value() : std::string();
+                entry.launchParameters = m["launchParameters"].is_string() ? m["launchParameters"].string_value() : std::string();
+                if (!entry.launchFile.empty())
                 {
-                    std::error_code e2;
-                    fs::path fp = folder / name;
-                    if (!fs::is_regular_file(fp, e2)) return std::string();
-                    return ToFileUri(fp);
-                };
-
-                std::string square = uri("cover_square_image.jpg");
-                std::string landscape = uri("small_landscape_image.jpg");
-                std::string screenshot = uri("cover_landscape_image.jpg");
-
-                auto dn = displayNames.find(id);
-
-                AppEntry entry;
-                entry.id = id;
-                entry.canonical = base;
-                entry.title = (dn != displayNames.end() && !dn->second.empty()) ? dn->second : Prettify(base);
-                entry.acquiredTime = FileUnixTime(p);
-                entry.squareUri = square;
-                entry.portraitUri = square;
-                entry.landscapeUri = landscape;
-                entry.iconUri = uri("icon_image.jpg");
-                entry.screenshot0Uri = screenshot;// no local screenshots so reuse the landscape cover
-                entry.screenshot1Uri = screenshot;
-
-                // A full <canonical>.json wins over a bare _assets entry, otherwise fill in a missing thumbnail from a later root that has the store art.
-                auto existing = byId.find(id);
-                if (existing == byId.end() || !isAssets || (existing->second.squareUri.empty() && !entry.squareUri.empty()))
-                {
-                    byId[id] = entry;
+                    // the exe folder is <root>\Software\<canonical title>
+                    entry.installDir = prefs::Narrow((fs::path(root) / L"Software" / prefs::Widen(canon)).wstring());
+                    entry.acquiredTime = FileUnixTime(p); // real acquire time now that a manifest exists
                 }
             }
         }
@@ -335,17 +467,27 @@ namespace applibraries {
         {
             return _stricmp(a.title.c_str(), b.title.c_str()) < 0;
         });
+
+        if (imageFailures) *imageFailures = failures;
         return out;
     }
 
-    int Rebuild(const std::vector<std::string>& userRoots)
+    RebuildResult Rebuild(const std::vector<std::string>& userRoots, Progress* progress)
     {
-        std::vector<AppEntry> apps = Scan(userRoots);
+        RebuildResult res;
+
+        int failures = 0;
+        std::string oafError;
+        std::vector<AppEntry> apps = Scan(userRoots, progress, &failures, &oafError);
+
+        int installed = 0;
 
         json11::Json::array arr;
         arr.reserve(apps.size());
         for (const auto& a : apps)
         {
+            if (!a.launchFile.empty()) ++installed;
+
             arr.push_back(json11::Json::object{
                 { "ID", a.id },
                 { "Canonical", a.canonical },
@@ -357,11 +499,18 @@ namespace applibraries {
                 { "IconURI", a.iconUri },
                 { "Screenshot0URI", a.screenshot0Uri },
                 { "Screenshot1URI", a.screenshot1Uri },
+                { "LaunchFile", a.launchFile },
+                { "LaunchParameters", a.launchParameters },
+                { "InstallDir", a.installDir },
             });
         }
         json11::Json doc = json11::Json::object{ { "apps", arr } };
 
-        fs::path out = fs::path(prefs::AppDir()) / L"store" / L"apps-library.json";
+        res.owned = (int)apps.size();
+        res.installed = installed;
+        res.imageFailures = failures;
+
+        fs::path out = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"apps-library.json";
         std::error_code ec;
         fs::create_directories(out.parent_path(), ec);
 
@@ -370,16 +519,61 @@ namespace applibraries {
         tmp += L".tmp";
         {
             std::ofstream f(tmp, std::ios::binary | std::ios::trunc);
-            if (!f) return -1;
+            if (!f)
+            {
+                res.error = "Could not write the apps library file.";
+                return res;
+            }
             f << doc.dump();
         }
 
         if (!MoveFileExW(tmp.wstring().c_str(), out.wstring().c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
         {
-            return -1;
+            res.error = "Could not write the apps library file.";
+            return res;
         }
 
-        return (int)apps.size();
+        res.success = true;
+
+        // Surface any errors.
+        // A missing oaf cache branches since it means no apps at all compared to failed cover downloads.
+        if (!oafError.empty())
+            res.error = oafError;
+        else if (failures > 0)
+            res.error = std::to_string(failures) + " app image(s) could not be downloaded. Launch Meta Link to refresh the app art, then Refresh Apps again.";
+
+        return res;
+    }
+
+    LibraryCounts CountApps()
+    {
+        LibraryCounts counts;
+
+        fs::path p = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"apps-library.json";
+        std::string text = ReadFileUtf8(p);
+        if (text.empty()) return counts;
+
+        std::string err;
+        json11::Json j = json11::Json::parse(text, err);
+        if (!err.empty()) return counts;
+
+        const json11::Json& apps = j["apps"];
+        if (!apps.is_array()) return counts;
+
+        counts.owned = (int)apps.array_items().size();
+        for (const auto& a : apps.array_items())
+        {
+            // an installed app is one a manifest gave a launch exe to
+            if (!a["LaunchFile"].string_value().empty()) ++counts.installed;
+        }
+        return counts;
+    }
+
+    bool LibraryFileExists()
+    {
+        fs::path p = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"apps-library.json";
+        std::error_code ec;
+        return fs::is_regular_file(p, ec);
     }
 
 }

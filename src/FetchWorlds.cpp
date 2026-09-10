@@ -344,7 +344,7 @@ namespace fetchworlds
     static std::vector<std::string> ReadLibraryAppIds()
     {
         std::vector<std::string> ids;
-        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "apps-library.json");
+        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "apps" / "apps-library.json");
         if (txt.empty()) return ids;
 
         std::string perr;
