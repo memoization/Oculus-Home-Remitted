@@ -134,7 +134,11 @@ namespace prefs
         json11::Json j = json11::Json::parse(text, err);
         if (!err.empty()) return std::string();
 
-        return j["wrapper"]["profileImagePath"].string_value();
+        // Stored relative to the app dir for portability
+        std::string v = j["wrapper"]["profileImagePath"].string_value();
+        if (v.empty()) return v;
+
+        return Narrow(AppDir()) + v;
     }
 
     void SetProfileImagePath(const std::string& path)
@@ -145,7 +149,11 @@ namespace prefs
 
         json11::Json::object root = existing.is_object() ? existing.object_items() : json11::Json::object();
         json11::Json::object wrapper = root["wrapper"].is_object() ? root["wrapper"].object_items() : json11::Json::object();
-        wrapper["profileImagePath"] = path;
+
+        // Store relative to the app dir when the file lives inside it
+        std::string base = Narrow(AppDir());
+        std::string rel = (!path.empty() && path.size() >= base.size() && _strnicmp(path.c_str(), base.c_str(), (int)base.size()) == 0) ? path.substr(base.size()) : path;
+        wrapper["profileImagePath"] = rel;
         root["wrapper"] = wrapper;
 
         std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);

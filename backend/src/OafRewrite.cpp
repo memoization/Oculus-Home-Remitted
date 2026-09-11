@@ -3,6 +3,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tlhelp32.h>
 #include "MinHook.h"
 
 #pragma comment(lib, "user32.lib") // for EnumDisplayMonitors / GetMonitorInfo
@@ -66,11 +67,16 @@ namespace home2backend {
 
     static std::string GetField(const std::string& j, const char* key)
     {
-        std::string pat = std::string("\"") + key + "\":\"";
+        std::string pat = std::string("\"") + key + "\":";
         size_t p = j.find(pat);
         if (p == std::string::npos) return "";
 
         p += pat.size();
+        // Tolerate whitespace after the colon, some requestData sub-objects are serialized with a space (e.g. "title": "...").
+        while (p < j.size() && (j[p] == ' ' || j[p] == '\t' || j[p] == '\r' || j[p] == '\n')) ++p;
+        if (p >= j.size() || j[p] != '"') return ""; // not a string value
+
+        ++p; // past the opening quote
         size_t e = j.find('"', p);
         return (e == std::string::npos) ? std::string() : j.substr(p, e - p);
     }
@@ -401,6 +407,91 @@ namespace home2backend {
         return real ? real : GetCurrentProcessId(); // a nonzero id so the game does not treat the channel as serverless!
     }
 
+    // Find if this process has Revive injector.
+    // The user launches Home2 with ReviveInjector.exe, which loads a Revive module into this process from the Revive install folder.
+    // Find that folder by locating a loaded module that sits next to ReviveInjector.exe, and return the injector path, or "" when not under Revive.
+    static std::wstring DetectReviveInjector()
+    {
+        std::wstring result;
+        HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetCurrentProcessId());
+        if (snap == INVALID_HANDLE_VALUE) return result;
+
+        MODULEENTRY32W me;
+        me.dwSize = sizeof(me);
+        if (Module32FirstW(snap, &me))
+        {
+            do
+            {
+                std::wstring path = me.szExePath;
+                size_t slash = path.find_last_of(L"\\/");
+                if (slash == std::wstring::npos) continue;
+
+                std::wstring inj = path.substr(0, slash) + L"\\ReviveInjector.exe";
+                if (GetFileAttributesW(inj.c_str()) != INVALID_FILE_ATTRIBUTES)
+                {
+                    result = inj;
+                    break;
+                }
+            } while (Module32NextW(snap, &me));
+        }
+        CloseHandle(snap);
+        return result;
+    }
+
+    static std::wstring GReviveInjector;      // ReviveInjector.exe path when under Revive, else empty
+    static volatile long GReviveChecked = 0;  // detection runs once
+
+    // Launch an installed app ourselves, replacing OVRServer's app-launch which the platform refuses because it thinks home is a third-party client.
+    // Under Revive the app is run through ReviveInjector so it gets the OVR-to-OpenVR shim, otherwise the exe runs directly. It runs from its own install directory.
+    static void LaunchApp(const std::wstring& exePath, const std::string& params)
+    {
+        if (InterlockedCompareExchange(&GReviveChecked, 1, 0) == 0)
+        {
+            GReviveInjector = DetectReviveInjector();
+            LogLine(GReviveInjector.empty() ? std::string("oaf-rewrite: launch: launching selected app") : "oaf-rewrite: launch: Revive detected, launching with the injector " + Utf8FromWide(GReviveInjector.c_str()));
+        }
+
+        std::wstring targetExe;
+        std::wstring cmd;
+        if (!GReviveInjector.empty())
+        {
+            targetExe = GReviveInjector;
+            cmd = L"\"" + GReviveInjector + L"\" \"" + exePath + L"\"";
+        }
+        else
+        {
+            targetExe = exePath;
+            cmd = L"\"" + exePath + L"\"";
+        }
+
+        if (!params.empty())
+        {
+            int n = MultiByteToWideChar(CP_UTF8, 0, params.c_str(), -1, nullptr, 0);
+            if (n > 1)
+            {
+                std::wstring wp(static_cast<size_t>(n) - 1, L'\0');
+                MultiByteToWideChar(CP_UTF8, 0, params.c_str(), -1, &wp[0], n);
+                cmd += L" " + wp;
+            }
+        }
+
+        std::wstring dir;
+        size_t slash = exePath.find_last_of(L"\\/");
+        if (slash != std::wstring::npos) dir = exePath.substr(0, slash);
+
+        STARTUPINFOW si = { sizeof(si) };
+        PROCESS_INFORMATION pi = {};
+        if (CreateProcessW(targetExe.c_str(), &cmd[0], nullptr, nullptr, FALSE, 0, nullptr, dir.empty() ? nullptr : dir.c_str(), &si, &pi))
+        {
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+        }
+        else
+        {
+            LogLine("oaf-rewrite: CreateProcess failed (err " + std::to_string(GetLastError()) + ") for the app launch");
+        }
+    }
+
     static void* DetourSend(const char* req)
     {
         if (req)
@@ -471,6 +562,34 @@ namespace home2backend {
                     {
                         synth = home2hook::GStore.BuildOafLibraryReply(seq, ts);
                     }
+                    else if (route == "/library/launch")
+                    {
+                        // The platform denies app launch to third-party clients, so run the app manually from its local install.
+                        std::string reqData = ExtractObj(j, "requestData");
+                        std::string key = GetField(j, "title");
+                        if (key.empty()) key = GetField(j, "app_id");
+                        if (key.empty()) key = GetField(j, "id");
+
+                        std::wstring exePath;
+                        std::string params;
+                        bool launchedApp = false;
+
+                        if (!key.empty() && home2hook::GStore.FindAppLaunch(key, exePath, params))
+                        {
+                            LaunchApp(exePath, params);
+                            LogLine("oaf-rewrite: /library/launch '" + key + "' launched " + Utf8FromWide(exePath.c_str()) + (params.empty() ? "" : (" " + params)));
+                            launchedApp = true;
+                        }
+                        else
+                        {
+                            LogLine("oaf-rewrite: /library/launch requestData " + reqData + " no local launch info, cannot run");
+                        }
+                        // Ack it so the game does not surface the third-party-denied error.
+                        if (launchedApp)
+                        {
+                            synth = "{\"messageType\":\"RESPONSE\",\"payload\":{\"value\":\"OK\"},\"payloadType\":\"PLAIN_STRING\",\"sequenceId\":\"" + seq + "\",\"timestamp\":\"" + ts + "\"}";
+                        }
+                    }
                     else
                     {
                         auto it = GReplies.find(route);
@@ -501,6 +620,19 @@ namespace home2backend {
                         if (n <= 80)
                         {
                             LogLine("oaf-rewrite: no canned reply for " + route + " seq " + seq + ", left unanswered");
+                        }
+                    }
+
+                    // App Library feed: OVRServer follows its broadcast_all_packages ack with a PACKAGE_INFO push of user's apps, which AppLibraryManager consumes to fill the game's App Library.
+                    // With no OVRServer that push never arrives and the list stays empty, so synthesize it from the offline local app list.
+                    // Note: A PACKAGE_INFO isFullUpdate replaces the list rather than appends, so if OVRServer is also present its own push simply supersedes ours with no duplication.
+                    if (route == "/packages/broadcast_all_packages")
+                    {
+                        std::string pkgPush = home2hook::GStore.BuildPackageInfoPush(ts);
+                        if (!pkgPush.empty())
+                        {
+                            GInjectQueue.push_back(pkgPush);
+                            LogLine("oaf-rewrite: injected PACKAGE_INFO push after " + route + " seq " + seq);
                         }
                     }
                 }

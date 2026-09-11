@@ -3,7 +3,9 @@
 #include <string>
 #include <vector>
 
-// "Fetch My Homes": pull the user's own worlds from the live graph.oculus.com backend (while it still answers lmao) and write them into store\worlds\world_<id>\ in the same format the backend serves, so they show in the app and load in-VR offline
+namespace json11 { class Json; }
+
+// "Fetch Homes": pull the user's own worlds from the live graph.oculus.com backend (while it still answers lmao) and write them into store\worlds\world_<id>\ in the same format the backend serves, so they show in the app and load in-VR offline
 //The UI polls Progress for the bar and the returned Result (via std::future) for success/failure
 namespace fetchworlds
 {
@@ -46,4 +48,18 @@ namespace fetchworlds
 
     // Count the app total count in store\apps-library.json
     int CountAppsInLibrary();
+
+    // Credentials the Oculus client caches locally, read from %APPDATA%\Oculus\sessions\_oaf\data.sqlite (Objects table).
+    // token is the working graph.oculus.com access_token (OafOfflineData.last_valid_auth_token), userId is User.id.
+    struct LocalCreds
+    {
+        std::string token;
+        std::string userId;
+    };
+
+    // Fetch an access token and userId from the local Oculus client cache. This lets features that need user credentials (worlds, achievements, app art) work without providing manual input
+    LocalCreds LoadLocalCreds();
+
+    // POST a persisted graph.oculus.com query
+    json11::Json GraphQL(const std::string& token, const std::string& docId, const std::string& variablesJson, std::string& err);
 }

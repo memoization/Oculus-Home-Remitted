@@ -54,6 +54,8 @@ namespace home2hook {
     static const char* kDocUpsertPortalData= home2hook::doc::UpsertWorldPortalData;
     static const char* kDocDeletePortalData= home2hook::doc::DeleteWorldPortalData;
     static const char* kDocNodeById        = home2hook::doc::NodeById;
+    static const char* kDocAppScreenshots  = home2hook::doc::AppScreenshots;
+    static const char* kDocAppCover        = home2hook::doc::AppCover;
     static const char* kDocWorldLikeToggle = home2hook::doc::WorldLikeToggle;
     static const char* kDocWorldDelete     = home2hook::doc::WorldDelete;
     static const char* kDocWorldLockedEdit = home2hook::doc::WorldLockedEdit;
@@ -145,6 +147,7 @@ namespace home2hook {
         case ResponseAction::UpsertPortalData:return "upsert_world_portal_data";
         case ResponseAction::DeletePortalData:return "delete_world_portal_data";
         case ResponseAction::NodeById:        return "node_by_id";
+        case ResponseAction::AppImages:       return "app_images";
         default:                              return "passthrough";
         }
     }
@@ -321,6 +324,32 @@ namespace home2hook {
         return std::string(buf);
     }
 
+    // Resolve a store-relative path (e.g. apps/images/<id>_square.png) to an absolute file:// uri under storeDir.
+    // Keeps image paths in apps-library.json portable.
+    static std::string StoreRelToFileUri(const std::wstring& storeDir, const std::string& relative)
+    {
+        int wn = MultiByteToWideChar(CP_UTF8, 0, relative.c_str(), (int)relative.size(), nullptr, 0);
+        std::wstring wrel((size_t)(wn < 0 ? 0 : wn), L'\0');
+        if (wn > 0) MultiByteToWideChar(CP_UTF8, 0, relative.c_str(), (int)relative.size(), &wrel[0], wn);
+
+        std::error_code ec;
+        std::filesystem::path abs = std::filesystem::absolute(std::filesystem::path(storeDir) / std::filesystem::path(wrel), ec);
+        std::wstring wp = abs.wstring();
+
+        int nn = WideCharToMultiByte(CP_UTF8, 0, wp.c_str(), (int)wp.size(), nullptr, 0, nullptr, nullptr);
+        std::string p((size_t)(nn < 0 ? 0 : nn), '\0');
+        if (nn > 0) WideCharToMultiByte(CP_UTF8, 0, wp.c_str(), (int)wp.size(), &p[0], nn, nullptr, nullptr);
+
+        std::string enc = "file:///";
+        for (char c : p)
+        {
+            if (c == '\\' || c == '/') enc += '/';
+            else if (c == ' ') enc += "%20";
+            else enc += c;
+        }
+        return enc;
+    }
+
     bool ResponseStore::Load(const std::wstring& storeDir)
     {
         namespace fs = std::filesystem;
@@ -449,7 +478,7 @@ namespace home2hook {
         // Optional: the user's local Oculus app library. When present it lets the "worlds_apps_and_achievements" handlers reconstruct real titles and thumbnails for placed GameBox, cartridge, and achievement tiles.
         // When absent the handlers serve the empty form so tiles render blank without a crash. Accept either a bare {"apps":[...]} object or an [...] array.
         std::string appLibText;
-        if (ReadFileText(root / "apps-library.json", appLibText))
+        if (ReadFileText(root / "apps" / "apps-library.json", appLibText))
         {
             std::string err;
             json11::Json parsed = json11::Json::parse(appLibText, err);
@@ -462,6 +491,29 @@ namespace home2hook {
                 
                 appLibraryLoaded = appLibrary["apps"].is_array() && !appLibrary["apps"].array_items().empty();
             }
+        }
+
+        // apps-library.json stores image fields as store-relative paths (apps/images/<file>).
+        // Resolve them to absolute file:// uris so every serve path (PACKAGE_INFO, app_images, worlds_apps) hands the game a loadable uri and the library remains fully portable.
+        if (appLibraryLoaded)
+        {
+            static const char* const kImageFields[] = { "SquareURI", "PortraitURI", "LandscapeURI", "IconURI", "Screenshot0URI", "Screenshot1URI" };
+            json11::Json::array resolvedApps;
+            for (const auto& app : appLibrary["apps"].array_items())
+            {
+                json11::Json::object o = app.object_items();
+                for (const char* field : kImageFields)
+                {
+                    auto it = o.find(field);
+                    if (it == o.end() || !it->second.is_string()) continue;
+
+                    std::string v = it->second.string_value();
+                    if (!v.empty() && v.compare(0, 7, "file://") != 0)
+                        o[field] = StoreRelToFileUri(storeDir, v);
+                }
+                resolvedApps.push_back(json11::Json(o));
+            }
+            appLibrary = json11::Json(json11::Json::object{ { "apps", resolvedApps } });
         }
 
         // Fetched achievement definitions linked to library apps.
@@ -496,14 +548,13 @@ namespace home2hook {
 
         loadWorlds();
 
-        // Make each world's placed UGC objects owned in the offline inventory. The game gates editing a UGC object on finding the object's inventory_item.id among "owned_items".
+        // Make each world's placed UGC objects owned in the offline inventory.
         // Without it the entity is read-only and the game never sends a customization update.
-        // Emit an owned node per world UGC object carrying its real inventory_item.id, distinct from the def id so there is no owned/used reconciliation loading void. Then rebuild the entry-id to def-id reverse map.
+        // Emit an owned node per world UGC object carrying its real inventory_item.id which is distinct from the def id so there is no owned/used reconciliation loading void. Then rebuild the entry-id to def-id reverse map.
         augmentInventoryFromWorldUgc();
         rebuildInventoryReverseMap();
 
         LogLine("store: world_login=" + std::string(worldLoginLoaded ? "yes" : "no") +
-                " canned_templates=" + std::to_string(cannedTemplates.size()) +
                 " master_db=" + std::string(masterLoaded ? "yes" : "no") +
                 " owned=" + std::string(ownedLoaded ? "yes" : "no") +
                 " app_library=" + (appLibraryLoaded ? std::to_string(appLibrary["apps"].array_items().size()) : std::string("0 (blank tiles)")) +
@@ -647,6 +698,8 @@ namespace home2hook {
             return ResponseAction::DeletePortalData;
         if (docId == kDocNodeById)
             return worldsLoaded ? ResponseAction::NodeById : (cannedDocIds.count(docId) ? ResponseAction::Canned : ResponseAction::PassThrough);
+        if (docId == kDocAppScreenshots || docId == kDocAppCover)
+            return ResponseAction::AppImages;
         if (docId == kDocWorldLikeToggle)
             return ResponseAction::WorldLikeToggle;
         if (docId == kDocWorldDelete)
@@ -1644,6 +1697,67 @@ namespace home2hook {
         return ""; // not one of known objects, pass through
     }
 
+    // App image fetch. A portal set to an app destination queries the app's art by app_id to render it.
+    // The screenshots doc wants images as a list of {uri}, the cover doc wants a single {uri}.
+    // Serve the local file:// art from apps-library.json.
+    std::string ResponseStore::buildAppImages(const std::string& docId, const std::string& appId) const
+    {
+        if (appId.empty()) return "";
+
+        std::string landscape, square, icon, screenshot0, screenshot1;
+        if (appLibraryLoaded)
+        {
+            for (const auto& app : appLibrary["apps"].array_items())
+            {
+                if (app["ID"].string_value() == appId)
+                {
+                    landscape = app["LandscapeURI"].string_value();
+                    square = app["SquareURI"].string_value();
+                    icon = app["IconURI"].string_value();
+                    screenshot0 = app["Screenshot0URI"].string_value();
+                    screenshot1 = app["Screenshot1URI"].string_value();
+                    break;
+                }
+            }
+        }
+
+        json11::Json images;
+        if (docId == kDocAppScreenshots)
+        {
+            // The screenshots query selects images as a list
+            std::string uri0 = !screenshot0.empty() ? screenshot0 : landscape;
+            std::string uri1 = !screenshot1.empty() ? screenshot1 : landscape;
+            json11::Json::array arr;
+            
+            if (!uri0.empty())
+            {
+                arr.push_back(json11::Json::object{ {"uri", uri0} });
+            }
+            
+            if (!uri1.empty())
+            {
+                arr.push_back(json11::Json::object{ {"uri", uri1} });
+            }
+            images = json11::Json(arr);
+        }
+        else
+        {
+            // The cover query selects a single image, select the icon the portal shows for an app
+            std::string uri = !square.empty() ? square : (!landscape.empty() ? landscape : icon);
+            images = json11::Json::object{ {"uri", uri} };
+        }
+
+        return json11::Json(json11::Json::object{
+            {"data", json11::Json::object{
+                {"node", json11::Json::object{
+                    {"__typename", std::string("Application")},
+                    {"id", appId},
+                    {"images", images}
+                }}
+            }}
+        }).dump();
+    }
+
     // Like/unlike toggle with no direction flag: flip is_liked, set like_count to is_liked?1:0, which offline is a user's own like only, persist config.json atomically, update the in-memory entry.
     // buildWorldNodeJson serves is_liked and like_count from config, so a queried worlds-list reflects it.
     std::string ResponseStore::buildWorldLikeToggle(const std::string& clientMutationId, const std::string& worldId) const
@@ -2351,6 +2465,171 @@ namespace home2hook {
         return body;
     }
 
+    json11::Json ResponseStore::buildPackageInfoEntry(const json11::Json& app) const
+    {
+        std::string id        = app["ID"].string_value();
+        std::string canonical = app["Canonical"].string_value();
+        std::string title     = app["Title"].string_value();
+        std::string square    = app["SquareURI"].string_value();
+        std::string landscape = app["LandscapeURI"].string_value();
+        std::string icon      = app["IconURI"].string_value();
+        double grantTimeMs    = app["AcquiredTime"].number_value() * 1000.0; // AcquiredTime is unix seconds, the field is milliseconds
+
+        // Spoof evidence of a real installed package.
+        // AppLibraryManager only counts a package as an "installed app" (the ones the App Library shows) when it looks installed, so a blank path and empty install history exclude it.
+        // Match the standard Oculus install layout and add one install event.
+        std::string installPath = "C:\\Program Files\\Oculus\\Software\\Software\\" + canonical + "\\";
+        std::string nowMs = std::to_string(NowUnix() * 1000LL);
+        json11::Json::array installEvents = {
+            json11::Json::object{
+                { "assetCanonicalName", std::string("") },
+                { "newVersion", std::string("1.0.0") },
+                { "newVersionCode", 1 },
+                { "oldVersion", json11::Json() },
+                { "oldVersionCode", json11::Json() },
+                { "timestampMs", nowMs },
+            }
+        };
+
+        // The nested library item is what the App Library UI reads. category APPS, itemType STORE, isVisibleinHome and appSource store are the fields that make a package appear as a launchable Oculus app rather than a desktop window.
+        json11::Json libraryItem = json11::Json::object{
+            { "activeState", std::string("PERMANENT") },
+            { "appGroupingId", id },
+            { "autoUpdateTime", json11::Json() },
+            { "availableVersion", std::string("") },
+            { "availableVersionCode", -1 },
+            { "canAccessFeatureKeys", json11::Json::array{} },
+            { "category", std::string("APPS") },
+            { "cloudFileIsDownloading", false },
+            { "cloudFileIsEnabled", false },
+            { "cloudFileIsSyncing", false },
+            { "comfortRating", std::string("") },
+            { "coverLandscapeImageLargeUrl", landscape },
+            { "coverLandscapeImageUrl", landscape },
+            { "coverSquareImageUrl", square },
+            { "dlc", json11::Json::array{} },
+            { "dominantColor", json11::Json() },
+            { "expirationTimeMs", 0.0 },
+            { "gameModes", json11::Json::array{} },
+            { "genres", json11::Json::array{} },
+            { "grantReason", std::string("UNKNOWN") },
+            { "grantTimeMs", grantTimeMs },
+            { "hasAchievements", false },
+            { "hasIap", false },
+            { "hasViewerLeaderboards", false },
+            { "iconImageUrl", icon },
+            { "id", id },
+            { "imageUrl", landscape },
+            { "installedVersion", std::string("1.0.0") },
+            { "installedVersionCode", 1 },
+            { "is2dModeSupported", false },
+            { "isDucNonCompliant", false },
+            { "isHidden", false },
+            { "isInStartMenu", false },
+            { "isPinnedInTaskBar", false },
+            { "isRefundable", false },
+            { "isThirdParty", false },
+            { "isVisibleinHome", true },
+            { "itemType", std::string("STORE") },
+            { "lastAccessedTimeMs", std::string("0") },
+            { "livestreamingStatus", std::string("ACCEPTED") },
+            { "logoTransparentImageUrl", std::string("") },
+            { "longDescription", std::string("") },
+            { "packageName", canonical },
+            { "playTime", 0 },
+            { "queuePosition", -1 },
+            { "renderMode", std::string("VR") },
+            { "requiredSpace", std::string("0") },
+            { "shortDescription", std::string("") },
+            { "size", std::string("0") },
+            { "smallLandscapeImageUrl", landscape },
+            { "starRating", 0.0 },
+            { "state", std::string("ready") }, // installed-and-ready, "installed" is not a valid state enum and gets the package rejected
+            { "statusProgress", 0.0 },
+            { "statusProgressMax", 1.0 },
+            { "supportedControllers", json11::Json::array{} },
+            { "supportedInAppLanguages", json11::Json::array{} },
+            { "title", title },
+        };
+
+        json11::Json versionData = json11::Json::object{
+            { "current", json11::Json::object{ { "createdTime", 0 }, { "version", std::string("1.0.0") }, { "versionCode", 1 } } },
+            { "latest",  json11::Json::object{ { "createdTime", 0 }, { "version", std::string("1.0.0") }, { "versionCode", 1 } } },
+        };
+
+        return json11::Json::object{
+            { "appId", id },
+            { "appSource", std::string("store") },
+            { "assetFiles", json11::Json::array{} },
+            { "bcp47", std::string("") },
+            { "installEvents", installEvents },
+            { "installOperation", json11::Json() },
+            { "isInStartMenu", false },
+            { "isThirdParty", false },
+            { "launchParameters", std::string("") },
+            { "launchParameters2d", std::string("") },
+            { "libraryItem", libraryItem },
+            { "locationGuid", std::string("") },
+            { "locationPath", std::string("C:\\Program Files\\Oculus\\Software") },
+            { "packageName", canonical },
+            { "packageType", std::string("app") },
+            { "path", installPath },
+            { "readyState", std::string("ready") },
+            { "renderMode", std::string("VR") },
+            { "versionData", versionData },
+        };
+    }
+
+    bool ResponseStore::FindAppLaunch(const std::string& key, std::wstring& exePath, std::string& params) const
+    {
+        if (key.empty() || !appLibraryLoaded) return false;
+
+        for (const auto& app : appLibrary["apps"].array_items())
+        {
+            if (app["Canonical"].string_value() != key && app["ID"].string_value() != key) continue;
+
+            std::string dir = app["InstallDir"].string_value();
+            std::string file = app["LaunchFile"].string_value();
+            if (dir.empty() || file.empty()) return false; // known app but no launch info
+
+            exePath = (std::filesystem::u8path(dir) / std::filesystem::u8path(file)).wstring();
+            params = app["LaunchParameters"].string_value();
+            return true;
+        }
+        return false;
+    }
+
+    std::string ResponseStore::BuildPackageInfoPush(const std::string& ts) const
+    {
+        json11::Json::array packages;
+        if (appLibraryLoaded)
+        {
+            for (const auto& app : appLibrary["apps"].array_items())
+            {
+                // A store app needs both an id and a canonical, the canonical is what /library/launch is later given.
+                if (app.is_object() && !app["ID"].string_value().empty() && !app["Canonical"].string_value().empty())
+                    packages.push_back(buildPackageInfoEntry(app));
+            }
+        }
+
+        if (!packages.empty())
+        {
+            json11::Json payload = json11::Json::object{
+                { "isFullUpdate", true },
+                { "packages", packages },
+            };
+
+            std::string body = "{\"messageType\":\"PUSH\",\"payload\":" + payload.dump() +
+                               ",\"payloadType\":\"PACKAGE_INFO\",\"sequenceId\":\"null\",\"timestamp\":\"" + JsonEscape(ts) + "\"}";
+
+
+            LogLine("store: built PACKAGE_INFO push with " + std::to_string(packages.size()) + " app(s) for the offline App Library");
+            return body;
+        }
+
+        return ""; // nothing to advertise
+    }
+
     std::string ResponseStore::buildCanned(const std::string& docId, const std::string& clientMutationId, const std::string& worldNodeId) const
     {
         std::string key = docId;
@@ -2461,6 +2740,7 @@ namespace home2hook {
         json11::Json createArr, updateArr, deleteArr; // world_batch_update_objects
         bool newUserLockedEdit = false; // world_set_user_locked_edit
         std::string nodeId; // node_by_id: the object_instance being fetched
+        std::string appIdVar; // app_images: the application whose art to fetch
         std::string objectInstance; // upsert_world_portal_data: the portal object
         std::string destinationWorld; // upsert_world_portal_data: target world id
         std::string destinationApplication; // upsert_world_portal_data: target application id
@@ -2504,6 +2784,8 @@ namespace home2hook {
                     newUserLockedEdit = (vars["new_user_locked_edit"].string_value() == "true");
                 if (vars["node_id"].is_string())
                     nodeId = vars["node_id"].string_value();
+                if (vars["app_id"].is_string())
+                    appIdVar = vars["app_id"].string_value();
                 if (vars["object_instance"].is_string())
                     objectInstance = vars["object_instance"].string_value();
                 if (vars["destination_world"].is_string())
@@ -2554,6 +2836,9 @@ namespace home2hook {
             break;
         case ResponseAction::NodeById:
             body = buildNodeById(nodeId);
+            break;
+        case ResponseAction::AppImages:
+            body = buildAppImages(docId, appIdVar);
             break;
         case ResponseAction::WorldLikeToggle:
             body = buildWorldLikeToggle(clientMutationId, worldId);

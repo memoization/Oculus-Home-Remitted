@@ -96,11 +96,11 @@ void CenteredText(const std::string& text, bool adjustToPadding = false)
     ImGui::Text(text.c_str());
 }
 
-void CenteredTextWrapped(const std::string& text)
+void CenteredTextWrapped(const std::string& text, bool adjustToPadding = false)
 {
     auto windowWidth = ImGui::GetWindowSize().x;
     auto textWidth = ImGui::CalcTextSize(text.c_str(), nullptr, false, windowWidth).x;
-    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f - (adjustToPadding ? UIConsts.PageContentPadding : 0));
     ImGui::TextWrapped(text.c_str());
 }
 
@@ -595,7 +595,7 @@ void UI::DoWorlds()
             ImGui::PopStyleColor();
         }
 
-        // Footer: Fetch My Homes (left) and Set Default (right), centered as a pair
+        // Footer: Fetch Homes (left) and Set Default (right), centered as a pair
         ImGui::SetCursorPosY(avail.y - iScale.F(66));
         float btnH = iScale.F(40);
         float fetchW = iScale.F(180);
@@ -611,11 +611,11 @@ void UI::DoWorlds()
         ImGui::SetCursorPosX(pairStartX);
 
         pushedStyles = PushButtonStyleGrey();
-        if (ImGui::Button("Fetch My Homes", ImVec2(fetchW, btnH)))
+        if (ImGui::Button("Fetch Homes", ImVec2(fetchW, btnH)))
         {
             fetchResultMsg.clear();
             fetchResultOk = false;
-            env.nextPopup = "Fetch My Homes";
+            env.nextPopup = "Fetch Homes";
         }
         ImGui::PopStyleColor(pushedStyles);
 
@@ -777,11 +777,43 @@ void UI::DoApps()
 {
     ImVec2 avail = ImGui::GetContentRegionAvail();
 
-    // On page (re)open, reload the user's locations from prefs and rebuild store\apps-library.json so the count and backend feed reflect any apps installed since last time
-    if (reloadAppsOnOpen)
+    // Pick up a finished background rebuild. It is polled every frame while the page is up.
+    if (appsScanRunning && appsScanFuture.valid() &&
+        appsScanFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        RebuildAppsLibrary();
-        reloadAppsOnOpen = false;
+        applibraries::RebuildResult r = appsScanFuture.get();
+        appsScanRunning = false;
+        appsFoundCount = r.owned;
+        appsInstalledCount = r.installed;
+        if (!r.error.empty())
+        {
+            appsScanResultMsg = r.error;
+            appsScanResultOk = false;
+        }
+        else
+        {
+            appsScanResultMsg = "Refreshed " + std::to_string(r.owned) + " owned app(s), " + std::to_string(r.installed) + " installed.";
+            appsScanResultOk = true;
+        }
+        homeLogger.write() << "Apps Library: build finished, owned " << r.owned << " installed " << r.installed << " image failures " << r.imageFailures << std::endl;
+    }
+
+    // On page open, refresh the counts from the current apps-library.json.
+    // If the file has never been built, kick off a build now so the page is not empty on first visit.
+    // Otherwise a rescan only happens on an explicit action (Add/Remove a location, or Refresh Apps).
+    if (refreshAppCountOnOpen && !appsScanRunning)
+    {
+        if (!applibraries::LibraryFileExists())
+        {
+            RebuildAppsLibrary();
+        }
+        else
+        {
+            applibraries::LibraryCounts counts = applibraries::CountApps();
+            appsFoundCount = counts.owned;
+            appsInstalledCount = counts.installed;
+        }
+        refreshAppCountOnOpen = false;
     }
 
     ImGui::Dummy(iScale.Vec2(0, 25));
@@ -793,7 +825,7 @@ void UI::DoApps()
     ImGui::Dummy(iScale.Vec2(0, 25));
 
     ImGui::PushFont(fontHeader);
-    ImGui::Text("Found Apps: %d", appsFoundCount);
+    ImGui::Text("Owned Apps: %d | Installed Apps: %d", appsFoundCount, appsInstalledCount);
     ImGui::PopFont();
 
     ImGui::Dummy(iScale.Vec2(0, 14));
@@ -811,15 +843,46 @@ void UI::DoApps()
     float listH = iScale.F(240);
     SourceColumn("Library Locations", kLibraryKind, rows, ImVec2(listW, listH), (int)iScale.F(560));
 
-    // Footer: Add and Remove (Remove acts on the selected location row).
+    ImGui::TextWrapped("Add any \"Oculus Apps\" folders containing \"Manifests\" and \"Software\" so your installed apps are found.\nOnly installed apps can be launched from Oculus Home portals or game consoles.");
+
     bool hasSelection = env.sourceKind == kLibraryKind && env.selectedSourceId >= 1 && env.selectedSourceId <= libraryPaths.size();
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(85));
+    ImGui::SetCursorPosY(avail.y - iScale.F(120));
+
+    // Live build status
+    if (appsScanRunning)
+    {
+        int done = appsScanProgress.done.load();
+        int total = appsScanProgress.total.load();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
+        if (total > 0)
+        {
+            std::string appFetchProgress = "Fetching apps...  " + std::to_string(done) + " / " + std::to_string(total);
+
+            CenteredText(appFetchProgress, true);
+        }
+        else
+        {
+            CenteredText("Reading the Oculus app cache...", true);
+        }
+        ImGui::PopStyleColor();
+
+    }
+    else if (!appsScanResultMsg.empty())
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, appsScanResultOk ? UIConsts.SuccessText : UIConsts.ErrorText);
+        CenteredTextWrapped(appsScanResultMsg.c_str(), true);
+        ImGui::PopStyleColor();
+    }
+
     float btnH = iScale.F(40);
     float btnW = iScale.F(180);
     float gap = iScale.F(14);
-    ImGui::SetCursorPosX((avail.x - (btnW * 2 + gap)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosX((avail.x - (btnW * 3 + gap * 2)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosY(avail.y - iScale.F(85));
 
+    ImGui::BeginDisabled(appsScanRunning);
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Add Location", ImVec2(btnW, btnH)))
     {
@@ -845,10 +908,11 @@ void UI::DoApps()
         }
     }
     ImGui::PopStyleColor(pushedStyles);
+    ImGui::EndDisabled();
 
     ImGui::SameLine(0, gap);
 
-    ImGui::BeginDisabled(!hasSelection);
+    ImGui::BeginDisabled(appsScanRunning || !hasSelection);
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Remove Selected", ImVec2(btnW, btnH)))
     {
@@ -860,8 +924,20 @@ void UI::DoApps()
     ImGui::PopStyleColor(pushedStyles);
     ImGui::EndDisabled();
 
+    ImGui::SameLine(0, gap);
+
+    // Manual rescan of the library locations into apps-library.json
+    ImGui::BeginDisabled(appsScanRunning);
+    pushedStyles = PushButtonStyleGrey();
+    if (ImGui::Button("Refresh Apps", ImVec2(btnW, btnH)))
+    {
+        RebuildAppsLibrary();
+    }
+    ImGui::PopStyleColor(pushedStyles);
+    ImGui::EndDisabled();
+
     pushedStyles = PushSubTextStyle();
-    CenteredText("Add an \"Oculus Apps\" folder that contains \"Manifests\" and \"Software\\StoreAssets\".", true);
+    CenteredText("Owned apps are detected automatically.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
@@ -874,7 +950,9 @@ void UI::DoAchievements()
     {
         if (appsFoundCount == 0)
         {
-            RebuildAppsLibrary();
+            applibraries::LibraryCounts counts = applibraries::CountApps();
+            appsFoundCount = counts.owned;
+            appsInstalledCount = counts.installed;
         }
 
         achievementList = fetchworlds::LoadAchievements();
@@ -943,13 +1021,24 @@ void UI::DoAchievements()
     ImGui::PopStyleColor(pushedStyles);
 }
 
-// Re-scan the default CoreData location and the user's added roots into store\apps-library.json
+// Re-scan the default CoreData location and the user's added libraries into store\apps\apps-library.json
 // The backend feeds this to the worlds_apps_and_achievements graphql request on next launch.
 void UI::RebuildAppsLibrary()
 {
-    int n = applibraries::Rebuild(libraryPaths);
-    appsFoundCount = (n < 0) ? 0 : n;
-    homeLogger.write() << "Apps Library rebuilt: " << appsFoundCount << " app(s)." << std::endl;
+    if (appsScanRunning) return;
+
+    appsScanProgress.total.store(0);
+    appsScanProgress.done.store(0);
+    appsScanResultMsg.clear();
+    appsScanResultOk = false;
+    appsScanRunning = true;
+
+    homeLogger.write() << "Apps Library: rebuild started." << std::endl;
+
+    // Returns the result which the UI loop picks up.
+    appsScanFuture = std::async(std::launch::async,
+        [paths = libraryPaths, this]()
+        { return applibraries::Rebuild(paths, &appsScanProgress); });
 }
 
 // Modern shell folder picker (IFileOpenDialog with FOS_PICKFOLDERS). Returns true and the chosen filesystem path if the user confirmed a folder.
@@ -965,7 +1054,7 @@ bool UI::BrowseForFolder(std::string& outPath)
         DWORD opts = 0;
         dlg->GetOptions(&opts);
         dlg->SetOptions(opts | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST);
-        dlg->SetTitle(L"Select an Oculus library folder (contains Manifests and Software\\StoreAssets)");
+        dlg->SetTitle(L"Select an Oculus library folder (contains Manifests and Software)");
 
         if (SUCCEEDED(dlg->Show(glfwGetWin32Window(window))))
         {
@@ -1120,10 +1209,11 @@ bool UI::NavItem(const char* label, const std::string& iconPath, PageType page)
             reloadWorldsOnOpen = true;
         }
 
-        // Re-scan the Oculus library on switch-to (rebuilds store\apps-library.json).
+        // Refresh the found total from apps-library.json on open
         if (page == PageType::AppsLibrary && env.currentPage != PageType::AppsLibrary)
         {
-            reloadAppsOnOpen = true;
+            appsScanResultMsg = "";
+            refreshAppCountOnOpen = true;
         }
 
         // Reload the saved achievement index on switch-to
@@ -1627,10 +1717,10 @@ void UI::DoPopups(Env& env)
         ImGui::EndPopup();
     }
 
-    // Fetch My Homes: download the user's remote worlds (homes) from graph.oculus.com into store\worlds
+    // Fetch Homes: download the user's remote worlds (homes) from graph.oculus.com into store\worlds
     ImGui::SetNextWindowPos(center, ImGuiCond_Always, pivot);
-    ImGui::SetNextWindowSize(iScale.Vec2(780, 620), ImGuiCond_Always);
-    if (ImGui::BeginPopupModal("Fetch My Homes", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+    ImGui::SetNextWindowSize(iScale.Vec2(850, homesFallbackToFields ? 610 : 245), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Fetch Homes", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
     {
         ImGui::Dummy(iScale.Vec2(0, 10));
         float headerTop = ImGui::GetCursorPosY();
@@ -1647,7 +1737,7 @@ void UI::DoPopups(Env& env)
         // Centered title on the same header row
         ImGui::SetCursorPos(ImVec2(0.0f, headerTop));
         ImGui::PushFont(fontHeader);
-        CenteredText("Fetch My Homes");
+        CenteredText("Fetch Homes");
         ImGui::PopFont();
 
         ImGui::Spacing();
@@ -1676,69 +1766,64 @@ void UI::DoPopups(Env& env)
 
         ImGui::BeginChild("AccountFields", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
         {
-            ImGui::TextWrapped("Download your homes from the Oculus backend while they still exist. Any found homes are saved locally and can load offline afterward. A couple details about your Meta (Oculus) account are required.");
+            ImGui::TextWrapped("Download your homes from the Oculus backend while they still exist. Any found homes are saved locally and can load offline afterward. A couple credentials about your Meta (Oculus) account will be used.");
             ImGui::Spacing();
-
-            ImGui::PushTextWrapPos(iScale.F(780));
-            ImGui::TextColored(UIConsts.SubText, "1. Open your Meta Horizon Link app."
-                "\n2. Press \"CTRL + SHIFT + I\" to show dev tools."
-                "\n3. Go under \"Network\" tab."
-                "\n4. In the link app, click on your profile page."
-                "\n5. In the captured network list, look for requests titled with \"graphql\"."
-                "\n6. Observe these requests and look for the fields \"access_token\" and \"userId\" in the \"Payload\" tab of each request."
-                "\n7. Copy these values and paste into the respective fields below and click \"Submit\".");
-            ImGui::Spacing();
-            ImGui::TextColored(UIConsts.SubText, "Any fetched homes that contain UGC content will download the assets automatically into your world folder.");
-            ImGui::TextColored(UIConsts.SubText, "Do not share your FRL token with anyone!");
-            ImGui::PopTextWrapPos();
-
-            ImGui::Spacing();
-
-            ImGui::BeginDisabled(fetchRunning);
-
-            ImGui::TextUnformatted("FRL Token");
-            ImGui::SetNextItemWidth(iScale.F(430));
-            pushedStyles = PushTextInputStyle();
-            ImGui::InputText("##fetchToken", &fetchToken, ImGuiInputTextFlags_Password);
-            ImGui::PopStyleColor(pushedStyles);
-
-            ImGui::TextUnformatted("User ID");
-            ImGui::SetNextItemWidth(iScale.F(430));
-            pushedStyles = PushTextInputStyle();
-            ImGui::InputText("##fetchUserId", &fetchUserId);
-            ImGui::PopStyleColor(pushedStyles);
-
-            ImGui::EndDisabled();
-
-            ImGui::Spacing();
-
-            if (fetchRunning)
+            ImGui::TextWrapped("Any fetched homes that contain UGC assets will have them downloaded into your world folder.");
+                
+            if (homesFallbackToFields)
             {
-                int done = fetchProgress.done.load();
-                int total = fetchProgress.total.load();
-                if (total > 0)
-                    ImGui::Text("Fetching homes...  %d / %d", done, total);
-                else
-                    ImGui::TextUnformatted("Contacting the backend...");
-            }
-            else if (!fetchResultMsg.empty())
-            {
+                ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.ErrorText);
+                ImGui::TextWrapped("Unable to fetch your homes automatically! Manually provide your account details using the steps below:");
+                ImGui::PopStyleColor();
+
                 ImGui::PushTextWrapPos(iScale.F(780));
-                ImGui::TextColored(fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText, "%s", fetchResultMsg.c_str());
+                ImGui::TextColored(UIConsts.SubText, "1. Open your Meta Horizon Link app."
+                    "\n2. Press \"CTRL + SHIFT + I\" to show dev tools."
+                    "\n3. Go under \"Network\" tab."
+                    "\n4. In the link app, click on your profile page."
+                    "\n5. In the captured network list, look for requests titled with \"graphql\"."
+                    "\n6. Observe these requests and look for the fields \"access_token\" and \"userId\" in the \"Payload\" tab of each request."
+                    "\n7. Copy these values and paste into the respective fields below and click \"Submit\".");
+                ImGui::Spacing();
+                ImGui::TextColored(UIConsts.SubText, "Do not share your FRL token with anyone!");
                 ImGui::PopTextWrapPos();
+
+                ImGui::Spacing();
+
+                ImGui::BeginDisabled(fetchRunning);
+
+                ImGui::TextUnformatted("FRL Token");
+                ImGui::SetNextItemWidth(iScale.F(430));
+                pushedStyles = PushTextInputStyle();
+                ImGui::InputText("##fetchToken", &fetchToken, ImGuiInputTextFlags_Password);
+                ImGui::PopStyleColor(pushedStyles);
+
+                ImGui::TextUnformatted("User ID");
+                ImGui::SetNextItemWidth(iScale.F(430));
+                pushedStyles = PushTextInputStyle();
+                ImGui::InputText("##fetchUserId", &fetchUserId);
+                ImGui::PopStyleColor(pushedStyles);
+
+                ImGui::EndDisabled();
             }
+        }
 
-            float windowHeight = ImGui::GetWindowSize().y;
-            float footerOffset = windowHeight - iScale.F(58);
+        ImGui::Spacing();
 
-            ImGui::SetCursorPosY(footerOffset);
+        float windowHeight = ImGui::GetWindowSize().y;
+        float footerOffset = windowHeight - iScale.F(85);
 
-            ImGui::Spacing();
-            ImGui::Separator();
-            ImGui::Spacing();
+        ImGui::SetCursorPosY(footerOffset);
 
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (homesFallbackToFields)
+        {
             ImGui::BeginDisabled(fetchRunning || fetchToken.empty() || fetchUserId.empty());
             pushedStyles = PushButtonStyleGrey();
+
             if (CenteredButton("Submit", iScale.Vec2(140, 34)))
             {
                 fetchProgress.total.store(0);
@@ -1746,17 +1831,70 @@ void UI::DoPopups(Env& env)
                 fetchResultMsg.clear();
                 fetchResultOk = false;
                 fetchRunning = true;
-                // Copy token/userId into the task (no cross-thread read of the UI strings). The worker touches only fetchProgress (atomics) and "this"
+
                 fetchFuture = std::async(std::launch::async,
                     [token = fetchToken, userId = fetchUserId, this]()
                     { return fetchworlds::FetchMyWorlds(token, userId, &fetchProgress); });
             }
-
-            ImGui::PopStyleColor(pushedStyles);
-            ImGui::EndDisabled();
         }
-        ImGui::EndChild();
+        else
+        {
+            ImGui::BeginDisabled(fetchRunning);
+            pushedStyles = PushButtonStyleGrey();
 
+            if (CenteredButton("Download Homes", iScale.Vec2(170, 34)))
+            {
+                fetchworlds::LocalCreds userCreds = fetchworlds::LoadLocalCreds();
+
+                if (userCreds.userId.empty() || userCreds.token.empty() || !userCreds.token.starts_with("FRL"))
+                {
+                    homesFallbackToFields = true;
+                }
+
+                fetchProgress.total.store(0);
+                fetchProgress.done.store(0);
+                fetchResultMsg.clear();
+                fetchResultOk = false;
+                fetchRunning = true;
+
+                fetchFuture = std::async(std::launch::async,
+                    [token = userCreds.token, userId = userCreds.userId, this]()
+                    { return fetchworlds::FetchMyWorlds(token, userId, &fetchProgress); });
+            }
+        }
+        ImGui::PopStyleColor(pushedStyles);
+        ImGui::EndDisabled();
+
+        if (fetchRunning)
+        {
+            int done = fetchProgress.done.load();
+            int total = fetchProgress.total.load();
+            if (total > 0)
+            {
+                std::string homeProgress = "Fetching homes...  " + std::to_string(done) + " / " + std::to_string(total);
+                CenteredText(homeProgress);
+            }
+            else
+            {
+                CenteredText("Contacting the backend...");
+            }
+        }
+        else if (!fetchResultMsg.empty())
+        {
+            ImGui::PushTextWrapPos(iScale.F(780));
+            ImGui::PushStyleColor(ImGuiCol_Text, fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText);
+            CenteredText(fetchResultMsg.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopTextWrapPos();
+        }
+        else
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.WarnText);
+            CenteredTextWrapped("Any existing homes already downloaded from your account will be overwritten!");
+            ImGui::PopStyleColor();
+        }
+
+        ImGui::EndChild();
         ImGui::PopStyleVar();
 
         ImGui::SameLine();
@@ -1765,7 +1903,7 @@ void UI::DoPopups(Env& env)
 
     // Fetch Achievements: download them from graphql request into store\achievements
     ImGui::SetNextWindowPos(center, ImGuiCond_Always, pivot);
-    ImGui::SetNextWindowSize(iScale.Vec2(780, 520), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(iScale.Vec2(850, (achievementFallbackToFields ? 540 : 245)), ImGuiCond_Always);
     if (ImGui::BeginPopupModal("Fetch Achievements", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
     {
         ImGui::Dummy(iScale.Vec2(0, 10));
@@ -1812,62 +1950,57 @@ void UI::DoPopups(Env& env)
 
         ImGui::BeginChild("AccountFields", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
         {
-            ImGui::TextWrapped("Download your app achievements from the Oculus backend while they still exist. Achievements are saved locally and show up in the \"App Items\" category. One credential from your Meta (Oculus) account is required.");
+            ImGui::TextWrapped("Download your app achievements from the Oculus backend while they still exist. Achievements are saved locally and show up in the \"App Items\" category. One credential from your Meta (Oculus) account will be used.");
             ImGui::Spacing();
 
-            ImGui::PushTextWrapPos(iScale.F(780));
-            ImGui::TextColored(UIConsts.SubText, "1. Open your Meta Horizon Link app."
-                "\n2. Press \"CTRL + SHIFT + I\" to show dev tools."
-                "\n3. Go under \"Network\" tab."
-                "\n4. In the link app, click on your profile page."
-                "\n5. In the captured network list, look for requests titled with \"graphql\"."
-                "\n6. Observe these requests and look for the field \"access_token\" in the \"Payload\" tab of each request."
-                "\n7. Copy the token and paste into the field below and click \"Submit\".");
-            ImGui::Spacing();
-            ImGui::TextColored(UIConsts.SubText, "Do not share your FRL token with anyone!");
-            ImGui::PopTextWrapPos();
-
-            ImGui::Spacing();
-
-            ImGui::BeginDisabled(fetchRunning);
-
-            ImGui::TextUnformatted("FRL Token");
-            ImGui::SetNextItemWidth(iScale.F(430));
-            pushedStyles = PushTextInputStyle();
-            ImGui::InputText("##fetchToken", &fetchToken, ImGuiInputTextFlags_Password);
-            ImGui::PopStyleColor(pushedStyles);
-
-            ImGui::EndDisabled();
-
-            ImGui::Spacing();
-
-            if (fetchRunning)
+            if (achievementFallbackToFields)
             {
-                int done = fetchProgress.done.load();
-                int total = fetchProgress.total.load();
-                if (total > 0)
-                    ImGui::Text("Fetching achievements...  %d / %d", done, total);
-                else
-                    ImGui::TextUnformatted("Contacting the backend...");
-            }
-            else if (!fetchResultMsg.empty())
-            {
+                ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.ErrorText);
+                ImGui::TextWrapped("Unable to fetch your achievements automatically! Manually provide your account token using the steps below:");
+                ImGui::PopStyleColor();
+
                 ImGui::PushTextWrapPos(iScale.F(780));
-                ImGui::TextColored(fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText, "%s", fetchResultMsg.c_str());
+                ImGui::TextColored(UIConsts.SubText, "1. Open your Meta Horizon Link app."
+                    "\n2. Press \"CTRL + SHIFT + I\" to show dev tools."
+                    "\n3. Go under \"Network\" tab."
+                    "\n4. In the link app, click on your profile page."
+                    "\n5. In the captured network list, look for requests titled with \"graphql\"."
+                    "\n6. Observe these requests and look for the field \"access_token\" in the \"Payload\" tab of each request."
+                    "\n7. Copy the token and paste into the field below and click \"Submit\".");
+                ImGui::Spacing();
+                ImGui::TextColored(UIConsts.SubText, "Do not share your FRL token with anyone!");
                 ImGui::PopTextWrapPos();
+
+                ImGui::Spacing();
+
+                ImGui::BeginDisabled(fetchRunning);
+
+                ImGui::TextUnformatted("FRL Token");
+                ImGui::SetNextItemWidth(iScale.F(430));
+                pushedStyles = PushTextInputStyle();
+                ImGui::InputText("##fetchToken", &fetchToken, ImGuiInputTextFlags_Password);
+                ImGui::PopStyleColor(pushedStyles);
+
+                ImGui::EndDisabled();
             }
+        }
 
-            float windowHeight = ImGui::GetWindowSize().y;
-            float footerOffset = windowHeight - iScale.F(58);
+        ImGui::Spacing();
 
-            ImGui::SetCursorPosY(footerOffset);
+        float windowHeight = ImGui::GetWindowSize().y;
+        float footerOffset = windowHeight - iScale.F(58 + ((fetchRunning || !fetchResultMsg.empty()) ? 25 : 0));
 
-            ImGui::Spacing();
-            ImGui::Separator();
-            ImGui::Spacing();
+        ImGui::SetCursorPosY(footerOffset);
 
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (achievementFallbackToFields)
+        {
             ImGui::BeginDisabled(fetchRunning || fetchToken.empty());
             pushedStyles = PushButtonStyleGrey();
+
             if (CenteredButton("Submit", iScale.Vec2(140, 34)))
             {
                 fetchProgress.total.store(0);
@@ -1880,12 +2013,59 @@ void UI::DoPopups(Env& env)
                     [token = fetchToken, this]()
                     { return fetchworlds::FetchMyAchievements(token, &fetchProgress); });
             }
-
-            ImGui::PopStyleColor(pushedStyles);
-            ImGui::EndDisabled();
         }
-        ImGui::EndChild();
+        else
+        {
+            ImGui::BeginDisabled(fetchRunning);
+            pushedStyles = PushButtonStyleGrey();
 
+            if (CenteredButton("Download Achievements", iScale.Vec2(220, 34)))
+            {
+                fetchworlds::LocalCreds userCreds = fetchworlds::LoadLocalCreds();
+
+                if (userCreds.token.empty() || !userCreds.token.starts_with("FRL"))
+                {
+                    achievementFallbackToFields = true;
+                }
+
+                fetchProgress.total.store(0);
+                fetchProgress.done.store(0);
+                fetchResultMsg.clear();
+                fetchResultOk = false;
+                fetchRunning = true;
+
+                fetchFuture = std::async(std::launch::async,
+                    [token = userCreds.token, this]()
+                    { return fetchworlds::FetchMyAchievements(token, &fetchProgress); });
+            }
+        }
+        ImGui::PopStyleColor(pushedStyles);
+        ImGui::EndDisabled();
+
+        if (fetchRunning)
+        {
+            int done = fetchProgress.done.load();
+            int total = fetchProgress.total.load();
+            if (total > 0)
+            {
+                std::string achievementProgress = "Fetching achievements...  " + std::to_string(done) + " / " + std::to_string(total);
+                CenteredText(achievementProgress);
+            }
+            else
+            {
+                CenteredText("Contacting the backend...");
+            }
+        }
+        else if (!fetchResultMsg.empty())
+        {
+            ImGui::PushTextWrapPos(iScale.F(780));
+            ImGui::PushStyleColor(ImGuiCol_Text, fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText);
+            CenteredText(fetchResultMsg.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopTextWrapPos();
+        }
+
+        ImGui::EndChild();
         ImGui::PopStyleVar();
 
         ImGui::SameLine();

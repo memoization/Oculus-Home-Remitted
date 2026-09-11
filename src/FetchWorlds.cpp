@@ -1,3 +1,6 @@
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include "fetchworlds.h"
 #include "imageconv.h"
 #include "Prefs.h"
@@ -11,6 +14,9 @@
 #include <sstream>
 #include <set>
 #include <vector>
+#include <cctype>
+#include <cstring>
+#include <cstdio>
 
 namespace fetchworlds
 {
@@ -69,7 +75,7 @@ namespace fetchworlds
     }
 
     // POST a persisted-query to graph.oculus.com. Returns the parsed top-level JSON and sets err on any failure
-    static json11::Json GraphQL(const std::string& token, const std::string& docId, const std::string& variablesJson, std::string& err)
+    json11::Json GraphQL(const std::string& token, const std::string& docId, const std::string& variablesJson, std::string& err)
     {
         cpr::Response r = cpr::Post(
             cpr::Url{ kGraphUrl },
@@ -102,6 +108,115 @@ namespace fetchworlds
             return json11::Json();
         }
         return j;
+    }
+
+    // ---- Local Oculus credential cache ----
+    // The valid user's tokens and id are cached by the Oculus client in %APPDATA%\Oculus\sessions\_oaf\data.sqlite.
+    // A string-scalar field in the blob is <u32 nameLen><name>\x01\x01<u64 valLen><value>. Return the value for `name`, or "" when it is not present as a string scalar.
+    static std::string OafBlobField(const unsigned char* blob, size_t len, const char* name)
+    {
+        size_t nlen = std::strlen(name);
+        std::string needle;
+        needle.push_back((char)(nlen & 0xFF));
+        needle.push_back((char)((nlen >> 8) & 0xFF));
+        needle.push_back((char)((nlen >> 16) & 0xFF));
+        needle.push_back((char)((nlen >> 24) & 0xFF));
+        needle.append(name, nlen);
+        needle.push_back(0x01);
+        needle.push_back(0x01);
+
+        for (size_t i = 0; i + needle.size() + 8 <= len; ++i)
+        {
+            if (std::memcmp(blob + i, needle.data(), needle.size()) != 0) continue;
+
+            size_t p = i + needle.size();
+            unsigned long long vlen = 0;
+            for (int k = 0; k < 8; ++k)
+            {
+                vlen |= (unsigned long long)blob[p + k] << (8 * k);
+            }
+
+            p += 8;
+            if (vlen == 0 || vlen > 8192 || p + vlen > len) return std::string();
+
+            return std::string((const char*)blob + p, (size_t)vlen); // values are UTF-8
+        }
+        return std::string();
+    }
+
+    LocalCreds LoadLocalCreds()
+    {
+        LocalCreds creds;
+
+        wchar_t appdata[MAX_PATH];
+        DWORD n = GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+        if (n == 0 || n >= MAX_PATH) return creds;
+
+        std::wstring path = std::wstring(appdata) + L"\\Oculus\\sessions\\_oaf\\data.sqlite";
+        std::error_code ec;
+        if (!fs::is_regular_file(path, ec)) return creds;
+
+        HMODULE h = LoadLibraryW(L"winsqlite3.dll");
+        if (!h) return creds;
+
+        struct sqlite3; struct sqlite3_stmt;
+        auto open_v2   = (int(*)(const char*, sqlite3**, int, const char*))GetProcAddress(h, "sqlite3_open_v2");
+        auto prepare   = (int(*)(sqlite3*, const char*, int, sqlite3_stmt**, const char**))GetProcAddress(h, "sqlite3_prepare_v2");
+        auto step      = (int(*)(sqlite3_stmt*))GetProcAddress(h, "sqlite3_step");
+        auto col_text  = (const unsigned char*(*)(sqlite3_stmt*, int))GetProcAddress(h, "sqlite3_column_text");
+        auto col_blob  = (const void*(*)(sqlite3_stmt*, int))GetProcAddress(h, "sqlite3_column_blob");
+        auto col_bytes = (int(*)(sqlite3_stmt*, int))GetProcAddress(h, "sqlite3_column_bytes");
+        auto finalize  = (int(*)(sqlite3_stmt*))GetProcAddress(h, "sqlite3_finalize");
+        auto close_db  = (int(*)(sqlite3*))GetProcAddress(h, "sqlite3_close");
+
+        if (open_v2 && prepare && step && col_text && col_blob && col_bytes && finalize && close_db)
+        {
+            // file: URI with immutable=1 so there is no locking
+            std::string uri = "file:///";
+            for (char c : prefs::Narrow(path))
+            {
+                unsigned char u = (unsigned char)c;
+                if (c == '\\' || c == '/') uri += '/';
+                else if (std::isalnum(u) || c == '.' || c == '-' || c == '_' || c == ':') uri += c;
+                else { char b[4]; std::snprintf(b, sizeof b, "%%%02X", u); uri += b; }
+            }
+            uri += "?immutable=1";
+
+            const int SQLITE_OK = 0, SQLITE_ROW = 100;
+            const int OPEN_READONLY = 0x00000001, OPEN_URI = 0x00000040;
+            sqlite3* db = nullptr;
+            if (open_v2(uri.c_str(), &db, OPEN_READONLY | OPEN_URI, nullptr) == SQLITE_OK && db)
+            {
+                sqlite3_stmt* st = nullptr;
+                // last_valid_auth_token is the one graph.oculus.com normally accepts, the frl and meta variants are rejected there. User.id is the numeric account id.
+                const char* sql = "SELECT typename,value FROM Objects WHERE typename IN ('OafOfflineData','User')";
+
+                if (prepare(db, sql, -1, &st, nullptr) == SQLITE_OK)
+                {
+                    while (step(st) == SQLITE_ROW)
+                    {
+                        const unsigned char* tn = col_text(st, 0);
+                        const unsigned char* blob = (const unsigned char*)col_blob(st, 1);
+                        int blen = col_bytes(st, 1);
+
+                        if (!tn || !blob || blen <= 0) continue;
+
+                        std::string tname((const char*)tn);
+                        if (tname == "OafOfflineData" && creds.token.empty())
+                            creds.token = OafBlobField(blob, (size_t)blen, "last_valid_auth_token");
+                        else if (tname == "User" && creds.userId.empty())
+                            creds.userId = OafBlobField(blob, (size_t)blen, "id");
+                    }
+                    finalize(st);
+                }
+                close_db(db);
+            }
+        }
+
+        FreeLibrary(h);
+
+        homeLogger.write() << "FetchWorlds: local creds " << (creds.token.empty() ? "not found" : "token loaded") << (creds.userId.empty() ? "" : ", userId present") << std::endl;
+        return creds;
     }
 
     static std::string Download(const std::string& url)
@@ -344,7 +459,7 @@ namespace fetchworlds
     static std::vector<std::string> ReadLibraryAppIds()
     {
         std::vector<std::string> ids;
-        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "apps-library.json");
+        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "apps" / "apps-library.json");
         if (txt.empty()) return ids;
 
         std::string perr;
