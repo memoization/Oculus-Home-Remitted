@@ -13,6 +13,7 @@
 #include "json11.hpp"
 #include <cpr/cpr.h>
 #include "HomeLogger.h"
+#include "FetchWorlds.h"
 
 namespace fs = std::filesystem;
 
@@ -109,7 +110,7 @@ namespace applibraries {
         std::error_code ec;
         if (!fs::is_regular_file(path, ec))
         {
-            if (errorOut) *errorOut = "Oculus app cache not found. Open Meta Link at least once so it can build the cache, then try again.";
+            if (errorOut) *errorOut = "Oculus app cache not found. Open Meta Link at least once so it can build the cache then try again.";
             return out;
         }
 
@@ -311,6 +312,69 @@ namespace applibraries {
         return f.good();
     }
 
+    // The two graph.oculus.com persisted queries for an app's store art. Both need a valid access_token.
+    static const char* kDocAppCover       = "2562966287070020"; // portrait cover, response node.images is a single {uri}
+    static const char* kDocAppScreenshots = "2841468849260027"; // screenshots, response node.images is a list of {uri}
+
+    // oculuscdn urls for an app's portrait cover and first two screenshots. Empty fields on any failure should fall back to any existing covers.
+    struct AppArt
+    {
+        std::string portraitUrl;
+        std::string shot0Url;
+        std::string shot1Url;
+    };
+
+    // Relative store path of a downloaded app image named "<id><suffix>.<ext>", or "" when none is cached.
+    static std::string FindCachedImage(const std::vector<std::string>& files, const std::string& id, const std::string& suffix)
+    {
+        std::string prefix = id + suffix + ".";
+        for (const auto& name : files)
+        {
+            if (name.size() > prefix.size() && name.compare(0, prefix.size(), prefix) == 0)
+                return "apps/images/" + name;
+        }
+        return std::string();
+    }
+
+    // Query the live backend for an app's portrait cover and screenshots.
+    // token is the user's cached access_token, appId is the numeric id.
+    // wantCover and wantShots permit each request so cached art is not fetched again. Returns empty urls when the token is absent or a query fails.
+    static AppArt FetchAppArt(const std::string& token, const std::string& appId, bool wantCover, bool wantShots)
+    {
+        AppArt art;
+        if (token.empty() || appId.empty()) return art;
+
+        std::string err;
+
+        if (wantCover)
+        {
+            std::string coverVars = json11::Json(json11::Json::object{ { "size", "252x360" }, { "app_id", appId } }).dump();
+            json11::Json cover = fetchworlds::GraphQL(token, kDocAppCover, coverVars, err);
+            if (err.empty())
+            {
+                const json11::Json& uri = cover["data"]["node"]["images"]["uri"];
+                if (uri.is_string()) art.portraitUrl = uri.string_value();
+            }
+        }
+
+        if (wantShots)
+        {
+            err.clear();
+            std::string shotVars = json11::Json(json11::Json::object{ { "size", "1280x720" }, { "app_id", appId } }).dump();
+            json11::Json shots = fetchworlds::GraphQL(token, kDocAppScreenshots, shotVars, err);
+            if (err.empty())
+            {
+                const json11::Json& imgs = shots["data"]["node"]["images"];
+                if (imgs.is_array())
+                {
+                    if (imgs.array_items().size() >= 1) art.shot0Url = imgs[0]["uri"].string_value();
+                    if (imgs.array_items().size() >= 2) art.shot1Url = imgs[1]["uri"].string_value();
+                }
+            }
+        }
+        return art;
+    }
+
     std::vector<AppEntry> Scan(const std::vector<std::string>& userRoots, Progress* progress, int* imageFailures, std::string* oafError)
     {
         int failures = 0; // covers with a uri that failed to download
@@ -339,10 +403,24 @@ namespace applibraries {
         std::map<std::string, OafApp> oafApps = LoadOafApps(&oafErr);
         if (oafError) *oafError = oafErr;
 
+        // Read the user's cached access_token once. When present, each app is enriched with real portrait and screenshot art from the live backend, otherwise the local covers are reused as before. Best-effort, a dead backend or no login just keeps the fallback.
+        fetchworlds::LocalCreds creds = fetchworlds::LoadLocalCreds();
+
         // Cover images download into store\apps\images and the stored field is the store-relative path. The backend resolves it to an absolute file:// at serve time so the library remains portable.
         fs::path imagesDir = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"images";
         std::error_code ecdir;
         fs::create_directories(imagesDir, ecdir);
+
+        // Snapshot what art is already downloaded so an app whose cover and screenshots are cached is not requested again from the backend at all.
+        std::vector<std::string> cachedImageFiles;
+        {
+            std::error_code ec;
+            for (fs::directory_iterator it(imagesDir, ec), end; it != end; it.increment(ec))
+            {
+                if (ec) break;
+                if (it->is_regular_file(ec)) cachedImageFiles.push_back(it->path().filename().string());
+            }
+        }
 
         const long long kUnknownAcquire = 1451606400LL;
 
@@ -384,17 +462,55 @@ namespace applibraries {
                 }
             }
 
+            // Real portrait cover and screenshots when a token is available
+            // reuse the square and landscape covers as fallback.
+            std::string portraitUri = squareUri;
+            std::string shot0Uri = landscapeUri;
+            std::string shot1Uri = landscapeUri;
+
+            std::string cachedPortrait = FindCachedImage(cachedImageFiles, id, "_portrait");
+            std::string cachedShot0    = FindCachedImage(cachedImageFiles, id, "_shot0");
+            std::string cachedShot1    = FindCachedImage(cachedImageFiles, id, "_shot1");
+            if (!cachedPortrait.empty()) portraitUri = cachedPortrait;
+            if (!cachedShot0.empty())    shot0Uri = cachedShot0;
+            if (!cachedShot1.empty())    shot1Uri = cachedShot1;
+
+            bool wantCover = cachedPortrait.empty();
+            bool wantShots = cachedShot0.empty() || cachedShot1.empty();
+            if (!creds.token.empty() && (wantCover || wantShots))
+            {
+                AppArt art = FetchAppArt(creds.token, id, wantCover, wantShots);
+                if (wantCover && !art.portraitUrl.empty())
+                {
+                    std::string fn = id + "_portrait" + ImageExtFromUrl(art.portraitUrl);
+                    if (DownloadImage(art.portraitUrl, imagesDir / fn)) portraitUri = "apps/images/" + fn;
+                    else ++failures;
+                }
+                if (wantShots && !art.shot0Url.empty())
+                {
+                    std::string fn = id + "_shot0" + ImageExtFromUrl(art.shot0Url);
+                    if (DownloadImage(art.shot0Url, imagesDir / fn)) shot0Uri = "apps/images/" + fn;
+                    else ++failures;
+                }
+                if (wantShots && !art.shot1Url.empty())
+                {
+                    std::string fn = id + "_shot1" + ImageExtFromUrl(art.shot1Url);
+                    if (DownloadImage(art.shot1Url, imagesDir / fn)) shot1Uri = "apps/images/" + fn;
+                    else ++failures;
+                }
+            }
+
             AppEntry entry;
             entry.id = id;
             entry.canonical = base;
             entry.title = !oaf.displayName.empty() ? oaf.displayName : (!base.empty() ? Prettify(base) : id);
             entry.acquiredTime = kUnknownAcquire; // an installed manifest overwrites this below
-            entry.squareUri = squareUri;      // cover_square_image
-            entry.portraitUri = squareUri;    // cover_square_image
+            entry.squareUri = squareUri; // cover_square_image
+            entry.portraitUri = portraitUri;// portrait cover, square as fallback
             entry.landscapeUri = landscapeUri;// cover_landscape_image
-            entry.iconUri = squareUri;        // cover_square_image
-            entry.screenshot0Uri = landscapeUri; // cover_landscape_image
-            entry.screenshot1Uri = landscapeUri; // cover_landscape_image
+            entry.iconUri = squareUri; // cover_square_image
+            entry.screenshot0Uri = shot0Uri; // 1280x720 screenshot, landscape as fallback
+            entry.screenshot1Uri = shot1Uri; // 1280x720 screenshot, landscape as fallback
             byId[id] = entry;
 
             if (progress) progress->done.fetch_add(1);

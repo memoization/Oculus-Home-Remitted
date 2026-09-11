@@ -1704,7 +1704,7 @@ namespace home2hook {
     {
         if (appId.empty()) return "";
 
-        std::string landscape, square, icon;
+        std::string landscape, square, icon, screenshot0, screenshot1;
         if (appLibraryLoaded)
         {
             for (const auto& app : appLibrary["apps"].array_items())
@@ -1714,6 +1714,8 @@ namespace home2hook {
                     landscape = app["LandscapeURI"].string_value();
                     square = app["SquareURI"].string_value();
                     icon = app["IconURI"].string_value();
+                    screenshot0 = app["Screenshot0URI"].string_value();
+                    screenshot1 = app["Screenshot1URI"].string_value();
                     break;
                 }
             }
@@ -1723,12 +1725,18 @@ namespace home2hook {
         if (docId == kDocAppScreenshots)
         {
             // The screenshots query selects images as a list
-            std::string uri = !landscape.empty() ? landscape : square;
+            std::string uri0 = !screenshot0.empty() ? screenshot0 : landscape;
+            std::string uri1 = !screenshot1.empty() ? screenshot1 : landscape;
             json11::Json::array arr;
             
-            if (!uri.empty())
+            if (!uri0.empty())
             {
-                arr.push_back(json11::Json::object{ {"uri", uri} });
+                arr.push_back(json11::Json::object{ {"uri", uri0} });
+            }
+            
+            if (!uri1.empty())
+            {
+                arr.push_back(json11::Json::object{ {"uri", uri1} });
             }
             images = json11::Json(arr);
         }
