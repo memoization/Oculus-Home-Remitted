@@ -195,12 +195,14 @@ struct UI
     std::vector<std::string> achievementRowLabels; // "App name  |  Achievement title" per entry
     bool reloadAchievementsOnOpen = true;
 
-    // "Fetch My Homes": download the user's remote worlds from graph.oculus.com into store\worlds.
+    // Fetch details for the user's remote worlds/achivements from graph.oculus.com.
     std::string fetchToken;
     std::string fetchUserId;
     std::string fetchResultMsg;// shown in the popup after completion
     bool fetchResultOk = false;
     bool fetchRunning = false;
+    bool homesFallbackToFields = false;
+    bool achievementFallbackToFields = false;
     fetchworlds::Progress fetchProgress;// written by the worker, read by the UI
     std::future<fetchworlds::Result> fetchFuture;
 
