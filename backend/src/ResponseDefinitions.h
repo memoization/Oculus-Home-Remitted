@@ -48,6 +48,8 @@ inline constexpr const char* DefaultWorld     = "3313418545373770";
 
 // E. Item definitions / inventory / apps / UGC endorse
 inline constexpr const char* ItemDefs         = "2340400929361818";
+inline constexpr const char* AppScreenshots   = "2841468849260027";
+inline constexpr const char* AppCover         = "2562966287070020";
 inline constexpr const char* Inventory        = "3098640583495832";
 inline constexpr const char* WorldsApps       = "3420023344706951";
 inline constexpr const char* WorldsGuestApps  = "2426930340689946";
@@ -74,7 +76,7 @@ struct DocIdInfo
     std::string_view purpose; // one-line human-readable purpose
 };
 
-inline constexpr std::array<DocIdInfo, 40> kDocRegistry = {{
+inline constexpr std::array<DocIdInfo, 42> kDocRegistry = {{
     // A. Session / login / config
     { doc::WorldLogin,       "world_login",            "startup config/login: server_time, limits, default material defs, user_options, nux (failure blocks startup)" },
     { doc::SetUserOptions,   "set_user_options",       "persist client prefs (user_options = base64 JSON)" },
@@ -106,6 +108,8 @@ inline constexpr std::array<DocIdInfo, 40> kDocRegistry = {{
     { doc::DefaultWorld,     "default_world",          "read the user's default world id" },
     // E. Item definitions / inventory / apps / UGC endorse
     { doc::ItemDefs,         "item_defs",              "item definitions: def to asset_key/bounds/flags, UGC adds hash_from_client and CDN uris" },
+    { doc::AppScreenshots,   "app_screenshots",        "Application node screenshots by app_id + size (images is a list of {uri})" },
+    { doc::AppCover,         "app_cover",              "Application node cover image by app_id + size (images is a single {uri}), the portal app-destination icon" },
     { doc::Inventory,        "inventory",              "my_world_data.owned_items[] (owned item defs with placed-UGC ownership ids)" },
     { doc::WorldsApps,       "worlds_apps_and_achievements","app and achievement metadata for placed app tiles" },
     { doc::WorldsGuestApps,  "worlds_guest_apps_and_achievements","guest variant of app/achievement metadata" },

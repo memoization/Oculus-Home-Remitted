@@ -33,7 +33,8 @@ namespace home2hook {
         SetUserOptions,  // 2659373614156793 (base64-decode, persist to prefs, then ack)
         UpsertPortalData,// 2421017851295011 (persist a portal's destination into the owning world's config.json portals array)
         DeletePortalData,// 2495919857138744 (remove a portal's destination from the owning world's config.json portals array)
-        NodeById         // 2305014842947625 (node fetch, example: for the world objects returns the WorldObjectInstance with its portal_data)
+        NodeById,        // 2305014842947625 (node fetch, example: for the world objects returns the WorldObjectInstance with its portal_data)
+        AppImages        // 2841468849260027 / 2562966287070020 (Application node images by app_id, the art a portal shows for an app destination)
     };
 
     const char* ActionName(ResponseAction action);
@@ -54,6 +55,12 @@ namespace home2hook {
         // OAF /library/fetchall reply: the user's Oculus app library, built from apps-library.json, so the in-Home inventory App Library lists a user's games OafRewrite calls this for that route.
         // btw: seq/ts are this exchange's OafIpc sequenceId/timestamp.
         std::string BuildOafLibraryReply(const std::string& seq, const std::string& ts) const;
+
+        // Resolve a launchable app to a full exe path and its launch parameters. Returns false when the app or its launch info is absent.
+        bool FindAppLaunch(const std::string& key, std::wstring& exePath, std::string& params) const;
+
+        // OAF PACKAGE_INFO push for the offline App Library. Built from apps-library.json. Returns "" when the library is empty. ts is this exchange's OafIpc timestamp.
+        std::string BuildPackageInfoPush(const std::string& ts) const;
 
         // REST uploads (TlsServer routes non-graphql multipart POSTs here): write the raw image bytes into store\worlds\world_<worldId>\screenshot.jpg "isScreenshot" or cubemap.jpg atomically
         bool WriteWorldMedia(const std::string& worldId, bool isScreenshot, const std::string& bytes);
@@ -161,6 +168,9 @@ namespace home2hook {
         // One OAF LIBRARY_UPDATE entitlement node (full ~60-field schema, per-app fields from libApp, rest constant defaults captured from a live library reply).
         json11::Json buildOafEntitlement(const json11::Json& libApp) const;
 
+        // One PACKAGE_INFO package record (installed app entry with its nested libraryItem) for an apps-library.json app.
+        json11::Json buildPackageInfoEntry(const json11::Json& app) const;
+
         // Requested app ids from the variables. base64Encoded handles the guest app_ids_encoded blob,else parses the non-guest app_ids_json string. Tolerant of the wire's non-standard JSON (unquoted keys / single quotes) by scanning for all-digit quoted tokens.
         static std::vector<std::string> parseRequestedAppIds(const std::string& variablesJson, bool base64Encoded);
         std::string buildCanned(const std::string& docId, const std::string& clientMutationId, const std::string& worldNodeId) const;
@@ -189,6 +199,7 @@ namespace home2hook {
         std::string buildUpsertPortalData(const std::string& clientMutationId, const std::string& objectInstance, const std::string& destinationWorld, const std::string& destinationApplication) const;
         std::string buildDeletePortalData(const std::string& objectInstance) const;
         std::string buildNodeById(const std::string& nodeId) const;
+        std::string buildAppImages(const std::string& docId, const std::string& appId) const;
         std::string buildWorldLikeToggle(const std::string& clientMutationId, const std::string& worldId) const;
         std::string buildWorldDelete(const std::string& clientMutationId, const std::string& worldId) const;
         std::string buildWorldSetLockedEdit(const std::string& clientMutationId, const std::string& worldId, bool newLockedEdit) const;
