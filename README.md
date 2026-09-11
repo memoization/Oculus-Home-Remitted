@@ -40,6 +40,5 @@ This tool only supports a specific version of Oculus Home. It can be downloaded 
 # Caveats
 The following features of Oculus Home are not supported by the tool at this time. Offline support for some may drop later..
 - Editing and customizing avatars.
-- Launching Oculus app titles from the game cartridge feature.
 - Uploading new UGC content (at least a UX-friendly way from in VR). You can possibly add new UGC by manually configuring your home's `config.json` and adding entries to its `ugc-hashes.json`.
 - Any multiplayer features are out of scope of this project and unlikely to ever be supported in this repository. Reversing the *VertsClient.dll* via thorough capture of verts traffic in a live multiplayer session would be needed as a rough start. There are capture tools provided in the repository for those who are adventurous.
