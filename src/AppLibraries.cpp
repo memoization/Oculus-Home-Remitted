@@ -303,8 +303,24 @@ namespace applibraries {
         if (fs::is_regular_file(dest, ec)) return true;
         if (url.empty()) return false;
 
-        cpr::Response r = cpr::Get(cpr::Url{ url }, cpr::Timeout{ 15000 });
-        if (r.status_code != 200 || r.text.empty()) return false;
+        std::string downloadUrl = url;
+
+        constexpr std::string_view badHost = "scontent-atl3-3.oculuscdn.com"; // This endpoint tends to NXDOMAIN fail
+        constexpr std::string_view replacementHost = "scontent-atl3-1.oculuscdn.com";
+
+        if (const size_t pos = downloadUrl.find(badHost); pos != std::string::npos)
+        {
+            downloadUrl.replace(pos, badHost.length(), replacementHost);
+        }
+
+        homeLogger.write() << "AppLibraries: Getting image from url: " << downloadUrl.c_str() << std::endl;
+
+        cpr::Response r = cpr::Get(cpr::Url{ downloadUrl }, cpr::Timeout{ 15000 });
+        if (r.status_code != 200 || r.text.empty())
+        {
+            homeLogger.write() << "AppLibraries: Failed to download image from url: " << downloadUrl.c_str() << " | err: " << r.error.message.c_str() << std::endl;
+            return false;
+        }
 
         std::ofstream f(dest, std::ios::binary);
         if (!f) return false;
@@ -654,9 +670,13 @@ namespace applibraries {
         // Surface any errors.
         // A missing oaf cache branches since it means no apps at all compared to failed cover downloads.
         if (!oafError.empty())
+        {
             res.error = oafError;
+        }
         else if (failures > 0)
-            res.error = std::to_string(failures) + " app image(s) could not be downloaded. Launch Meta Link to refresh the app art, then Refresh Apps again.";
+        {
+            res.error = std::to_string(failures) + " app image(s) could not be downloaded. Open Meta Link and view your apps library then try \"Refresh Apps\" again.";
+        }
 
         return res;
     }

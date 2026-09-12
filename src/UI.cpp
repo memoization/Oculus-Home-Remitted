@@ -98,10 +98,26 @@ void CenteredText(const std::string& text, bool adjustToPadding = false)
 
 void CenteredTextWrapped(const std::string& text, bool adjustToPadding = false)
 {
-    auto windowWidth = ImGui::GetWindowSize().x;
-    auto textWidth = ImGui::CalcTextSize(text.c_str(), nullptr, false, windowWidth).x;
-    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f - (adjustToPadding ? UIConsts.PageContentPadding : 0));
-    ImGui::TextWrapped(text.c_str());
+    const float windowWidth = ImGui::GetWindowSize().x;
+    const float padding = adjustToPadding ? UIConsts.PageContentPadding : 0.0f;
+    const float availableWidth = windowWidth - padding * 2.0f;
+
+    const float textWidth = ImGui::CalcTextSize(text.c_str()).x;
+
+    if (textWidth <= availableWidth)
+    {
+        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f - padding);
+
+        ImGui::Text(text.c_str());
+    }
+    else
+    {
+        ImGui::SetCursorPosX(padding);
+
+        ImGui::PushTextWrapPos(padding + availableWidth);
+        ImGui::TextWrapped("%s", text.c_str());
+        ImGui::PopTextWrapPos();
+    }
 }
 
 bool CenteredButton(const std::string& text, ImVec2 size = iScale.Vec2(0, 0))
@@ -596,7 +612,7 @@ void UI::DoWorlds()
         }
 
         // Footer: Fetch Homes (left) and Set Default (right), centered as a pair
-        ImGui::SetCursorPosY(avail.y - iScale.F(66));
+        ImGui::SetCursorPosY(avail.y - iScale.F(75));
         float btnH = iScale.F(40);
         float fetchW = iScale.F(180);
         float setW = iScale.F(160);
@@ -843,11 +859,12 @@ void UI::DoApps()
     float listH = iScale.F(240);
     SourceColumn("Library Locations", kLibraryKind, rows, ImVec2(listW, listH), (int)iScale.F(560));
 
+    ImGui::SetCursorPosY(avail.y - iScale.F(180));
     ImGui::TextWrapped("Add any \"Oculus Apps\" folders containing \"Manifests\" and \"Software\" so your installed apps are found.\nOnly installed apps can be launched from Oculus Home portals or game consoles.");
 
     bool hasSelection = env.sourceKind == kLibraryKind && env.selectedSourceId >= 1 && env.selectedSourceId <= libraryPaths.size();
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(120));
+    ImGui::SetCursorPosY(avail.y - iScale.F(130));
 
     // Live build status
     if (appsScanRunning)
@@ -880,7 +897,7 @@ void UI::DoApps()
     float btnW = iScale.F(180);
     float gap = iScale.F(14);
     ImGui::SetCursorPosX((avail.x - (btnW * 3 + gap * 2)) / 2 - UIConsts.PageContentPadding);
-    ImGui::SetCursorPosY(avail.y - iScale.F(85));
+    ImGui::SetCursorPosY(avail.y - iScale.F(75));
 
     ImGui::BeginDisabled(appsScanRunning);
     pushedStyles = PushButtonStyleGrey();
@@ -937,7 +954,7 @@ void UI::DoApps()
     ImGui::EndDisabled();
 
     pushedStyles = PushSubTextStyle();
-    CenteredText("Owned apps are detected automatically.", true);
+    CenteredText("Owned apps are detected automatically for the first time. Use \"Refresh Apps\" if there is a new app.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
@@ -993,7 +1010,7 @@ void UI::DoAchievements()
     float listH = iScale.F(240);
     SourceColumn("Achievements", kAchievementsKind, rows, ImVec2(listW, listH), (int)iScale.F(760));
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(85));
+    ImGui::SetCursorPosY(avail.y - iScale.F(75));
     float btnH = iScale.F(40);
     float btnW = iScale.F(180);
     ImGui::SetCursorPosX(((avail.x - btnW) / 2) - UIConsts.PageContentPadding);
