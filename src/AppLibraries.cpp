@@ -299,8 +299,6 @@ namespace applibraries {
     // Download url to dest. Skips the fetch if the file already exists. Returns true if the file is present afterward.
     static bool DownloadImage(const std::string& url, const fs::path& dest)
     {
-        homeLogger.write() << "AppLibraries: Getting image from url: " << url.c_str() << std::endl;
-
         std::error_code ec;
         if (fs::is_regular_file(dest, ec)) return true;
         if (url.empty()) return false;
@@ -314,6 +312,8 @@ namespace applibraries {
         {
             downloadUrl.replace(pos, badHost.length(), replacementHost);
         }
+
+        homeLogger.write() << "AppLibraries: Getting image from url: " << downloadUrl.c_str() << std::endl;
 
         cpr::Response r = cpr::Get(cpr::Url{ downloadUrl }, cpr::Timeout{ 15000 });
         if (r.status_code != 200 || r.text.empty())
