@@ -29,6 +29,7 @@ inline constexpr const char* WorldLockedEdit  = "2507097196064477";
 inline constexpr const char* WorldsMarkSeen   = "2451059878250562";
 inline constexpr const char* WorldDelete      = "2213511855433466";
 inline constexpr const char* WorldLikeToggle  = "2285528538195458";
+inline constexpr const char* WorldAutoCapture = "2578668222250705";
 
 // C. Object editing (the core edit action)
 inline constexpr const char* WorldBatchUpdate = "3393266397380374";
@@ -89,6 +90,7 @@ inline constexpr std::array<DocIdInfo, 42> kDocRegistry = {{
     { doc::SetDefaultWorld,  "set_default_world",      "set the home/default world (in-VR write)" },
     { doc::AddWorldVisit,    "add_world_visit_history","record entering a world (ack)" },
     { doc::WorldLockedEdit,  "world_set_user_locked_edit","lock/unlock world editing" },
+    { doc::WorldAutoCapture, "world_set_auto_capture_enabled","enable screenshot auto capturing" },
     { doc::WorldsMarkSeen,   "worlds_mark_items_seen", "clear new-item badges on owned items" },
     { doc::WorldDelete,      "world_delete",           "delete a world" },
     { doc::WorldLikeToggle,  "world_like_toggle",      "like/unlike a world" },

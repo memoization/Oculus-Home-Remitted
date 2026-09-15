@@ -39,7 +39,6 @@ namespace home2backend {
             {
                 std::string line = FirstLine(d, num);
                 bool graphql = line.find("/graphql") != std::string::npos;
-                LogLine(std::string("SSL_write: *** GAME SENT REQUEST") + (graphql ? " (/graphql)" : "") + ": " + line + " ***");
                 GGameSentRequestPlain = true;
             }
         }

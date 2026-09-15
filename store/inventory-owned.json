@@ -1341,21 +1341,6 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "130018561605719093",
-      "asset_key": "Item2",
-      "owned_count": 1
-    },
-    {
-      "item_def_id": "184648507189460014",
-      "asset_key": "Item3",
-      "owned_count": 1
-    },
-    {
-      "item_def_id": "164266349537978953",
-      "asset_key": "KITBASH_1",
-      "owned_count": 1
-    },
-    {
       "item_def_id": "2246866852073404",
       "asset_key": "LIGHTSABER_GREEN_01",
       "owned_count": 1
@@ -1901,11 +1886,6 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "149592608976033164",
-      "asset_key": "NewRow",
-      "owned_count": 1
-    },
-    {
       "item_def_id": "166016108654091403",
       "asset_key": "OC1_STATUE",
       "owned_count": 1
@@ -1926,12 +1906,12 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "101630728097300545",
+      "item_def_id": "2044503918961545",
       "asset_key": "OCULUS_PLUSHIE_01",
       "owned_count": 1
     },
     {
-      "item_def_id": "178170336629064043",
+      "item_def_id": "2309388889112717",
       "asset_key": "OCULUS_STATUE_01",
       "owned_count": 1
     },
@@ -2426,23 +2406,8 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "151236633541837064",
-      "asset_key": "PROMOTION_WKND_01",
-      "owned_count": 1
-    },
-    {
       "item_def_id": "2194326167273827",
       "asset_key": "PROMOTION_WRATH_01",
-      "owned_count": 1
-    },
-    {
-      "item_def_id": "166626624255308891",
-      "asset_key": "PresetMap1",
-      "owned_count": 1
-    },
-    {
-      "item_def_id": "153288898074538512",
-      "asset_key": "RECORDING_00",
       "owned_count": 1
     },
     {
@@ -2466,7 +2431,7 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "153636467814708159",
+      "item_def_id": "1577492172288345",
       "asset_key": "REX_FC_01",
       "owned_count": 1
     },
@@ -2486,7 +2451,7 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "192321297504397569",
+      "item_def_id": "1793878937296801",
       "asset_key": "REX_FC_05",
       "owned_count": 1
     },
@@ -3083,11 +3048,6 @@
     {
       "item_def_id": "1746732968957267",
       "asset_key": "SYSTEM_01",
-      "owned_count": 1
-    },
-    {
-      "item_def_id": "162058635313615488",
-      "asset_key": "TEST_BOOKSTACK_01",
       "owned_count": 1
     },
     {

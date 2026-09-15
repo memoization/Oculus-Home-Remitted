@@ -58,10 +58,10 @@
         "{\"LessonKey\":\"Teleport\",\"State\":4,\"FirstCompletionTime\":0}"
       ],
       "server_time": __SERVER_TIME__,
-      "max_objects_in_worlds": 500,
+      "max_objects_in_worlds": 5000,
       "max_objects_in_mutation": 60,
-      "max_number_of_worlds": 12,
-      "world_auto_capture_period": 15,
+      "max_number_of_worlds": 200,
+      "world_auto_capture_period": 10,
       "max_ugc_file_size": 15728640,
       "max_mb_ugc_in_world": 250,
       "max_mp_guests": 7,

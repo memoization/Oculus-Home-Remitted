@@ -28,11 +28,11 @@
           "possible_item_defs": [
             {
               "id": "2309388889112717",
-              "name": "",
+              "name": "REX Bot",
               "item_description": "",
               "asset_key": "OCULUS_STATUE_01",
               "is_scalable": true,
-              "is_unlimited": false,
+              "is_unlimited": true,
               "salvage_value": 0,
               "world_placement_cap": 0,
               "stackable": true,
@@ -74,11 +74,11 @@
           "possible_item_defs": [
             {
               "id": "1793878937296801",
-              "name": "",
+              "name": "Robot Head",
               "item_description": "",
               "asset_key": "REX_FC_05",
               "is_scalable": true,
-              "is_unlimited": false,
+              "is_unlimited": true,
               "salvage_value": 5,
               "world_placement_cap": 0,
               "stackable": true,
@@ -112,11 +112,11 @@
           "possible_item_defs": [
             {
               "id": "1577492172288345",
-              "name": "",
+              "name": "T0B1 Statue v1",
               "item_description": "",
               "asset_key": "REX_FC_01",
               "is_scalable": true,
-              "is_unlimited": false,
+              "is_unlimited": true,
               "salvage_value": 50,
               "world_placement_cap": 0,
               "stackable": true,
@@ -156,11 +156,11 @@
           "possible_item_defs": [
             {
               "id": "2044503918961545",
-              "name": "",
+              "name": "Zodiac Plushie - Tobi",
               "item_description": "Forget the hard edges, this plushie version of T0B1 is as soft as his little robotic heart. ",
               "asset_key": "OCULUS_PLUSHIE_01",
               "is_scalable": true,
-              "is_unlimited": false,
+              "is_unlimited": true,
               "salvage_value": 0,
               "world_placement_cap": 0,
               "stackable": true,

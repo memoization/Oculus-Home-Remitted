@@ -566,10 +566,10 @@ void UI::DoWorlds()
 
         if (hasWorlds)
         {
-            // reflects 500 = world_login: max_objects_in_worlds
+            // reflects 5000 = world_login.json: max_objects_in_worlds
             ImGui::PushFont(fontHeader);
             int shownObjectCount = objectCount > 0 ? objectCount - 1 : 0;
-            ImGui::Text("Objects   %d / 500", shownObjectCount);
+            ImGui::Text("Objects   %d / 5000", shownObjectCount);
             ImGui::PopFont();
         }
 

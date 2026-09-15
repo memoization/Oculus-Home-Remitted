@@ -59,6 +59,7 @@ namespace home2hook {
     static const char* kDocWorldLikeToggle = home2hook::doc::WorldLikeToggle;
     static const char* kDocWorldDelete     = home2hook::doc::WorldDelete;
     static const char* kDocWorldLockedEdit = home2hook::doc::WorldLockedEdit;
+    static const char* kDocWorldAutoCapture = home2hook::doc::WorldAutoCapture;
     static const char* kDocSetUserOptions  = home2hook::doc::SetUserOptions;
     static const char* kDocWorldsApps      = home2hook::doc::WorldsApps;
     static const char* kDocWorldsGuestApps = home2hook::doc::WorldsGuestApps;
@@ -138,6 +139,7 @@ namespace home2hook {
         case ResponseAction::WorldLikeToggle: return "world_like_toggle";
         case ResponseAction::WorldDelete:     return "world_delete";
         case ResponseAction::WorldSetLockedEdit: return "world_set_user_locked_edit";
+        case ResponseAction::WorldSetAutoCapture: return "world_set_auto_capture_enabled";
         case ResponseAction::Inventory:       return "inventory";
         case ResponseAction::ItemDefs:        return "item_defs";
         case ResponseAction::WorldsApps:      return "worlds_apps_and_achievements";
@@ -534,7 +536,7 @@ namespace home2hook {
         }
 
         // Load the user's uploaded-UGC catalog once. Seeded into ugcDefs each loadWorlds so item-defs resolve every UGC def even if a world's own manifest is incomplete.
-        // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldUgc" and not from this catalog.
+        // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldObjects" and not from this catalog.
         std::string gtext;
         if (ReadFileText(root.parent_path() / "ugc-hashes-global.json", gtext))
         {
@@ -548,10 +550,11 @@ namespace home2hook {
 
         loadWorlds();
 
-        // Make each world's placed UGC objects owned in the offline inventory.
-        // Without it the entity is read-only and the game never sends a customization update.
-        // Emit an owned node per world UGC object carrying its real inventory_item.id which is distinct from the def id so there is no owned/used reconciliation loading void. Then rebuild the entry-id to def-id reverse map.
-        augmentInventoryFromWorldUgc();
+        // Make each world's placed objects owned in the offline inventory.
+        // Without it the object is not found in inventory error causes a readonly state for some objects where edits do not persist.
+        // First repoint catalogued objects at the catalog's existing owned entry so they are editable without duplicating in the tray, then own any remaining (uncatalogued/UGC) objects by their real inventory_item.id.Then rebuild the entry-id to def-id reverse map.
+        normalizePlacedObjectEntryIds();
+        augmentInventoryFromWorldObjects();
         rebuildInventoryReverseMap();
 
         LogLine("store: world_login=" + std::string(worldLoginLoaded ? "yes" : "no") +
@@ -706,6 +709,8 @@ namespace home2hook {
             return ResponseAction::WorldDelete;
         if (docId == kDocWorldLockedEdit)
             return ResponseAction::WorldSetLockedEdit;
+        if (docId == kDocWorldAutoCapture)
+            return ResponseAction::WorldSetAutoCapture;
         if (docId == kDocInventory)
             return ownedLoaded ? ResponseAction::Inventory : ResponseAction::PassThrough;
         if (docId == kDocItemDefs)
@@ -1847,9 +1852,9 @@ namespace home2hook {
         }).dump();
     }
 
-    // user_locked_edit: persist config.json user_locked_edit field to the new value. Served by buildWorldNodeJson.
-    // {"data":{"world_set_user_locked_edit":{"success":true}}}.
-    std::string ResponseStore::buildWorldSetLockedEdit(const std::string& clientMutationId, const std::string& worldId, bool newLockedEdit) const
+    // Persist a defined boolean value into config.json. Served by buildWorldNodeJson.
+    // example return request: {"data":{"world_set_user_locked_edit":{"success":true}}}.
+    std::string ResponseStore::buildWorldSetPropBool(std::string prop, std::string returnField, const std::string& clientMutationId, const std::string& worldId, bool newBool) const
     {
         (void)clientMutationId; // the confirmed response does not echo the cmid
         std::wstring cfgPath;
@@ -1862,7 +1867,7 @@ namespace home2hook {
                 if (e.worldId == worldId)
                 {
                     json11::Json::object obj = e.config.object_items();
-                    obj["user_locked_edit"] = newLockedEdit;
+                    obj[prop] = newBool;
                     e.config = json11::Json(obj);
                     newCfg = e.config;
                     cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
@@ -1874,17 +1879,17 @@ namespace home2hook {
         if (found)
         {
             if (writeFileAtomic(cfgPath, newCfg.dump()))
-                LogLine("store: world_set_user_locked_edit: world " + worldId + " user_locked_edit=" + (newLockedEdit ? "true" : "false"));
+                LogLine("store: world set boolean prop: world " + worldId + " " + prop + "=" + (newBool ? "true" : "false"));
             else
-                LogLine("store: world_set_user_locked_edit: config.json write failed for " + worldId);
+                LogLine("store: world set boolean prop: config.json write failed for " + worldId);
         }
         else
         {
-            LogLine("store: world_set_user_locked_edit: world " + worldId + " not found (ack only)");
+            LogLine("store: world set boolean prop: world " + worldId + " not found (ack only)");
         }
         return json11::Json(json11::Json::object{
             {"data", json11::Json::object{
-                {"world_set_user_locked_edit", json11::Json::object{ {"success", true} }}
+                {returnField, json11::Json::object{ {"success", true} }}
             }}
         }).dump();
     }
@@ -1972,6 +1977,44 @@ namespace home2hook {
         return true;
     }
 
+    // Clear home's image cache. Caching is not really needed since everything is offline.
+    void ClearWorldsImageCache(std::wstring targetExtension, std::string suffix)
+    {
+        wchar_t appdata[MAX_PATH];
+        DWORD n = GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+        if (n == 0 || n >= MAX_PATH) return;
+
+        std::wstring path = std::wstring(appdata) + L"\\..\\Local\\Home2\\ImageCache";
+        std::error_code ec;
+        if (!std::filesystem::is_directory(path, ec)) return;
+
+        int deleted_c = 0;
+        for (const auto& entry : std::filesystem::directory_iterator(path, ec))
+        {
+            if (ec) return;
+            if (!entry.is_regular_file(ec)) continue;
+
+            std::wstring ext = entry.path().extension().wstring();
+            std::string stem = entry.path().stem().string();
+
+            size_t pos = stem.find_last_of('_');
+
+            // Only clear files with the target extension and suffix in its name
+            if (entry.path().extension() == targetExtension && pos != std::string::npos)
+            {
+                std::string suffix = stem.substr(pos + 1);
+                if (suffix == suffix)
+                {
+                    std::filesystem::remove(entry.path(), ec);
+
+                    ++deleted_c;
+                }
+            }
+        }
+
+        LogLine("store: cleared " + std::to_string(deleted_c) + " image cache file(s)");
+    }
+
     // Persist uploaded world media. Screenshots arrive as JPEG but are converted to screenshot.png so the .png is the only screenshot file both the game via screenshot_uri and the frontend UI read.
     // A decode failure falls back to screenshot.jpg so at least an upload is never lost.
     // Cubemaps are OCH2CUBE .dds and stored as cubemap.dds.
@@ -1995,22 +2038,85 @@ namespace home2hook {
         std::error_code ec;
         std::filesystem::create_directories(folder, ec);
 
-        if (!isScreenshot) return writeFileAtomic((std::filesystem::path(folder) / L"cubemap.dds").wstring(), bytes);
+        if (!isScreenshot)
+        {
+            if (writeFileAtomic((std::filesystem::path(folder) / L"cubemap.dds").wstring(), bytes))
+            {
+                LogLine("store: created new world cubemap: " + (std::filesystem::path(folder) / L"cubemap.dds").string());
+                ClearWorldsImageCache(L".dds", "cube");
+                return true;
+            }
+
+            return false;
+        } 
 
         std::wstring pngPath = (std::filesystem::path(folder) / L"screenshot.png").wstring();
         if (WriteImageBytesAsPng(bytes, pngPath))
         {
+            LogLine("store: created new world screenshot: " + (std::filesystem::path(folder) / L"screenshot.png").string());
+            ClearWorldsImageCache(L".png", "ss");
             return true;
         }
         
         LogLine("store: screenshot JPEG-to-PNG convert failed, wrote raw screenshot.jpg");
-        return writeFileAtomic((std::filesystem::path(folder) / L"screenshot.jpg").wstring(), bytes);
+        if (writeFileAtomic((std::filesystem::path(folder) / L"screenshot.jpg").wstring(), bytes))
+        {
+            LogLine("store: created new world screenshot: " + (std::filesystem::path(folder) / L"screenshot.jpg").string());
+            ClearWorldsImageCache(L".png", "ss");
+            return true;
+        }
+
+        return false;
     }
 
-    // Add an owned_items entry per placed UGC object across all loaded worlds, keyed by the object's real inventory_item.id, the entry_id, so the game recognizes the object as owned and lets its UGC editor commit.
-    // A UGC place's lighting update is withheld unless its inventory_item.id is owned.
-    // It is de-duped by entry id, skipping ids already present..
-    void ResponseStore::augmentInventoryFromWorldUgc()
+    // Point a catalogued object at the owned catalog's derived entry id instead of a fetched real inventory_item.id.
+    // Fetched worlds store the real backend inventory_item.ids. Owning those directly would make the objects editable but double the item in the tray, since the catalog already serves one owned node per def. Repointing the object at the existing derived entry keeps it editable with no extra node.
+    // Objects placed offline already match and are skipped. Uploaded UGC defs are left alone for augmentInventoryFromWorldObjects to own by their real id.
+    // A later edit persists it to config.json and a subsequent load normalize again cheaply.
+    void ResponseStore::normalizePlacedObjectEntryIds()
+    {
+        std::unordered_set<std::string> ownedDefs;
+        for (const auto& item : ownedItems.array_items())
+        {
+            std::string defId = item["item_def_id"].string_value();
+            if (!defId.empty()) ownedDefs.insert(defId);
+        }
+
+        size_t fixed = 0;
+        for (auto& e : worlds)
+        {
+            json11::Json::object cfg = e.config.object_items();
+            std::vector<json11::Json> objs = cfg["objects"].array_items();
+            bool changed = false;
+            for (auto& node : objs)
+            {
+                std::string defId = node["item_definition"]["id"].string_value();
+                if (defId.empty() || ownedDefs.count(defId) == 0) continue; // uncatalogued, augment owns it by its real id
+
+                std::string want = DeriveInventoryEntryId(defId);
+                if (node["inventory_item"]["id"].string_value() == want) continue; // already the catalog entry (placed offline)
+
+                json11::Json::object n = node.object_items();
+                n["inventory_item"] = json11::Json::object{ {"id", want} };
+                node = json11::Json(n);
+                changed = true;
+                ++fixed;
+            }
+            if (changed)
+            {
+                cfg["objects"] = json11::Json(objs);
+                e.config = json11::Json(cfg);
+            }
+        }
+
+        if (fixed) LogLine("store: normalized " + std::to_string(fixed) + " placed object entry id(s) to the owned catalog");
+    }
+
+    // Add an owned_items entry per placed object across all loaded worlds.
+    // Downloaded worlds can carry the real backend inventory_item.ids, which are not any offline derived '7...' entry ids, so without this the serializer reports "Could not find object in inventory" and edits do not persist.
+    // Objects placed offline already own their entry id and are skipped by the de-dup. UGC objects are included the same way (their editor also needs the entry owned).
+    // These are de-duped by entry id.
+    void ResponseStore::augmentInventoryFromWorldObjects()
     {
         std::unordered_set<std::string> haveEntry;
         for (const auto& item : ownedItems.array_items())
@@ -2027,9 +2133,6 @@ namespace home2hook {
         {
             for (const auto& obj : e.config["objects"].array_items())
             {
-                const std::string& tn = obj["item_definition"]["__typename"].string_value();
-                if (tn.rfind("WorldsUGC", 0) != 0) continue;
-                
                 std::string invId = obj["inventory_item"]["id"].string_value();
                 std::string defId = obj["item_definition"]["id"].string_value();
 
@@ -2045,7 +2148,7 @@ namespace home2hook {
         {
             ownedItems = json11::Json(owned);
             ownedLoaded = true;
-            LogLine("store: owned " + std::to_string(added) + " placed UGC object(s) from world(s) (editable-UGC gate)");
+            LogLine("store: owned " + std::to_string(added) + " placed object(s) from world");
         }
     }
 
@@ -2739,11 +2842,20 @@ namespace home2hook {
         std::string worldCustomizationsB64; // world_batch_update_objects: base64(JSON) room customizations
         json11::Json createArr, updateArr, deleteArr; // world_batch_update_objects
         bool newUserLockedEdit = false; // world_set_user_locked_edit
+        bool newAutoCapture = false; // world_set_auto_capture_enabled
         std::string nodeId; // node_by_id: the object_instance being fetched
         std::string appIdVar; // app_images: the application whose art to fetch
         std::string objectInstance; // upsert_world_portal_data: the portal object
         std::string destinationWorld; // upsert_world_portal_data: target world id
         std::string destinationApplication; // upsert_world_portal_data: target application id
+        std::string responseField = "";
+
+        const DocIdInfo* docInfo = LookupDocId(docId);
+
+        if (docInfo)
+        {
+            responseField = docInfo->name;
+        }
 
         if (!variablesJson.empty())
         {
@@ -2782,6 +2894,10 @@ namespace home2hook {
                     newUserLockedEdit = vars["new_user_locked_edit"].bool_value();
                 else if (vars["new_user_locked_edit"].is_string())
                     newUserLockedEdit = (vars["new_user_locked_edit"].string_value() == "true");
+                if (vars["new_auto_capture_enabled"].is_bool())
+                    newAutoCapture = vars["new_auto_capture_enabled"].bool_value();
+                else if (vars["new_auto_capture_enabled"].is_string())
+                    newAutoCapture = (vars["new_auto_capture_enabled"].string_value() == "true");
                 if (vars["node_id"].is_string())
                     nodeId = vars["node_id"].string_value();
                 if (vars["app_id"].is_string())
@@ -2847,7 +2963,10 @@ namespace home2hook {
             body = buildWorldDelete(clientMutationId, worldId);
             break;
         case ResponseAction::WorldSetLockedEdit:
-            body = buildWorldSetLockedEdit(clientMutationId, worldId, newUserLockedEdit);
+            body = buildWorldSetPropBool("user_locked_edit", responseField, clientMutationId, worldId, newUserLockedEdit);
+            break;
+        case ResponseAction::WorldSetAutoCapture:
+            body = buildWorldSetPropBool("auto_capture_enabled", responseField, clientMutationId, worldId, newAutoCapture);
             break;
         case ResponseAction::Inventory:
             body = buildInventory();
