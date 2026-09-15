@@ -1978,7 +1978,7 @@ namespace home2hook {
     }
 
     // Clear home's image cache. Caching is not really needed since everything is offline.
-    void ClearWorldsImageCache(std::wstring targetExtension)
+    void ClearWorldsImageCache(std::wstring targetExtension, std::string suffix)
     {
         wchar_t appdata[MAX_PATH];
         DWORD n = GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
@@ -1995,13 +1995,20 @@ namespace home2hook {
             if (!entry.is_regular_file(ec)) continue;
 
             std::wstring ext = entry.path().extension().wstring();
+            std::string stem = entry.path().stem().string();
 
-            // Only clear files with the target extension
-            if (entry.path().extension() == targetExtension)
+            size_t pos = stem.find_last_of('_');
+
+            // Only clear files with the target extension and suffix in its name
+            if (entry.path().extension() == targetExtension && pos != std::string::npos)
             {
-                std::filesystem::remove(entry.path(), ec);
+                std::string suffix = stem.substr(pos + 1);
+                if (suffix == suffix)
+                {
+                    std::filesystem::remove(entry.path(), ec);
 
-                ++deleted_c;
+                    ++deleted_c;
+                }
             }
         }
 
@@ -2036,7 +2043,7 @@ namespace home2hook {
             if (writeFileAtomic((std::filesystem::path(folder) / L"cubemap.dds").wstring(), bytes))
             {
                 LogLine("store: created new world cubemap: " + (std::filesystem::path(folder) / L"cubemap.dds").string());
-                ClearWorldsImageCache(L".dds");
+                ClearWorldsImageCache(L".dds", "cube");
                 return true;
             }
 
@@ -2047,7 +2054,7 @@ namespace home2hook {
         if (WriteImageBytesAsPng(bytes, pngPath))
         {
             LogLine("store: created new world screenshot: " + (std::filesystem::path(folder) / L"screenshot.png").string());
-            ClearWorldsImageCache(L".png");
+            ClearWorldsImageCache(L".png", "ss");
             return true;
         }
         
@@ -2055,7 +2062,7 @@ namespace home2hook {
         if (writeFileAtomic((std::filesystem::path(folder) / L"screenshot.jpg").wstring(), bytes))
         {
             LogLine("store: created new world screenshot: " + (std::filesystem::path(folder) / L"screenshot.jpg").string());
-            ClearWorldsImageCache(L".png");
+            ClearWorldsImageCache(L".png", "ss");
             return true;
         }
 
