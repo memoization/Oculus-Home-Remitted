@@ -25,6 +25,7 @@ namespace home2hook {
         WorldLikeToggle, // 2285528538195458 (toggle is_liked/like_count into config.json)
         WorldDelete,     // 2213511855433466 (delete world folder and drop entry)
         WorldSetLockedEdit,// 2507097196064477 (persist user_locked_edit into config.json)
+        WorldSetAutoCapture,// 2578668222250705 (persist auto_capture_enabled into config.json)
         Inventory,       // 3098640583495832 (DB-backed from the Owned set)
         ItemDefs,        // 2340400929361818 (DB-backed per requested item_def_ids[])
         WorldsApps,      // 3420023344706951 (app/achievement tile metadata, empty-but-valid or library-backed)
@@ -203,7 +204,7 @@ namespace home2hook {
         std::string buildAppImages(const std::string& docId, const std::string& appId) const;
         std::string buildWorldLikeToggle(const std::string& clientMutationId, const std::string& worldId) const;
         std::string buildWorldDelete(const std::string& clientMutationId, const std::string& worldId) const;
-        std::string buildWorldSetLockedEdit(const std::string& clientMutationId, const std::string& worldId, bool newLockedEdit) const;
+        std::string buildWorldSetPropBool(std::string prop, std::string returnField, const std::string& clientMutationId, const std::string& worldId, bool newBool) const;
         json11::Json buildCanonicalConfig(const std::string& worldId, int creationIndex, int nameIndex) const;
         std::string mintNumericId() const; // 16-digit '8'-prefixed numeric string
         std::string mintWorldId() const;// mintNumericId collision-checked against folders

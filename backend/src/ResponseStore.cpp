@@ -59,6 +59,7 @@ namespace home2hook {
     static const char* kDocWorldLikeToggle = home2hook::doc::WorldLikeToggle;
     static const char* kDocWorldDelete     = home2hook::doc::WorldDelete;
     static const char* kDocWorldLockedEdit = home2hook::doc::WorldLockedEdit;
+    static const char* kDocWorldAutoCapture = home2hook::doc::WorldAutoCapture;
     static const char* kDocSetUserOptions  = home2hook::doc::SetUserOptions;
     static const char* kDocWorldsApps      = home2hook::doc::WorldsApps;
     static const char* kDocWorldsGuestApps = home2hook::doc::WorldsGuestApps;
@@ -138,6 +139,7 @@ namespace home2hook {
         case ResponseAction::WorldLikeToggle: return "world_like_toggle";
         case ResponseAction::WorldDelete:     return "world_delete";
         case ResponseAction::WorldSetLockedEdit: return "world_set_user_locked_edit";
+        case ResponseAction::WorldSetAutoCapture: return "world_set_auto_capture_enabled";
         case ResponseAction::Inventory:       return "inventory";
         case ResponseAction::ItemDefs:        return "item_defs";
         case ResponseAction::WorldsApps:      return "worlds_apps_and_achievements";
@@ -707,6 +709,8 @@ namespace home2hook {
             return ResponseAction::WorldDelete;
         if (docId == kDocWorldLockedEdit)
             return ResponseAction::WorldSetLockedEdit;
+        if (docId == kDocWorldAutoCapture)
+            return ResponseAction::WorldSetAutoCapture;
         if (docId == kDocInventory)
             return ownedLoaded ? ResponseAction::Inventory : ResponseAction::PassThrough;
         if (docId == kDocItemDefs)
@@ -1848,9 +1852,9 @@ namespace home2hook {
         }).dump();
     }
 
-    // user_locked_edit: persist config.json user_locked_edit field to the new value. Served by buildWorldNodeJson.
-    // {"data":{"world_set_user_locked_edit":{"success":true}}}.
-    std::string ResponseStore::buildWorldSetLockedEdit(const std::string& clientMutationId, const std::string& worldId, bool newLockedEdit) const
+    // Persist a defined boolean value into config.json. Served by buildWorldNodeJson.
+    // example return request: {"data":{"world_set_user_locked_edit":{"success":true}}}.
+    std::string ResponseStore::buildWorldSetPropBool(std::string prop, std::string returnField, const std::string& clientMutationId, const std::string& worldId, bool newBool) const
     {
         (void)clientMutationId; // the confirmed response does not echo the cmid
         std::wstring cfgPath;
@@ -1863,7 +1867,7 @@ namespace home2hook {
                 if (e.worldId == worldId)
                 {
                     json11::Json::object obj = e.config.object_items();
-                    obj["user_locked_edit"] = newLockedEdit;
+                    obj[prop] = newBool;
                     e.config = json11::Json(obj);
                     newCfg = e.config;
                     cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
@@ -1875,17 +1879,17 @@ namespace home2hook {
         if (found)
         {
             if (writeFileAtomic(cfgPath, newCfg.dump()))
-                LogLine("store: world_set_user_locked_edit: world " + worldId + " user_locked_edit=" + (newLockedEdit ? "true" : "false"));
+                LogLine("store: world set boolean prop: world " + worldId + " " + prop + "=" + (newBool ? "true" : "false"));
             else
-                LogLine("store: world_set_user_locked_edit: config.json write failed for " + worldId);
+                LogLine("store: world set boolean prop: config.json write failed for " + worldId);
         }
         else
         {
-            LogLine("store: world_set_user_locked_edit: world " + worldId + " not found (ack only)");
+            LogLine("store: world set boolean prop: world " + worldId + " not found (ack only)");
         }
         return json11::Json(json11::Json::object{
             {"data", json11::Json::object{
-                {"world_set_user_locked_edit", json11::Json::object{ {"success", true} }}
+                {returnField, json11::Json::object{ {"success", true} }}
             }}
         }).dump();
     }
@@ -2831,11 +2835,20 @@ namespace home2hook {
         std::string worldCustomizationsB64; // world_batch_update_objects: base64(JSON) room customizations
         json11::Json createArr, updateArr, deleteArr; // world_batch_update_objects
         bool newUserLockedEdit = false; // world_set_user_locked_edit
+        bool newAutoCapture = false; // world_set_auto_capture_enabled
         std::string nodeId; // node_by_id: the object_instance being fetched
         std::string appIdVar; // app_images: the application whose art to fetch
         std::string objectInstance; // upsert_world_portal_data: the portal object
         std::string destinationWorld; // upsert_world_portal_data: target world id
         std::string destinationApplication; // upsert_world_portal_data: target application id
+        std::string responseField = "";
+
+        const DocIdInfo* docInfo = LookupDocId(docId);
+
+        if (docInfo)
+        {
+            responseField = docInfo->name;
+        }
 
         if (!variablesJson.empty())
         {
@@ -2874,6 +2887,10 @@ namespace home2hook {
                     newUserLockedEdit = vars["new_user_locked_edit"].bool_value();
                 else if (vars["new_user_locked_edit"].is_string())
                     newUserLockedEdit = (vars["new_user_locked_edit"].string_value() == "true");
+                if (vars["new_auto_capture_enabled"].is_bool())
+                    newAutoCapture = vars["new_auto_capture_enabled"].bool_value();
+                else if (vars["new_auto_capture_enabled"].is_string())
+                    newAutoCapture = (vars["new_auto_capture_enabled"].string_value() == "true");
                 if (vars["node_id"].is_string())
                     nodeId = vars["node_id"].string_value();
                 if (vars["app_id"].is_string())
@@ -2939,7 +2956,10 @@ namespace home2hook {
             body = buildWorldDelete(clientMutationId, worldId);
             break;
         case ResponseAction::WorldSetLockedEdit:
-            body = buildWorldSetLockedEdit(clientMutationId, worldId, newUserLockedEdit);
+            body = buildWorldSetPropBool("user_locked_edit", responseField, clientMutationId, worldId, newUserLockedEdit);
+            break;
+        case ResponseAction::WorldSetAutoCapture:
+            body = buildWorldSetPropBool("auto_capture_enabled", responseField, clientMutationId, worldId, newAutoCapture);
             break;
         case ResponseAction::Inventory:
             body = buildInventory();
