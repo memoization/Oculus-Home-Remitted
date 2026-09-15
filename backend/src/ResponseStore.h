@@ -181,7 +181,8 @@ namespace home2hook {
         // folder serve/mutation backend.
         void loadWorlds();
         void loadWorldUgc(const std::wstring& folder); // merge a world's ugc\ugc-hashes.json into ugcDefs
-        void augmentInventoryFromWorldUgc(); // own each world's placed UGC objects (editable-UGC gate)
+        void normalizePlacedObjectEntryIds(); // point catalogued objects at the owned catalog's derived entry id so they are editable without duplicating
+        void augmentInventoryFromWorldObjects(); // own each world's placed objects by inventory_item.id so the game can find and edit them
         void rebuildInventoryReverseMap(); // entry-id to def-id from final ownedItems (honors entry_id)
         const WorldEntry* findWorldLocked(const std::string& worldId) const; // caller holds worldsMutex
         std::string screenshotFileUri(const WorldEntry& entry) const;

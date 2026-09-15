@@ -534,7 +534,7 @@ namespace home2hook {
         }
 
         // Load the user's uploaded-UGC catalog once. Seeded into ugcDefs each loadWorlds so item-defs resolve every UGC def even if a world's own manifest is incomplete.
-        // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldUgc" and not from this catalog.
+        // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldObjects" and not from this catalog.
         std::string gtext;
         if (ReadFileText(root.parent_path() / "ugc-hashes-global.json", gtext))
         {
@@ -548,10 +548,11 @@ namespace home2hook {
 
         loadWorlds();
 
-        // Make each world's placed UGC objects owned in the offline inventory.
-        // Without it the entity is read-only and the game never sends a customization update.
-        // Emit an owned node per world UGC object carrying its real inventory_item.id which is distinct from the def id so there is no owned/used reconciliation loading void. Then rebuild the entry-id to def-id reverse map.
-        augmentInventoryFromWorldUgc();
+        // Make each world's placed objects owned in the offline inventory.
+        // Without it the object is not found in inventory error causes a readonly state for some objects where edits do not persist.
+        // First repoint catalogued objects at the catalog's existing owned entry so they are editable without duplicating in the tray, then own any remaining (uncatalogued/UGC) objects by their real inventory_item.id.Then rebuild the entry-id to def-id reverse map.
+        normalizePlacedObjectEntryIds();
+        augmentInventoryFromWorldObjects();
         rebuildInventoryReverseMap();
 
         LogLine("store: world_login=" + std::string(worldLoginLoaded ? "yes" : "no") +
@@ -2007,10 +2008,54 @@ namespace home2hook {
         return writeFileAtomic((std::filesystem::path(folder) / L"screenshot.jpg").wstring(), bytes);
     }
 
-    // Add an owned_items entry per placed UGC object across all loaded worlds, keyed by the object's real inventory_item.id, the entry_id, so the game recognizes the object as owned and lets its UGC editor commit.
-    // A UGC place's lighting update is withheld unless its inventory_item.id is owned.
-    // It is de-duped by entry id, skipping ids already present..
-    void ResponseStore::augmentInventoryFromWorldUgc()
+    // Point a catalogued object at the owned catalog's derived entry id instead of a fetched real inventory_item.id.
+    // Fetched worlds store the real backend inventory_item.ids. Owning those directly would make the objects editable but double the item in the tray, since the catalog already serves one owned node per def. Repointing the object at the existing derived entry keeps it editable with no extra node.
+    // Objects placed offline already match and are skipped. Uploaded UGC defs are left alone for augmentInventoryFromWorldObjects to own by their real id.
+    // A later edit persists it to config.json and a subsequent load normalize again cheaply.
+    void ResponseStore::normalizePlacedObjectEntryIds()
+    {
+        std::unordered_set<std::string> ownedDefs;
+        for (const auto& item : ownedItems.array_items())
+        {
+            std::string defId = item["item_def_id"].string_value();
+            if (!defId.empty()) ownedDefs.insert(defId);
+        }
+
+        size_t fixed = 0;
+        for (auto& e : worlds)
+        {
+            json11::Json::object cfg = e.config.object_items();
+            std::vector<json11::Json> objs = cfg["objects"].array_items();
+            bool changed = false;
+            for (auto& node : objs)
+            {
+                std::string defId = node["item_definition"]["id"].string_value();
+                if (defId.empty() || ownedDefs.count(defId) == 0) continue; // uncatalogued, augment owns it by its real id
+
+                std::string want = DeriveInventoryEntryId(defId);
+                if (node["inventory_item"]["id"].string_value() == want) continue; // already the catalog entry (placed offline)
+
+                json11::Json::object n = node.object_items();
+                n["inventory_item"] = json11::Json::object{ {"id", want} };
+                node = json11::Json(n);
+                changed = true;
+                ++fixed;
+            }
+            if (changed)
+            {
+                cfg["objects"] = json11::Json(objs);
+                e.config = json11::Json(cfg);
+            }
+        }
+
+        if (fixed) LogLine("store: normalized " + std::to_string(fixed) + " placed object entry id(s) to the owned catalog");
+    }
+
+    // Add an owned_items entry per placed object across all loaded worlds.
+    // Downloaded worlds can carry the real backend inventory_item.ids, which are not any offline derived '7...' entry ids, so without this the serializer reports "Could not find object in inventory" and edits do not persist.
+    // Objects placed offline already own their entry id and are skipped by the de-dup. UGC objects are included the same way (their editor also needs the entry owned).
+    // These are de-duped by entry id.
+    void ResponseStore::augmentInventoryFromWorldObjects()
     {
         std::unordered_set<std::string> haveEntry;
         for (const auto& item : ownedItems.array_items())
@@ -2027,9 +2072,6 @@ namespace home2hook {
         {
             for (const auto& obj : e.config["objects"].array_items())
             {
-                const std::string& tn = obj["item_definition"]["__typename"].string_value();
-                if (tn.rfind("WorldsUGC", 0) != 0) continue;
-                
                 std::string invId = obj["inventory_item"]["id"].string_value();
                 std::string defId = obj["item_definition"]["id"].string_value();
 
@@ -2045,7 +2087,7 @@ namespace home2hook {
         {
             ownedItems = json11::Json(owned);
             ownedLoaded = true;
-            LogLine("store: owned " + std::to_string(added) + " placed UGC object(s) from world(s) (editable-UGC gate)");
+            LogLine("store: owned " + std::to_string(added) + " placed object(s) from world");
         }
     }
 
