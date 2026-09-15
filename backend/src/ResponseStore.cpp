@@ -1973,6 +1973,37 @@ namespace home2hook {
         return true;
     }
 
+    // Clear home's image cache. Caching is not really needed since everything is offline.
+    void ClearWorldsImageCache(std::wstring targetExtension)
+    {
+        wchar_t appdata[MAX_PATH];
+        DWORD n = GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+        if (n == 0 || n >= MAX_PATH) return;
+
+        std::wstring path = std::wstring(appdata) + L"\\..\\Local\\Home2\\ImageCache";
+        std::error_code ec;
+        if (!std::filesystem::is_directory(path, ec)) return;
+
+        int deleted_c = 0;
+        for (const auto& entry : std::filesystem::directory_iterator(path, ec))
+        {
+            if (ec) return;
+            if (!entry.is_regular_file(ec)) continue;
+
+            std::wstring ext = entry.path().extension().wstring();
+
+            // Only clear files with the target extension
+            if (entry.path().extension() == targetExtension)
+            {
+                std::filesystem::remove(entry.path(), ec);
+
+                ++deleted_c;
+            }
+        }
+
+        LogLine("store: cleared " + std::to_string(deleted_c) + " image cache file(s)");
+    }
+
     // Persist uploaded world media. Screenshots arrive as JPEG but are converted to screenshot.png so the .png is the only screenshot file both the game via screenshot_uri and the frontend UI read.
     // A decode failure falls back to screenshot.jpg so at least an upload is never lost.
     // Cubemaps are OCH2CUBE .dds and stored as cubemap.dds.
@@ -1996,16 +2027,35 @@ namespace home2hook {
         std::error_code ec;
         std::filesystem::create_directories(folder, ec);
 
-        if (!isScreenshot) return writeFileAtomic((std::filesystem::path(folder) / L"cubemap.dds").wstring(), bytes);
+        if (!isScreenshot)
+        {
+            if (writeFileAtomic((std::filesystem::path(folder) / L"cubemap.dds").wstring(), bytes))
+            {
+                LogLine("store: created new world cubemap: " + (std::filesystem::path(folder) / L"cubemap.dds").string());
+                ClearWorldsImageCache(L".dds");
+                return true;
+            }
+
+            return false;
+        } 
 
         std::wstring pngPath = (std::filesystem::path(folder) / L"screenshot.png").wstring();
         if (WriteImageBytesAsPng(bytes, pngPath))
         {
+            LogLine("store: created new world screenshot: " + (std::filesystem::path(folder) / L"screenshot.png").string());
+            ClearWorldsImageCache(L".png");
             return true;
         }
         
         LogLine("store: screenshot JPEG-to-PNG convert failed, wrote raw screenshot.jpg");
-        return writeFileAtomic((std::filesystem::path(folder) / L"screenshot.jpg").wstring(), bytes);
+        if (writeFileAtomic((std::filesystem::path(folder) / L"screenshot.jpg").wstring(), bytes))
+        {
+            LogLine("store: created new world screenshot: " + (std::filesystem::path(folder) / L"screenshot.jpg").string());
+            ClearWorldsImageCache(L".png");
+            return true;
+        }
+
+        return false;
     }
 
     // Point a catalogued object at the owned catalog's derived entry id instead of a fetched real inventory_item.id.
