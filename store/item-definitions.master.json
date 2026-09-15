@@ -2,7 +2,7 @@
   "100353200729316": {
     "__typename": "WorldsItemDefinition",
     "id": "100353200729316",
-    "name": "PAINTING_SMALL_10",
+    "name": "Painting Cephalopod Knight",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -29,7 +29,7 @@
   "101630728097300545": {
     "__typename": "WorldsItemDefinition",
     "id": "101630728097300545",
-    "name": "OCULUS_PLUSHIE_01",
+    "name": "Zodiac Plushie - Tobi",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -57,7 +57,7 @@
   "1016885448436190": {
     "__typename": "WorldsItemDefinition",
     "id": "1016885448436190",
-    "name": "PIRATES_COUCH_01",
+    "name": "Plundered Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -84,7 +84,7 @@
   "101703323081665357": {
     "__typename": "WorldsItemDefinition",
     "id": "101703323081665357",
-    "name": "SPOOKY_ANALOG_CLOCK_01",
+    "name": "Gothic Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -111,7 +111,7 @@
   "102465064225114533": {
     "__typename": "WorldsItemDefinition",
     "id": "102465064225114533",
-    "name": "MODERN_STATUE_08",
+    "name": "Woman Statue Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -139,7 +139,7 @@
   "102477927122728": {
     "__typename": "WorldsItemDefinition",
     "id": "102477927122728",
-    "name": "MODERN_PLANT_03",
+    "name": "Plant Medium One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -167,7 +167,7 @@
   "103100233782037": {
     "__typename": "WorldsItemDefinition",
     "id": "103100233782037",
-    "name": "GENERIC_08",
+    "name": "Rock Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -195,7 +195,7 @@
   "1038824389585606": {
     "__typename": "WorldsItemDefinition",
     "id": "1038824389585606",
-    "name": "FANTASY_06",
+    "name": "Miniature Catapult",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -222,7 +222,7 @@
   "104244592186491759": {
     "__typename": "WorldsItemDefinition",
     "id": "104244592186491759",
-    "name": "WALL_11",
+    "name": "Wall Blue Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -249,7 +249,7 @@
   "105220654556292026": {
     "__typename": "WorldsItemDefinition",
     "id": "105220654556292026",
-    "name": "FANTASY_00",
+    "name": "Boomerang",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -276,7 +276,7 @@
   "105775525268223705": {
     "__typename": "WorldsItemDefinition",
     "id": "105775525268223705",
-    "name": "SKY_MODERN",
+    "name": "Surroundings Black",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -303,7 +303,7 @@
   "1060026304135127": {
     "__typename": "WorldsItemDefinition",
     "id": "1060026304135127",
-    "name": "MUS_FUTURE_MYSTERIOUS",
+    "name": "Future Mysterious",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -330,7 +330,7 @@
   "106176901265829521": {
     "__typename": "WorldsItemDefinition",
     "id": "106176901265829521",
-    "name": "WINTER_ANALOG_CLOCK_01",
+    "name": "Wooden Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -357,7 +357,7 @@
   "106725403325051": {
     "__typename": "WorldsItemDefinition",
     "id": "106725403325051",
-    "name": "MODERN_VAR1_01",
+    "name": "Wavy Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -385,7 +385,7 @@
   "107404743219926": {
     "__typename": "WorldsItemDefinition",
     "id": "107404743219926",
-    "name": "MODERN_SPORTS_02",
+    "name": "Basketball Hoop",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -413,7 +413,7 @@
   "107922419900478": {
     "__typename": "WorldsItemDefinition",
     "id": "107922419900478",
-    "name": "REX_FC_08",
+    "name": "Toy Rocket",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -440,7 +440,7 @@
   "108222729797190": {
     "__typename": "WorldsItemDefinition",
     "id": "108222729797190",
-    "name": "MODERN_SPORTS_05",
+    "name": "Ping-Pong Paddle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -468,7 +468,7 @@
   "108514289809131": {
     "__typename": "WorldsItemDefinition",
     "id": "108514289809131",
-    "name": "MODERN_MISC_01",
+    "name": "Bench",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -496,7 +496,7 @@
   "108683663074383": {
     "__typename": "WorldsItemDefinition",
     "id": "108683663074383",
-    "name": "MODERN_RUG_01",
+    "name": "Rug Sepia",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -524,7 +524,7 @@
   "108904646475314": {
     "__typename": "WorldsItemDefinition",
     "id": "108904646475314",
-    "name": "REX_FC_09",
+    "name": "Toy RV",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -551,7 +551,7 @@
   "109200546403470": {
     "__typename": "WorldsItemDefinition",
     "id": "109200546403470",
-    "name": "FANTASY_04",
+    "name": "Archery Target",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -578,7 +578,7 @@
   "1093198154138136": {
     "__typename": "WorldsItemDefinition",
     "id": "1093198154138136",
-    "name": "BOHO_BOOKCASE_01",
+    "name": "Leaning Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -605,7 +605,7 @@
   "1095628447239950": {
     "__typename": "WorldsItemDefinition",
     "id": "1095628447239950",
-    "name": "FARLANDS_PAINTINGS_06",
+    "name": "Curious Chimp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -632,7 +632,7 @@
   "109976443027113": {
     "__typename": "WorldsItemDefinition",
     "id": "109976443027113",
-    "name": "GENERIC_04",
+    "name": "Cube Plastic",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -660,7 +660,7 @@
   "1116708055120607": {
     "__typename": "WorldsItemDefinition",
     "id": "1116708055120607",
-    "name": "UGC_AMBIENT_DESERT",
+    "name": "UGC Ambience - Desert",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -687,7 +687,7 @@
   "113660316061331": {
     "__typename": "WorldsItemDefinition",
     "id": "113660316061331",
-    "name": "PAINTING_MEDIUM_06",
+    "name": "Painting Faragon Eclipse",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -714,7 +714,7 @@
   "114050815926302": {
     "__typename": "WorldsItemDefinition",
     "id": "114050815926302",
-    "name": "GENERIC_03",
+    "name": "Cube Basic",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -742,7 +742,7 @@
   "114965899834264811": {
     "__typename": "WorldsItemDefinition",
     "id": "114965899834264811",
-    "name": "ART_VICTROLA_01",
+    "name": "Retro Victrola",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -769,7 +769,7 @@
   "1166312126835140": {
     "__typename": "WorldsItemDefinition",
     "id": "1166312126835140",
-    "name": "MODERN_PLANT_12",
+    "name": "Plant Medium Six",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -797,7 +797,7 @@
   "116919546268245611": {
     "__typename": "WorldsItemDefinition",
     "id": "116919546268245611",
-    "name": "DREAMDECK_04",
+    "name": "Poly Moose",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -824,7 +824,7 @@
   "117103912319441": {
     "__typename": "WorldsItemDefinition",
     "id": "117103912319441",
-    "name": "FARLANDS_FLORA_08",
+    "name": "Moon Flower",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -851,7 +851,7 @@
   "117764768900846": {
     "__typename": "WorldsItemDefinition",
     "id": "117764768900846",
-    "name": "FANTASY_32",
+    "name": "Column Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -878,7 +878,7 @@
   "118153882233487": {
     "__typename": "WorldsItemDefinition",
     "id": "118153882233487",
-    "name": "FANTASY_28",
+    "name": "Archer Mini",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -905,7 +905,7 @@
   "118295472789692157": {
     "__typename": "WorldsItemDefinition",
     "id": "118295472789692157",
-    "name": "GOLDEN_DK2",
+    "name": "Golden DK2",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -913,10 +913,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -933,7 +932,7 @@
   "118519822131733": {
     "__typename": "WorldsItemDefinition",
     "id": "118519822131733",
-    "name": "REX_FC_POLO_01",
+    "name": "STACK IT!",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -960,7 +959,7 @@
   "118803805406722": {
     "__typename": "WorldsItemDefinition",
     "id": "118803805406722",
-    "name": "MODERN_MISC_05",
+    "name": "Triangle Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -988,7 +987,7 @@
   "118936684908038105": {
     "__typename": "WorldsItemDefinition",
     "id": "118936684908038105",
-    "name": "ART_PORTAL_01",
+    "name": "Deco Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -996,7 +995,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -1015,7 +1014,7 @@
   "119110445377112": {
     "__typename": "WorldsItemDefinition",
     "id": "119110445377112",
-    "name": "MODERN_MISC_08",
+    "name": "Low Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1043,7 +1042,7 @@
   "1192449797525743": {
     "__typename": "WorldsItemDefinition",
     "id": "1192449797525743",
-    "name": "FANTASY_11",
+    "name": "Astral Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1070,7 +1069,7 @@
   "120042153831650406": {
     "__typename": "WorldsItemDefinition",
     "id": "120042153831650406",
-    "name": "MODERN_PLANT_21",
+    "name": "Planter Medium Stone",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1098,7 +1097,7 @@
   "120320112060787123": {
     "__typename": "WorldsItemDefinition",
     "id": "120320112060787123",
-    "name": "PIRATES_DESK_01",
+    "name": "Treasure Map Desk",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1106,7 +1105,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -1125,7 +1124,7 @@
   "120321728650824238": {
     "__typename": "WorldsItemDefinition",
     "id": "120321728650824238",
-    "name": "SUMMER_PORTAL_01",
+    "name": "Summertime Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1133,7 +1132,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "COMMON",
     "local_bounds_origin": {
@@ -1152,7 +1151,7 @@
   "120373108670185": {
     "__typename": "WorldsItemDefinition",
     "id": "120373108670185",
-    "name": "FANTASY_26",
+    "name": "Knight Mini",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1179,7 +1178,7 @@
   "1209849129140333": {
     "__typename": "WorldsItemDefinition",
     "id": "1209849129140333",
-    "name": "WINTER_KINARA_01",
+    "name": "Kinara",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1206,7 +1205,7 @@
   "120989541950122": {
     "__typename": "WorldsItemDefinition",
     "id": "120989541950122",
-    "name": "DREAMDECK_02",
+    "name": "Moon Alien",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1233,7 +1232,7 @@
   "121569008470494": {
     "__typename": "WorldsItemDefinition",
     "id": "121569008470494",
-    "name": "FANTASY_21",
+    "name": "Battle Map Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1260,7 +1259,7 @@
   "121591808511174": {
     "__typename": "WorldsItemDefinition",
     "id": "121591808511174",
-    "name": "PAINTING_SMALL_17",
+    "name": "Painting Samurai",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1287,7 +1286,7 @@
   "121792678490653": {
     "__typename": "WorldsItemDefinition",
     "id": "121792678490653",
-    "name": "SCIFI_14",
+    "name": "Space Counter Square",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1314,7 +1313,7 @@
   "122075518409544": {
     "__typename": "WorldsItemDefinition",
     "id": "122075518409544",
-    "name": "FANTASY_18",
+    "name": "Royal Sword",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1341,7 +1340,7 @@
   "122503268381876": {
     "__typename": "WorldsItemDefinition",
     "id": "122503268381876",
-    "name": "SCIFI_TOYS_02",
+    "name": "Hologram Target",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1369,7 +1368,7 @@
   "122640208420040": {
     "__typename": "WorldsItemDefinition",
     "id": "122640208420040",
-    "name": "MODERN_PLANT_17",
+    "name": "Plant Potted Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1397,7 +1396,7 @@
   "122715428418016": {
     "__typename": "WorldsItemDefinition",
     "id": "122715428418016",
-    "name": "SCIFI_17",
+    "name": "Glorious Trigon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1424,7 +1423,7 @@
   "122725088402287": {
     "__typename": "WorldsItemDefinition",
     "id": "122725088402287",
-    "name": "SCIFI_13",
+    "name": "Space Counter Long",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1451,7 +1450,7 @@
   "122853918349776": {
     "__typename": "WorldsItemDefinition",
     "id": "122853918349776",
-    "name": "REX_FC_07",
+    "name": "Robot Hand",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1478,7 +1477,7 @@
   "123177871692404": {
     "__typename": "WorldsItemDefinition",
     "id": "123177871692404",
-    "name": "PAINTING_SMALL_06",
+    "name": "Painting Balloon Apparatus",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1505,7 +1504,7 @@
   "123190981650551": {
     "__typename": "WorldsItemDefinition",
     "id": "123190981650551",
-    "name": "MAT_FLOOR_TEST100",
+    "name": "Floor Tiled Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1532,7 +1531,7 @@
   "123484268353337": {
     "__typename": "WorldsItemDefinition",
     "id": "123484268353337",
-    "name": "MAT_FLOOR_TEST040",
+    "name": "Floor Red Room",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1559,7 +1558,7 @@
   "123816028320324": {
     "__typename": "WorldsItemDefinition",
     "id": "123816028320324",
-    "name": "PAINTING_SMALL_09",
+    "name": "Painting Custos",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1586,7 +1585,7 @@
   "123922164996320": {
     "__typename": "WorldsItemDefinition",
     "id": "123922164996320",
-    "name": "FANTASY_30",
+    "name": "Rug Noble",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1613,7 +1612,7 @@
   "1239816486140917": {
     "__typename": "WorldsItemDefinition",
     "id": "1239816486140917",
-    "name": "MODERN_VAR1_00",
+    "name": "Slanted Lounge Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1641,7 +1640,7 @@
   "124254014959669": {
     "__typename": "WorldsItemDefinition",
     "id": "124254014959669",
-    "name": "PAINTING_MEDIUM_07",
+    "name": "Painting dkz-bot",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1668,7 +1667,7 @@
   "124264663141717345": {
     "__typename": "WorldsItemDefinition",
     "id": "124264663141717345",
-    "name": "MODERN_STATUE_03",
+    "name": "Man Statue Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1696,7 +1695,7 @@
   "124277073982700588": {
     "__typename": "WorldsItemDefinition",
     "id": "124277073982700588",
-    "name": "SOUND_OBJECT_03",
+    "name": "SFX - Wind Chimes",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -1723,7 +1722,7 @@
   "124349234896427": {
     "__typename": "WorldsItemDefinition",
     "id": "124349234896427",
-    "name": "PAINTING_SMALL_21",
+    "name": "Painting Aim True",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1750,7 +1749,7 @@
   "124742961567298": {
     "__typename": "WorldsItemDefinition",
     "id": "124742961567298",
-    "name": "WALL_03",
+    "name": "Wall Jester",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1777,7 +1776,7 @@
   "124854704844672": {
     "__typename": "WorldsItemDefinition",
     "id": "124854704844672",
-    "name": "FARLANDS_FLORA_04",
+    "name": "Cactus Bulb",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1804,7 +1803,7 @@
   "124901908835258668": {
     "__typename": "WorldsItemDefinition",
     "id": "124901908835258668",
-    "name": "FANTASY_42",
+    "name": "Warrior Goddess",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1831,7 +1830,7 @@
   "125319194339574498": {
     "__typename": "WorldsItemDefinition",
     "id": "125319194339574498",
-    "name": "MODERN_STATUE_07",
+    "name": "Woman Statue Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1859,7 +1858,7 @@
   "125880051072069227": {
     "__typename": "WorldsItemDefinition",
     "id": "125880051072069227",
-    "name": "WALL_14",
+    "name": "Wall Dark Green Granite",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1886,7 +1885,7 @@
   "125895238115363": {
     "__typename": "WorldsItemDefinition",
     "id": "125895238115363",
-    "name": "WALL_00",
+    "name": "Wall Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1913,7 +1912,7 @@
   "126705666644357594": {
     "__typename": "WorldsItemDefinition",
     "id": "126705666644357594",
-    "name": "SPOOKY_PORTAL_01",
+    "name": "Gothic Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1921,7 +1920,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -1940,7 +1939,7 @@
   "1272243786220684": {
     "__typename": "WorldsItemDefinition",
     "id": "1272243786220684",
-    "name": "WALL_02",
+    "name": "Wall Palm Springs",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1967,7 +1966,7 @@
   "128005254570573": {
     "__typename": "WorldsItemDefinition",
     "id": "128005254570573",
-    "name": "PAINTING_MEDIUM_03",
+    "name": "Painting Rocket Fridge - Summer '68",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -1994,7 +1993,7 @@
   "1281360315307207": {
     "__typename": "WorldsItemDefinition",
     "id": "1281360315307207",
-    "name": "MAT_FLOOR_TEST020",
+    "name": "Floor Parquet One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2021,7 +2020,7 @@
   "128608081220410": {
     "__typename": "WorldsItemDefinition",
     "id": "128608081220410",
-    "name": "MAT_FLOOR_TEST080",
+    "name": "Floor Dark Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2048,7 +2047,7 @@
   "128920317709864": {
     "__typename": "WorldsItemDefinition",
     "id": "128920317709864",
-    "name": "SCIFI_TOYS_01",
+    "name": "RC Blimp",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -2075,7 +2074,7 @@
   "129219215252268868": {
     "__typename": "WorldsItemDefinition",
     "id": "129219215252268868",
-    "name": "FANTASY_PORTAL_01",
+    "name": "Fantasy Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2083,7 +2082,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "COMMON",
     "local_bounds_origin": {
@@ -2130,7 +2129,7 @@
   "1307410099367935": {
     "__typename": "WorldsItemDefinition",
     "id": "1307410099367935",
-    "name": "MAT_CEILING_TEST040",
+    "name": "Ceiling Standard White",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2158,7 +2157,7 @@
   "131335897617434": {
     "__typename": "WorldsItemDefinition",
     "id": "131335897617434",
-    "name": "SCIFI_16",
+    "name": "Space Shelf Square",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2185,7 +2184,7 @@
   "131382151026721222": {
     "__typename": "WorldsItemDefinition",
     "id": "131382151026721222",
-    "name": "INDUSTRIAL_ANALOG_CLOCK_01",
+    "name": "Ultramodern Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2212,7 +2211,7 @@
   "131647112611607911": {
     "__typename": "WorldsItemDefinition",
     "id": "131647112611607911",
-    "name": "OC4_STATUE",
+    "name": "Oculus Connect Four",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2220,10 +2219,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -2240,7 +2238,7 @@
   "132197427343217054": {
     "__typename": "WorldsItemDefinition",
     "id": "132197427343217054",
-    "name": "SOUND_OBJECT_WEATHER_THUNDER",
+    "name": "SFX - Thunder",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -2267,7 +2265,7 @@
   "1325029004273920": {
     "__typename": "WorldsItemDefinition",
     "id": "1325029004273920",
-    "name": "FLOOR_01",
+    "name": "Floor Hex Marble",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2294,7 +2292,7 @@
   "1325394930903807": {
     "__typename": "WorldsItemDefinition",
     "id": "1325394930903807",
-    "name": "MODERN_PLANT_18",
+    "name": "Planter Round Marble Large",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2322,7 +2320,7 @@
   "1327536934022954": {
     "__typename": "WorldsItemDefinition",
     "id": "1327536934022954",
-    "name": "PAINTING_MEDIUM_05",
+    "name": "Painting Visit to the Vermicious",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2349,7 +2347,7 @@
   "133287650200361175": {
     "__typename": "WorldsItemDefinition",
     "id": "133287650200361175",
-    "name": "CAFE_BOTTLE_03",
+    "name": "Cafe Bottle Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2357,7 +2355,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Object"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -2376,7 +2374,7 @@
   "133998423942443": {
     "__typename": "WorldsItemDefinition",
     "id": "133998423942443",
-    "name": "WALL_05",
+    "name": "Wall Padded Grid",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2403,7 +2401,7 @@
   "134126757852067241": {
     "__typename": "WorldsItemDefinition",
     "id": "134126757852067241",
-    "name": "REX_FC_POLO_00",
+    "name": "Bullseye!",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2431,7 +2429,7 @@
   "1342307379225885": {
     "__typename": "WorldsItemDefinition",
     "id": "1342307379225885",
-    "name": "PAINTING_SMALL_02",
+    "name": "Painting Cephalopod Warrior",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2458,7 +2456,7 @@
   "1347447508691579": {
     "__typename": "WorldsItemDefinition",
     "id": "1347447508691579",
-    "name": "SUMMER_STATUE_01",
+    "name": "Florence the Flamingo",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2485,7 +2483,7 @@
   "134810140648857": {
     "__typename": "WorldsItemDefinition",
     "id": "134810140648857",
-    "name": "MUS_MOD_AMBIENT",
+    "name": "Modern Ambient",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2512,7 +2510,7 @@
   "134961063841779": {
     "__typename": "WorldsItemDefinition",
     "id": "134961063841779",
-    "name": "CEILING_05",
+    "name": "Ceiling Blue Triangle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2539,7 +2537,7 @@
   "135237100458132": {
     "__typename": "WorldsItemDefinition",
     "id": "135237100458132",
-    "name": "SCIFI_12",
+    "name": "Space Counter Corner",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2566,7 +2564,7 @@
   "1359458054157052": {
     "__typename": "WorldsItemDefinition",
     "id": "1359458054157052",
-    "name": "SUMMER_LOVESEAT_01",
+    "name": "Retro-Modern Loveseat",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2593,7 +2591,7 @@
   "136095292635642958": {
     "__typename": "WorldsItemDefinition",
     "id": "136095292635642958",
-    "name": "FANTASY_ANALOG_CLOCK_01",
+    "name": "Ancient Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2620,7 +2618,7 @@
   "136561056563652302": {
     "__typename": "WorldsItemDefinition",
     "id": "136561056563652302",
-    "name": "FAERIE_WATERING_CAN_01",
+    "name": "Watering Can",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2647,7 +2645,7 @@
   "1367981979990854": {
     "__typename": "WorldsItemDefinition",
     "id": "1367981979990854",
-    "name": "PAINTING_SMALL_04",
+    "name": "Painting The Pointy End",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2674,7 +2672,7 @@
   "136879933659054": {
     "__typename": "WorldsItemDefinition",
     "id": "136879933659054",
-    "name": "MUS_FANTASY_NATURAL",
+    "name": "Fantasy Natural",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -2701,7 +2699,7 @@
   "137016493606919": {
     "__typename": "WorldsItemDefinition",
     "id": "137016493606919",
-    "name": "MODERN_PLANT_10",
+    "name": "Plant Large Four",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2729,7 +2727,7 @@
   "137226986458264537": {
     "__typename": "WorldsItemDefinition",
     "id": "137226986458264537",
-    "name": "ZODIAC_DOG_01",
+    "name": "Zodiac Plushie - The Dog",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2756,7 +2754,7 @@
   "137443809637997720": {
     "__typename": "WorldsItemDefinition",
     "id": "137443809637997720",
-    "name": "FANTASY_23",
+    "name": "Ornate Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2783,7 +2781,7 @@
   "1375461745872683": {
     "__typename": "WorldsItemDefinition",
     "id": "1375461745872683",
-    "name": "MODERN_MISC_07",
+    "name": "Dining Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2811,7 +2809,7 @@
   "137606828999671162": {
     "__typename": "WorldsItemDefinition",
     "id": "137606828999671162",
-    "name": "MODERN_STATUE_06",
+    "name": "Woman Statue Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2864,7 +2862,7 @@
   "137873436851761": {
     "__typename": "WorldsItemDefinition",
     "id": "137873436851761",
-    "name": "PAINTING_SMALL_14",
+    "name": "Painting Modern Coop",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2891,7 +2889,7 @@
   "138650246769954": {
     "__typename": "WorldsItemDefinition",
     "id": "138650246769954",
-    "name": "PAINTING_LARGE_03",
+    "name": "Painting Journey to a Faraway Land",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2918,7 +2916,7 @@
   "138863885997405789": {
     "__typename": "WorldsItemDefinition",
     "id": "138863885997405789",
-    "name": "ART_CEILING_02",
+    "name": "Ceiling Art Deco Mat White",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2926,7 +2924,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Material"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -2945,7 +2943,7 @@
   "140101286587453": {
     "__typename": "WorldsItemDefinition",
     "id": "140101286587453",
-    "name": "GENERIC_02",
+    "name": "Cube Glow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2973,7 +2971,7 @@
   "140182326602885": {
     "__typename": "WorldsItemDefinition",
     "id": "140182326602885",
-    "name": "FARLANDS_PAINTINGS_02",
+    "name": "Tom The Wibwom",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3000,7 +2998,7 @@
   "141134522306184910": {
     "__typename": "WorldsItemDefinition",
     "id": "141134522306184910",
-    "name": "ZODIAC_MONKEY_01",
+    "name": "Zodiac Plushie - The Monkey",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3027,7 +3025,7 @@
   "142158851508011687": {
     "__typename": "WorldsItemDefinition",
     "id": "142158851508011687",
-    "name": "WINTER_PORTAL_01",
+    "name": "Rustic Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3035,7 +3033,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -3054,7 +3052,7 @@
   "1422830397786299": {
     "__typename": "WorldsItemDefinition",
     "id": "1422830397786299",
-    "name": "PAINTING_MEDIUM_13",
+    "name": "Painting Family from Faragon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3081,7 +3079,7 @@
   "142751519642292": {
     "__typename": "WorldsItemDefinition",
     "id": "142751519642292",
-    "name": "FX_STATUE_04",
+    "name": "Astral Ribbon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3108,7 +3106,7 @@
   "142902559622036": {
     "__typename": "WorldsItemDefinition",
     "id": "142902559622036",
-    "name": "FANTASY_05",
+    "name": "Weapon Rack",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3135,7 +3133,7 @@
   "1430455817024163": {
     "__typename": "WorldsItemDefinition",
     "id": "1430455817024163",
-    "name": "SCIFI_01",
+    "name": "Digital Humming Bird",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3162,7 +3160,7 @@
   "143203914538445598": {
     "__typename": "WorldsItemDefinition",
     "id": "143203914538445598",
-    "name": "OC3_STATUE",
+    "name": "Oculus Connect Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3170,10 +3168,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -3190,7 +3187,7 @@
   "1436369339744498": {
     "__typename": "WorldsItemDefinition",
     "id": "1436369339744498",
-    "name": "MODERN_PLANT_08",
+    "name": "Plant Large Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3218,7 +3215,7 @@
   "143673977017840879": {
     "__typename": "WorldsItemDefinition",
     "id": "143673977017840879",
-    "name": "SOUND_OBJECT_02",
+    "name": "SFX - Steam Engine",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -3245,7 +3242,7 @@
   "144561992334448467": {
     "__typename": "WorldsItemDefinition",
     "id": "144561992334448467",
-    "name": "SCIFI_02",
+    "name": "Blackhole",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3259,12 +3256,12 @@
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
-      "z": "00000000"
+      "z": "42990000"
     },
     "local_bounds_extent": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
+      "x": "42cd0000",
+      "y": "42b20000",
+      "z": "42990000"
     },
     "asset_key": "SCIFI_02",
     "asset_pack": null
@@ -3272,7 +3269,7 @@
   "1449564598491748": {
     "__typename": "WorldsItemDefinition",
     "id": "1449564598491748",
-    "name": "DREAMDECK_08",
+    "name": "T-Rex Skull",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3299,7 +3296,7 @@
   "1456879947746785": {
     "__typename": "WorldsItemDefinition",
     "id": "1456879947746785",
-    "name": "SUMMER_FLOATIE_02",
+    "name": "Buddy Bear Floatie",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -3326,7 +3323,7 @@
   "1457233761038931": {
     "__typename": "WorldsItemDefinition",
     "id": "1457233761038931",
-    "name": "SKY_FANTASY",
+    "name": "Surroundings Coastal Mediterranean",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -3353,7 +3350,7 @@
   "1459834927432099": {
     "__typename": "WorldsItemDefinition",
     "id": "1459834927432099",
-    "name": "MAT_WALL_TEST080",
+    "name": "Wall Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3380,7 +3377,7 @@
   "146317155983182": {
     "__typename": "WorldsItemDefinition",
     "id": "146317155983182",
-    "name": "PAINTING_LARGE_01",
+    "name": "Painting The Salvage",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3407,7 +3404,7 @@
   "146782837389629013": {
     "__typename": "WorldsItemDefinition",
     "id": "146782837389629013",
-    "name": "FANTASY_09",
+    "name": "Six Sided Die",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3415,7 +3412,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Object"
     ],
     "rarity": "COMMON",
     "local_bounds_origin": {
@@ -3434,7 +3431,7 @@
   "147322868960398683": {
     "__typename": "WorldsItemDefinition",
     "id": "147322868960398683",
-    "name": "SKY_VOID",
+    "name": "Surroundings Grey",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3461,7 +3458,7 @@
   "1473781816014863": {
     "__typename": "WorldsItemDefinition",
     "id": "1473781816014863",
-    "name": "REX_FC_POLO_03",
+    "name": "CAN YOU HEAR ME?",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3488,7 +3485,7 @@
   "1474567532600097": {
     "__typename": "WorldsItemDefinition",
     "id": "1474567532600097",
-    "name": "MODERN_MISC_04",
+    "name": "Coat Rack",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3516,7 +3513,7 @@
   "147486287832691313": {
     "__typename": "WorldsItemDefinition",
     "id": "147486287832691313",
-    "name": "ART_ANALOG_CLOCK_01",
+    "name": "Vintage Wall Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3543,7 +3540,7 @@
   "1476122852452928": {
     "__typename": "WorldsItemDefinition",
     "id": "1476122852452928",
-    "name": "SCIFI_04",
+    "name": "Space Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3570,7 +3567,7 @@
   "1478535695570758": {
     "__typename": "WorldsItemDefinition",
     "id": "1478535695570758",
-    "name": "PAINTING_SMALL_13",
+    "name": "Painting Castle Talcott",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3597,7 +3594,7 @@
   "148133396635040069": {
     "__typename": "WorldsItemDefinition",
     "id": "148133396635040069",
-    "name": "CAFE_BOTTLE_01",
+    "name": "Cafe Bottle One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3605,7 +3602,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Object"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -3624,7 +3621,7 @@
   "1482023138765891": {
     "__typename": "WorldsItemDefinition",
     "id": "1482023138765891",
-    "name": "PAINTING_MEDIUM_12",
+    "name": "Painting Faragon Garden Spores",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3651,7 +3648,7 @@
   "148212642562121": {
     "__typename": "WorldsItemDefinition",
     "id": "148212642562121",
-    "name": "MUS_FANTASY_AMBIENT",
+    "name": "Fantasy Ambient",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -3678,7 +3675,7 @@
   "1482679841785847": {
     "__typename": "WorldsItemDefinition",
     "id": "1482679841785847",
-    "name": "DREAMDECK_00",
+    "name": "Rubber Duck",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3705,7 +3702,7 @@
   "148752369035383": {
     "__typename": "WorldsItemDefinition",
     "id": "148752369035383",
-    "name": "FANTASY_03",
+    "name": "Griffin Gargoyle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3732,7 +3729,7 @@
   "1487734294636306": {
     "__typename": "WorldsItemDefinition",
     "id": "1487734294636306",
-    "name": "MODERN_PLANT_15",
+    "name": "Plant Large Six",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3760,7 +3757,7 @@
   "1488891734562411": {
     "__typename": "WorldsItemDefinition",
     "id": "1488891734562411",
-    "name": "MODERN_PLANT_19",
+    "name": "Planter Round Cement Large",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3788,7 +3785,7 @@
   "1489832921039744": {
     "__typename": "WorldsItemDefinition",
     "id": "1489832921039744",
-    "name": "MODERN_SPORTS_01",
+    "name": "Basketball",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3816,7 +3813,7 @@
   "1490175654403824": {
     "__typename": "WorldsItemDefinition",
     "id": "1490175654403824",
-    "name": "PAINTING_MEDIUM_11",
+    "name": "Painting In the Cockpit",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3843,7 +3840,7 @@
   "149171734040267018": {
     "__typename": "WorldsItemDefinition",
     "id": "149171734040267018",
-    "name": "CAFE_REGISTER_01",
+    "name": "Cafe Register",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3851,7 +3848,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Decorations"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -3870,7 +3867,7 @@
   "1493184297434792": {
     "__typename": "WorldsItemDefinition",
     "id": "1493184297434792",
-    "name": "FANTASY_34",
+    "name": "Ornate Square Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3897,7 +3894,7 @@
   "149327299604071228": {
     "__typename": "WorldsItemDefinition",
     "id": "149327299604071228",
-    "name": "PIRATES_PORTAL_01",
+    "name": "Pirate Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3905,7 +3902,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -3924,7 +3921,7 @@
   "1495259357203031": {
     "__typename": "WorldsItemDefinition",
     "id": "1495259357203031",
-    "name": "FANTASY_12",
+    "name": "Carpenter's Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -3979,7 +3976,7 @@
   "1499655376790325": {
     "__typename": "WorldsItemDefinition",
     "id": "1499655376790325",
-    "name": "FARLANDS_PAINTINGS_04",
+    "name": "Koleron Portrait",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4006,7 +4003,7 @@
   "150140365562312": {
     "__typename": "WorldsItemDefinition",
     "id": "150140365562312",
-    "name": "PAINTING_03",
+    "name": "Painting Pagoda Showdown",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4034,7 +4031,7 @@
   "150245812240502314": {
     "__typename": "WorldsItemDefinition",
     "id": "150245812240502314",
-    "name": "PAINTING_MEDIUM_01",
+    "name": "Painting On My Way To Papertown",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4061,7 +4058,7 @@
   "1504194236366605": {
     "__typename": "WorldsItemDefinition",
     "id": "1504194236366605",
-    "name": "PAINTING_SMALL_08",
+    "name": "Painting Arcus Feles",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4088,7 +4085,7 @@
   "1510541655681357": {
     "__typename": "WorldsItemDefinition",
     "id": "1510541655681357",
-    "name": "PAINTING_LARGE_05",
+    "name": "Painting Expedition",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4115,7 +4112,7 @@
   "151224298818314": {
     "__typename": "WorldsItemDefinition",
     "id": "151224298818314",
-    "name": "SCIFI_09",
+    "name": "Spider Tank",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4142,7 +4139,7 @@
   "151236633541837064": {
     "__typename": "WorldsItemDefinition",
     "id": "151236633541837064",
-    "name": "PROMOTION_WKND_01",
+    "name": "Lightsaber",
     "item_description": "Adventure awaits through this door. How will you forge your destiny? A new journey coming soon, from Oculus Studios.",
     "is_scalable": false,
     "is_unlimited": true,
@@ -4169,7 +4166,7 @@
   "1517005638392576": {
     "__typename": "WorldsItemDefinition",
     "id": "1517005638392576",
-    "name": "PAINTING_MEDIUM_08",
+    "name": "Painting Celestial Bodies",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4196,7 +4193,7 @@
   "151701815435483": {
     "__typename": "WorldsItemDefinition",
     "id": "151701815435483",
-    "name": "GENERIC_10",
+    "name": "Rock Four",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4224,7 +4221,7 @@
   "1517495865007050": {
     "__typename": "WorldsItemDefinition",
     "id": "1517495865007050",
-    "name": "PAINTING_SMALL_18",
+    "name": "Painting Burbling Beast",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4251,7 +4248,7 @@
   "1517957274989531": {
     "__typename": "WorldsItemDefinition",
     "id": "1517957274989531",
-    "name": "REX_FARLANDS_01",
+    "name": "Giffle Statue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4278,7 +4275,7 @@
   "152075402053277": {
     "__typename": "WorldsItemDefinition",
     "id": "152075402053277",
-    "name": "MAT_FLOOR_TEST050",
+    "name": "Floor Stone",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4305,7 +4302,7 @@
   "1521066101274080": {
     "__typename": "WorldsItemDefinition",
     "id": "1521066101274080",
-    "name": "MUS_FUTURE_ORCH",
+    "name": "Future Orchestral",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4332,7 +4329,7 @@
   "152273478705341": {
     "__typename": "WorldsItemDefinition",
     "id": "152273478705341",
-    "name": "FANTASY_33",
+    "name": "Ornate Long Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4359,7 +4356,7 @@
   "1524174297682333": {
     "__typename": "WorldsItemDefinition",
     "id": "1524174297682333",
-    "name": "SOUND_OBJECT_Halloween_SqueakyFloors",
+    "name": "SFX - Creaky Floors",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -4386,7 +4383,7 @@
   "152431700056526172": {
     "__typename": "WorldsItemDefinition",
     "id": "152431700056526172",
-    "name": "FANTASY_10",
+    "name": "Twenty Sided Die",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4394,7 +4391,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Object"
     ],
     "rarity": "COMMON",
     "local_bounds_origin": {
@@ -4413,7 +4410,7 @@
   "152519605585187160": {
     "__typename": "WorldsItemDefinition",
     "id": "152519605585187160",
-    "name": "GOLDEN_TOUCHES",
+    "name": "Golden Touches",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4421,10 +4418,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -4441,7 +4437,7 @@
   "1526037194170359": {
     "__typename": "WorldsItemDefinition",
     "id": "1526037194170359",
-    "name": "WALL_04",
+    "name": "Wall Space Base",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4468,7 +4464,7 @@
   "153229079766191773": {
     "__typename": "WorldsItemDefinition",
     "id": "153229079766191773",
-    "name": "FX_STATUE_01",
+    "name": "Twinkle Trails",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4523,7 +4519,7 @@
   "153636467814708159": {
     "__typename": "WorldsItemDefinition",
     "id": "153636467814708159",
-    "name": "REX_FC_01",
+    "name": "T0B1 Statue v1",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4551,7 +4547,7 @@
   "154142178903508757": {
     "__typename": "WorldsItemDefinition",
     "id": "154142178903508757",
-    "name": "INDUSTRIAL_PORTAL_01",
+    "name": "Industrial Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4559,7 +4555,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -4578,7 +4574,7 @@
   "1546674038767380": {
     "__typename": "WorldsItemDefinition",
     "id": "1546674038767380",
-    "name": "SPOOKY_COUNTER_01",
+    "name": "Gothic Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4605,7 +4601,7 @@
   "155186785109308": {
     "__typename": "WorldsItemDefinition",
     "id": "155186785109308",
-    "name": "FLOOR_03",
+    "name": "Floor Black Marble",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4632,7 +4628,7 @@
   "155222258416253": {
     "__typename": "WorldsItemDefinition",
     "id": "155222258416253",
-    "name": "FANTASY_36",
+    "name": "Rug Winter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4659,7 +4655,7 @@
   "155601197665543659": {
     "__typename": "WorldsItemDefinition",
     "id": "155601197665543659",
-    "name": "REX_FC_POLO_05",
+    "name": "DIGITAL DREAMS",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4687,7 +4683,7 @@
   "1558334804271562": {
     "__typename": "WorldsItemDefinition",
     "id": "1558334804271562",
-    "name": "SUMMER_STATUE_02",
+    "name": "Lustrous Palm",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4714,7 +4710,7 @@
   "156686574906024": {
     "__typename": "WorldsItemDefinition",
     "id": "156686574906024",
-    "name": "PAINTING_02",
+    "name": "Painting Poly Mountain",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4742,7 +4738,7 @@
   "157905908303327": {
     "__typename": "WorldsItemDefinition",
     "id": "157905908303327",
-    "name": "CEILING_04",
+    "name": "Ceiling Black Triangle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4769,7 +4765,7 @@
   "158413211417995": {
     "__typename": "WorldsItemDefinition",
     "id": "158413211417995",
-    "name": "CEILING_01",
+    "name": "Ceiling Circuit",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4796,7 +4792,7 @@
   "1591195730985662": {
     "__typename": "WorldsItemDefinition",
     "id": "1591195730985662",
-    "name": "SUMMER_UMBRELLA_01",
+    "name": "Summertime Umbrella",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4823,7 +4819,7 @@
   "1591290417580665": {
     "__typename": "WorldsItemDefinition",
     "id": "1591290417580665",
-    "name": "SCIFI_11",
+    "name": "Rug Circuit",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4850,7 +4846,7 @@
   "159365018566200384": {
     "__typename": "WorldsItemDefinition",
     "id": "159365018566200384",
-    "name": "SOUND_OBJECT_01",
+    "name": "SFX - Steam",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -4877,7 +4873,7 @@
   "1594405190615066": {
     "__typename": "WorldsItemDefinition",
     "id": "1594405190615066",
-    "name": "SKY_MOUNTAINS",
+    "name": "Surroundings Mountain Valley",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4904,7 +4900,7 @@
   "1595641460510741": {
     "__typename": "WorldsItemDefinition",
     "id": "1595641460510741",
-    "name": "REX_FC_02",
+    "name": "Workbench",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4932,7 +4928,7 @@
   "1595700630530834": {
     "__typename": "WorldsItemDefinition",
     "id": "1595700630530834",
-    "name": "INDUSTRIAL_END_TABLE_01",
+    "name": "Ultramodern End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4959,7 +4955,7 @@
   "1601508949948803": {
     "__typename": "WorldsItemDefinition",
     "id": "1601508949948803",
-    "name": "WINTER_DREIDEL_01",
+    "name": "Gimmel the Dreidel Plushie",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4986,7 +4982,7 @@
   "160488461163333": {
     "__typename": "WorldsItemDefinition",
     "id": "160488461163333",
-    "name": "REX_FARLANDS_00",
+    "name": "Wibwom Statue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5013,7 +5009,7 @@
   "160801589038406700": {
     "__typename": "WorldsItemDefinition",
     "id": "160801589038406700",
-    "name": "PIRATES_PAINTING_04",
+    "name": "Voyage",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5021,7 +5017,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -5040,7 +5036,7 @@
   "161729589574779528": {
     "__typename": "WorldsItemDefinition",
     "id": "161729589574779528",
-    "name": "WALL_20",
+    "name": "Wall Weathered Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5067,7 +5063,7 @@
   "1620080264764386": {
     "__typename": "WorldsItemDefinition",
     "id": "1620080264764386",
-    "name": "PIRATES_BOOKEND_02B",
+    "name": "Hammerhead Bookend (Rear)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5094,7 +5090,7 @@
   "162058635313615488": {
     "__typename": "WorldsItemDefinition",
     "id": "162058635313615488",
-    "name": "TEST_BOOKSTACK_01",
+    "name": "Test Book Stack",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5122,7 +5118,7 @@
   "1621859214545080": {
     "__typename": "WorldsItemDefinition",
     "id": "1621859214545080",
-    "name": "PAINTING_SMALL_03",
+    "name": "Painting Custo et Tiffany",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5149,7 +5145,7 @@
   "162883500948340": {
     "__typename": "WorldsItemDefinition",
     "id": "162883500948340",
-    "name": "REX_FC_04",
+    "name": "Circuit Board",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5176,7 +5172,7 @@
   "163261394728418211": {
     "__typename": "WorldsItemDefinition",
     "id": "163261394728418211",
-    "name": "WALL_16",
+    "name": "Wall Purple Granite",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5203,7 +5199,7 @@
   "1641958152489299": {
     "__typename": "WorldsItemDefinition",
     "id": "1641958152489299",
-    "name": "MODERN_VAR2_01",
+    "name": "Leather Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5259,7 +5255,7 @@
   "1644593608897858": {
     "__typename": "WorldsItemDefinition",
     "id": "1644593608897858",
-    "name": "FANTASY_19",
+    "name": "Commoner's Sword",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5286,7 +5282,7 @@
   "1646785678767228": {
     "__typename": "WorldsItemDefinition",
     "id": "1646785678767228",
-    "name": "SPOOKY_BOOKCASE_01",
+    "name": "Dead Man's Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5313,7 +5309,7 @@
   "1647461558716791": {
     "__typename": "WorldsItemDefinition",
     "id": "1647461558716791",
-    "name": "SPOOKY_RUG_01",
+    "name": "Ruined Rug",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5340,7 +5336,7 @@
   "165390277337782": {
     "__typename": "WorldsItemDefinition",
     "id": "165390277337782",
-    "name": "MODERN_02",
+    "name": "Modern Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5368,7 +5364,7 @@
   "166016108654091403": {
     "__typename": "WorldsItemDefinition",
     "id": "166016108654091403",
-    "name": "OC1_STATUE",
+    "name": "Oculus Connect One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5376,10 +5372,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -5396,7 +5391,7 @@
   "1662203673851040": {
     "__typename": "WorldsItemDefinition",
     "id": "1662203673851040",
-    "name": "MAT_WALL_TEST060",
+    "name": "Wall White Tiled One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5451,7 +5446,7 @@
   "166695423912667": {
     "__typename": "WorldsItemDefinition",
     "id": "166695423912667",
-    "name": "PAINTING_SMALL_01",
+    "name": "Painting Ruby Rush",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5478,7 +5473,7 @@
   "166941669678820760": {
     "__typename": "WorldsItemDefinition",
     "id": "166941669678820760",
-    "name": "BOHO_ANALOG_CLOCK_01",
+    "name": "Bohemian Wall Clock",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5505,7 +5500,7 @@
   "167078907471136830": {
     "__typename": "WorldsItemDefinition",
     "id": "167078907471136830",
-    "name": "PIRATES_STATUE_01",
+    "name": "Neptune Statue One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5513,7 +5508,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -5532,7 +5527,7 @@
   "1671220372977531": {
     "__typename": "WorldsItemDefinition",
     "id": "1671220372977531",
-    "name": "INDUSTRIAL_COUCH_01",
+    "name": "Stylish Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5559,7 +5554,7 @@
   "167254867394530126": {
     "__typename": "WorldsItemDefinition",
     "id": "167254867394530126",
-    "name": "SCIFI_PORTAL_01",
+    "name": "Space Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5567,7 +5562,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -5586,7 +5581,7 @@
   "1676106465765034": {
     "__typename": "WorldsItemDefinition",
     "id": "1676106465765034",
-    "name": "MODERN_PLANT_06",
+    "name": "Plant Large Five",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5614,7 +5609,7 @@
   "167698825995859167": {
     "__typename": "WorldsItemDefinition",
     "id": "167698825995859167",
-    "name": "MODERN_STATUE_05",
+    "name": "Woman Statue One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5642,7 +5637,7 @@
   "1677927088945609": {
     "__typename": "WorldsItemDefinition",
     "id": "1677927088945609",
-    "name": "CEILING_03",
+    "name": "Ceiling White Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5669,7 +5664,7 @@
   "1682393351825832": {
     "__typename": "WorldsItemDefinition",
     "id": "1682393351825832",
-    "name": "SCIFI_19",
+    "name": "Specimen Tank",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5696,7 +5691,7 @@
   "1682765545127957": {
     "__typename": "WorldsItemDefinition",
     "id": "1682765545127957",
-    "name": "SKY_SOLAR",
+    "name": "Surroundings Solar System",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5723,7 +5718,7 @@
   "168636150455009": {
     "__typename": "WorldsItemDefinition",
     "id": "168636150455009",
-    "name": "AVATAR_EDITOR_00",
+    "name": "Avatar Editor",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -5750,7 +5745,7 @@
   "1687874534672092": {
     "__typename": "WorldsItemDefinition",
     "id": "1687874534672092",
-    "name": "PIRATES_ANCHOR_01",
+    "name": "Plundered Anchor",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5777,7 +5772,7 @@
   "1688619137903504": {
     "__typename": "WorldsItemDefinition",
     "id": "1688619137903504",
-    "name": "SUMMER_SHARK_HEAD_01",
+    "name": "Shabby Sharkhead",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5804,7 +5799,7 @@
   "1694318247263990": {
     "__typename": "WorldsItemDefinition",
     "id": "1694318247263990",
-    "name": "MODERN_VAR2_02",
+    "name": "Marble Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5832,7 +5827,7 @@
   "169469134269567542": {
     "__typename": "WorldsItemDefinition",
     "id": "169469134269567542",
-    "name": "CAFE_BOTTLE_05",
+    "name": "Cafe Bottle Five",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5840,7 +5835,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Object"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -5859,7 +5854,7 @@
   "169886595014303365": {
     "__typename": "WorldsItemDefinition",
     "id": "169886595014303365",
-    "name": "SCIFI_10",
+    "name": "Rug Constellation",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5886,7 +5881,7 @@
   "1703253766449841": {
     "__typename": "WorldsItemDefinition",
     "id": "1703253766449841",
-    "name": "SPOOKY_BOOK_01",
+    "name": "Spellcaster's Tome",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5913,7 +5908,7 @@
   "170619422117619725": {
     "__typename": "WorldsItemDefinition",
     "id": "170619422117619725",
-    "name": "DREAMDECK_01",
+    "name": "Uber Duck",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5940,7 +5935,7 @@
   "1707299789380125": {
     "__typename": "WorldsItemDefinition",
     "id": "1707299789380125",
-    "name": "BOHO_SHELF_02",
+    "name": "Hanging Small Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5967,7 +5962,7 @@
   "1709208779113834": {
     "__typename": "WorldsItemDefinition",
     "id": "1709208779113834",
-    "name": "FANTASY_31",
+    "name": "Large Column",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -5994,7 +5989,7 @@
   "1713605205416534": {
     "__typename": "WorldsItemDefinition",
     "id": "1713605205416534",
-    "name": "BOHO_COUCH_01",
+    "name": "Boho Futon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6021,7 +6016,7 @@
   "1714370085334725": {
     "__typename": "WorldsItemDefinition",
     "id": "1714370085334725",
-    "name": "ART_WARDROBE_01",
+    "name": "Grand Wardrobe",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6048,7 +6043,7 @@
   "171490971325509688": {
     "__typename": "WorldsItemDefinition",
     "id": "171490971325509688",
-    "name": "CAFE_BOTTLE_02",
+    "name": "Cafe Bottle Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6056,7 +6051,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Object"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -6075,7 +6070,7 @@
   "171633596712616": {
     "__typename": "WorldsItemDefinition",
     "id": "171633596712616",
-    "name": "MODERN_RUG_00",
+    "name": "Rug Cowhide",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6103,7 +6098,7 @@
   "1716980091647752": {
     "__typename": "WorldsItemDefinition",
     "id": "1716980091647752",
-    "name": "FARLANDS_FLORA_02",
+    "name": "Space Cactus",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6130,7 +6125,7 @@
   "171718103406336": {
     "__typename": "WorldsItemDefinition",
     "id": "171718103406336",
-    "name": "MAT_CEILING_TEST010",
+    "name": "Ceiling Gold Coffee Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6157,7 +6152,7 @@
   "1724173517888357": {
     "__typename": "WorldsItemDefinition",
     "id": "1724173517888357",
-    "name": "DREAMDECK_03",
+    "name": "Poly Fox",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6184,7 +6179,7 @@
   "172510446634678": {
     "__typename": "WorldsItemDefinition",
     "id": "172510446634678",
-    "name": "MAT_CEILING_TEST030",
+    "name": "Ceiling Wood Coffee Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6211,7 +6206,7 @@
   "1727912183973325": {
     "__typename": "WorldsItemDefinition",
     "id": "1727912183973325",
-    "name": "SUMMER_COUNTER_01",
+    "name": "Chic Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6238,7 +6233,7 @@
   "173489038993711858": {
     "__typename": "WorldsItemDefinition",
     "id": "173489038993711858",
-    "name": "PIRATES_PAINTING_05",
+    "name": "Voyage (Reclaimed)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6246,7 +6241,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -6265,7 +6260,7 @@
   "1737204066380773": {
     "__typename": "WorldsItemDefinition",
     "id": "1737204066380773",
-    "name": "ZODIAC_DRAGON_01",
+    "name": "Zodiac Plushie - The Dragon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6292,7 +6287,7 @@
   "173744005247439485": {
     "__typename": "WorldsItemDefinition",
     "id": "173744005247439485",
-    "name": "BOHO_PORTAL_01",
+    "name": "Boho Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6300,7 +6295,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -6319,7 +6314,7 @@
   "1739770266327664": {
     "__typename": "WorldsItemDefinition",
     "id": "1739770266327664",
-    "name": "FARLANDS_FLORA_06",
+    "name": "Fire Blossom",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6346,7 +6341,7 @@
   "1740189896086984": {
     "__typename": "WorldsItemDefinition",
     "id": "1740189896086984",
-    "name": "WINTER_FLOOR_01",
+    "name": "Floor Winter Cabin",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6373,7 +6368,7 @@
   "1742796785846749": {
     "__typename": "WorldsItemDefinition",
     "id": "1742796785846749",
-    "name": "SOUND_OBJECT_Halloween_DaemonWhispers",
+    "name": "SFX - Monster's Whisper",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -6400,7 +6395,7 @@
   "1744328325671282": {
     "__typename": "WorldsItemDefinition",
     "id": "1744328325671282",
-    "name": "ART_COUNTER_02",
+    "name": "Deco Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6481,7 +6476,7 @@
   "1750850851687405": {
     "__typename": "WorldsItemDefinition",
     "id": "1750850851687405",
-    "name": "UGC_AMBIENT_None",
+    "name": "UGC Ambience - None",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6508,7 +6503,7 @@
   "1754753134549898": {
     "__typename": "WorldsItemDefinition",
     "id": "1754753134549898",
-    "name": "FANTASY_08",
+    "name": "Lion Bow",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -6535,7 +6530,7 @@
   "175546370117987941": {
     "__typename": "WorldsItemDefinition",
     "id": "175546370117987941",
-    "name": "SOUND_OBJECT_WATER_SMALL",
+    "name": "SFX - Water Droplets",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -6562,7 +6557,7 @@
   "1762500827378023": {
     "__typename": "WorldsItemDefinition",
     "id": "1762500827378023",
-    "name": "MUS_MOD_CHILLOUT",
+    "name": "Modern Chillout",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6589,7 +6584,7 @@
   "1762699633826841": {
     "__typename": "WorldsItemDefinition",
     "id": "1762699633826841",
-    "name": "SUMMER_ROOM_DIVIDER_01",
+    "name": "Elegant Screen",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6616,7 +6611,7 @@
   "176304448290635218": {
     "__typename": "WorldsItemDefinition",
     "id": "176304448290635218",
-    "name": "PIRATES_PAINTING_01",
+    "name": "Neptune's Deceit",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6624,7 +6619,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -6643,7 +6638,7 @@
   "177981029507874": {
     "__typename": "WorldsItemDefinition",
     "id": "177981029507874",
-    "name": "EVENT_POSTER_00",
+    "name": "Blackout Poster",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6670,7 +6665,7 @@
   "178170336629064043": {
     "__typename": "WorldsItemDefinition",
     "id": "178170336629064043",
-    "name": "OCULUS_STATUE_01",
+    "name": "REX Bot",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6678,7 +6673,6 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
       "Starter"
     ],
     "rarity": "COMMON",
@@ -6698,7 +6692,7 @@
   "1789344384707026": {
     "__typename": "WorldsItemDefinition",
     "id": "1789344384707026",
-    "name": "GENERIC_ARCADE_CABINET_02",
+    "name": "Classic Arcade Cabinet",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6726,7 +6720,7 @@
   "1796150347361844": {
     "__typename": "WorldsItemDefinition",
     "id": "1796150347361844",
-    "name": "MODERN_PLANT_00",
+    "name": "Plant Potted One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6754,7 +6748,7 @@
   "1798564356859058": {
     "__typename": "WorldsItemDefinition",
     "id": "1798564356859058",
-    "name": "PIRATES_COUNTER_03",
+    "name": "Makeshift Corner Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6781,7 +6775,7 @@
   "1801944879902934": {
     "__typename": "WorldsItemDefinition",
     "id": "1801944879902934",
-    "name": "WINTER_CEILING_01",
+    "name": "Ceiling Winter Cabin",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6808,7 +6802,7 @@
   "1803857506391486": {
     "__typename": "WorldsItemDefinition",
     "id": "1803857506391486",
-    "name": "INDUSTRIAL_DESK_01",
+    "name": "Designer's Desk",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6835,7 +6829,7 @@
   "1805336436198873": {
     "__typename": "WorldsItemDefinition",
     "id": "1805336436198873",
-    "name": "MUS_FUTURE_AMBIENT",
+    "name": "Future Ambient",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6862,7 +6856,7 @@
   "1805919459531467": {
     "__typename": "WorldsItemDefinition",
     "id": "1805919459531467",
-    "name": "INDUSTRIAL_FLOOR_01",
+    "name": "Floor Polished Concrete",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6889,7 +6883,7 @@
   "1806746259615809": {
     "__typename": "WorldsItemDefinition",
     "id": "1806746259615809",
-    "name": "PAINTING_SMALL_19",
+    "name": "Painting Ceci N’est Pas",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6916,7 +6910,7 @@
   "1809352005837699": {
     "__typename": "WorldsItemDefinition",
     "id": "1809352005837699",
-    "name": "WALL_19",
+    "name": "Wall Pale Yellow Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6943,7 +6937,7 @@
   "1809617895774458": {
     "__typename": "WorldsItemDefinition",
     "id": "1809617895774458",
-    "name": "SUMMER_END_TABLE_02",
+    "name": "Circular End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6970,7 +6964,7 @@
   "1810526142376524": {
     "__typename": "WorldsItemDefinition",
     "id": "1810526142376524",
-    "name": "MUS_HALLOWEEN_THEME",
+    "name": "Spooky Orchestral",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -6997,7 +6991,7 @@
   "181182435780897": {
     "__typename": "WorldsItemDefinition",
     "id": "181182435780897",
-    "name": "PAINTING_SMALL_22",
+    "name": "Painting Rising Action",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7024,7 +7018,7 @@
   "1812125592235301": {
     "__typename": "WorldsItemDefinition",
     "id": "1812125592235301",
-    "name": "BOHO_PILLOW_02",
+    "name": "X Pattern Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7051,7 +7045,7 @@
   "1813287535453527": {
     "__typename": "WorldsItemDefinition",
     "id": "1813287535453527",
-    "name": "SUMMER_BOOKCASE_02",
+    "name": "Chic Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7078,7 +7072,7 @@
   "181641382342883951": {
     "__typename": "WorldsItemDefinition",
     "id": "181641382342883951",
-    "name": "FANTASY_13",
+    "name": "Ornate Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7105,7 +7099,7 @@
   "1817656648360331": {
     "__typename": "WorldsItemDefinition",
     "id": "1817656648360331",
-    "name": "WINTER_CENTERPIECE_01",
+    "name": "Cheerful Centerpiece",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7132,7 +7126,7 @@
   "181832854663803872": {
     "__typename": "WorldsItemDefinition",
     "id": "181832854663803872",
-    "name": "FAERIE_BOW_01",
+    "name": "Sprite's Bow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7159,7 +7153,7 @@
   "182018436776001146": {
     "__typename": "WorldsItemDefinition",
     "id": "182018436776001146",
-    "name": "MODERN_STATUE_04",
+    "name": "Man Statue Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7187,7 +7181,7 @@
   "182042742353701": {
     "__typename": "WorldsItemDefinition",
     "id": "182042742353701",
-    "name": "FANTASY_35",
+    "name": "Rug Royal",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7214,7 +7208,7 @@
   "182322326338797056": {
     "__typename": "WorldsItemDefinition",
     "id": "182322326338797056",
-    "name": "GOLDEN_CV1",
+    "name": "Golden CV1",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7222,10 +7216,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -7242,7 +7235,7 @@
   "182513627712134045": {
     "__typename": "WorldsItemDefinition",
     "id": "182513627712134045",
-    "name": "FAERIE_PORTAL_01",
+    "name": "Faerie Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7250,7 +7243,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations"
+      "Special"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -7269,7 +7262,7 @@
   "1825667254168538": {
     "__typename": "WorldsItemDefinition",
     "id": "1825667254168538",
-    "name": "PIRATES_BOOKEND_01B",
+    "name": "Alligator Bookend (Rear)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7296,7 +7289,7 @@
   "183185502411417342": {
     "__typename": "WorldsItemDefinition",
     "id": "183185502411417342",
-    "name": "MODERN_SPORTS_00",
+    "name": "Putting Green",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7324,7 +7317,7 @@
   "183255315572670": {
     "__typename": "WorldsItemDefinition",
     "id": "183255315572670",
-    "name": "MAT_WALL_TEST030",
+    "name": "Wall Concrete",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7351,7 +7344,7 @@
   "1833977486638992": {
     "__typename": "WorldsItemDefinition",
     "id": "1833977486638992",
-    "name": "PIRATES_LIVING_CHAIR_01",
+    "name": "Plundered Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7378,7 +7371,7 @@
   "1835946546419646": {
     "__typename": "WorldsItemDefinition",
     "id": "1835946546419646",
-    "name": "PAINTING_SMALL_11",
+    "name": "Painting Cephalopod Swordsman",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7405,7 +7398,7 @@
   "1836346579775364": {
     "__typename": "WorldsItemDefinition",
     "id": "1836346579775364",
-    "name": "PIRATES_SWORD_01",
+    "name": "Mauvebeard's Cutlass",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7432,7 +7425,7 @@
   "183812681579947213": {
     "__typename": "WorldsItemDefinition",
     "id": "183812681579947213",
-    "name": "FANTASY_02",
+    "name": "Warrior Goddess",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7459,7 +7452,7 @@
   "1838915232855042": {
     "__typename": "WorldsItemDefinition",
     "id": "1838915232855042",
-    "name": "WALL_08",
+    "name": "Wall Tropical Wallpaper Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7486,7 +7479,7 @@
   "1842949669146544": {
     "__typename": "WorldsItemDefinition",
     "id": "1842949669146544",
-    "name": "PIRATES_BOOKEND_02F",
+    "name": "Hammerhead Bookend (Front)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7513,7 +7506,7 @@
   "1843904382368965": {
     "__typename": "WorldsItemDefinition",
     "id": "1843904382368965",
-    "name": "SUMMER_RECLINER_01",
+    "name": "Summertime Recliner",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7540,7 +7533,7 @@
   "1845733115525209": {
     "__typename": "WorldsItemDefinition",
     "id": "1845733115525209",
-    "name": "BOHO_SUITCASE_01",
+    "name": "Vintage Suitcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7595,7 +7588,7 @@
   "1846774695339604": {
     "__typename": "WorldsItemDefinition",
     "id": "1846774695339604",
-    "name": "GENERIC_00",
+    "name": "Cube Gold",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7623,7 +7616,7 @@
   "1847942971927230": {
     "__typename": "WorldsItemDefinition",
     "id": "1847942971927230",
-    "name": "PIRATES_DINING_CHAIR_01",
+    "name": "Crewmate's Dining Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7650,7 +7643,7 @@
   "1851575748244772": {
     "__typename": "WorldsItemDefinition",
     "id": "1851575748244772",
-    "name": "SPOOKY_THRONE_01",
+    "name": "Seat of the Countess",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7677,7 +7670,7 @@
   "1851991241578715": {
     "__typename": "WorldsItemDefinition",
     "id": "1851991241578715",
-    "name": "ART_WALL_ART_05",
+    "name": "Vintage Ad: Spectate",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7704,7 +7697,7 @@
   "185206385322304964": {
     "__typename": "WorldsItemDefinition",
     "id": "185206385322304964",
-    "name": "FARLANDS_PAINTINGS_07",
+    "name": "Koleron with a Pearl Earring",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7731,7 +7724,7 @@
   "1852066468247918": {
     "__typename": "WorldsItemDefinition",
     "id": "1852066468247918",
-    "name": "WALL_09",
+    "name": "Wall Tropical Wallpaper One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7758,7 +7751,7 @@
   "1852660471485622": {
     "__typename": "WorldsItemDefinition",
     "id": "1852660471485622",
-    "name": "PIRATES_CEILING_01",
+    "name": "Ceiling Pirate Hideout",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7785,7 +7778,7 @@
   "1854593284657828": {
     "__typename": "WorldsItemDefinition",
     "id": "1854593284657828",
-    "name": "BOHO_WALL_ART_01",
+    "name": "Seaside Forest Abstract Art",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7812,7 +7805,7 @@
   "1855494194761447": {
     "__typename": "WorldsItemDefinition",
     "id": "1855494194761447",
-    "name": "PAINTING_SMALL_15",
+    "name": "Painting Some Call Me Tom",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7839,7 +7832,7 @@
   "1856081441145794": {
     "__typename": "WorldsItemDefinition",
     "id": "1856081441145794",
-    "name": "MUS_PIRATE_THEME",
+    "name": "Pirate Theme",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7866,7 +7859,7 @@
   "1861566973930002": {
     "__typename": "WorldsItemDefinition",
     "id": "1861566973930002",
-    "name": "BOHO_PILLOW_01",
+    "name": "Boho Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7893,7 +7886,7 @@
   "1862799743806226": {
     "__typename": "WorldsItemDefinition",
     "id": "1862799743806226",
-    "name": "SPOOKY_MIRROR_01",
+    "name": "Cursed Mirror",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7920,7 +7913,7 @@
   "1864514833659475": {
     "__typename": "WorldsItemDefinition",
     "id": "1864514833659475",
-    "name": "ART_LIVING_TABLE_01",
+    "name": "Opulent Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7947,7 +7940,7 @@
   "1864515347211604": {
     "__typename": "WorldsItemDefinition",
     "id": "1864515347211604",
-    "name": "MAT_FLOOR_TEST030",
+    "name": "Floor Parquet Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -7974,7 +7967,7 @@
   "1865091030234836": {
     "__typename": "WorldsItemDefinition",
     "id": "1865091030234836",
-    "name": "SPOOKY_CEILING_01",
+    "name": "Ceiling Solstice",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8001,7 +7994,7 @@
   "1865272607067800": {
     "__typename": "WorldsItemDefinition",
     "id": "1865272607067800",
-    "name": "BASE_04",
+    "name": "Oculus Book",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8029,7 +8022,7 @@
   "1866536823468490": {
     "__typename": "WorldsItemDefinition",
     "id": "1866536823468490",
-    "name": "SPOOKY_LIVING_CHAIR_01",
+    "name": "Impaler's Lounge Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8056,7 +8049,7 @@
   "1866843033425588": {
     "__typename": "WorldsItemDefinition",
     "id": "1866843033425588",
-    "name": "FAERIE_RUG_01",
+    "name": "Rug Knitted",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8083,7 +8076,7 @@
   "1868645329918724": {
     "__typename": "WorldsItemDefinition",
     "id": "1868645329918724",
-    "name": "WINTER_SNOWMAN_01",
+    "name": "Snowflake the Snowman",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8110,7 +8103,7 @@
   "1869017593133900": {
     "__typename": "WorldsItemDefinition",
     "id": "1869017593133900",
-    "name": "SPOOKY_FLOOR_01",
+    "name": "Floor Dilapidated Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8137,7 +8130,7 @@
   "1872498619736191": {
     "__typename": "WorldsItemDefinition",
     "id": "1872498619736191",
-    "name": "MODERN_STATUE_00",
+    "name": "Table Top Cat",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8165,7 +8158,7 @@
   "187336675171942": {
     "__typename": "WorldsItemDefinition",
     "id": "187336675171942",
-    "name": "PAINTING_MEDIUM_10",
+    "name": "Painting Prologue Vertigo",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8192,7 +8185,7 @@
   "1873697706017784": {
     "__typename": "WorldsItemDefinition",
     "id": "1873697706017784",
-    "name": "PIRATES_LIVING_TABLE_01",
+    "name": "Barrel Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8219,7 +8212,7 @@
   "1874493959299643": {
     "__typename": "WorldsItemDefinition",
     "id": "1874493959299643",
-    "name": "SPOOKY_COUNTER_03",
+    "name": "Gothic Corner Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8246,7 +8239,7 @@
   "1876066372420560": {
     "__typename": "WorldsItemDefinition",
     "id": "1876066372420560",
-    "name": "FANTASY_41",
+    "name": "Ornate Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8273,7 +8266,7 @@
   "1877950248989617": {
     "__typename": "WorldsItemDefinition",
     "id": "1877950248989617",
-    "name": "SUMMER_COUCH_01",
+    "name": "Retro-Modern Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8300,7 +8293,7 @@
   "1881295968630749": {
     "__typename": "WorldsItemDefinition",
     "id": "1881295968630749",
-    "name": "SOUND_OBJECT_00",
+    "name": "SFX - Computer Tele",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -8327,7 +8320,7 @@
   "1881732411883971": {
     "__typename": "WorldsItemDefinition",
     "id": "1881732411883971",
-    "name": "SUMMER_FLOATIE_01",
+    "name": "One Swan-a-Swimming",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -8354,7 +8347,7 @@
   "1882353731852471": {
     "__typename": "WorldsItemDefinition",
     "id": "1882353731852471",
-    "name": "SPOOKY_CANDLE_01",
+    "name": "Gorgon's Candlehold",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8381,7 +8374,7 @@
   "1882693828481251": {
     "__typename": "WorldsItemDefinition",
     "id": "1882693828481251",
-    "name": "SPOOKY_STATUE_02",
+    "name": "Lefty",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8408,7 +8401,7 @@
   "1883452818406661": {
     "__typename": "WorldsItemDefinition",
     "id": "1883452818406661",
-    "name": "PIRATES_CHEST_01",
+    "name": "Forbidden Treasure",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8435,7 +8428,7 @@
   "1886600521408847": {
     "__typename": "WorldsItemDefinition",
     "id": "1886600521408847",
-    "name": "INDUSTRIAL_DINING_STOOL_01",
+    "name": "Utilitarian Stool",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8462,7 +8455,7 @@
   "1888603741257595": {
     "__typename": "WorldsItemDefinition",
     "id": "1888603741257595",
-    "name": "WINTER_PILLOW_02",
+    "name": "Joyful Throw Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8489,7 +8482,7 @@
   "1891691987595035": {
     "__typename": "WorldsItemDefinition",
     "id": "1891691987595035",
-    "name": "ART_BAR_01",
+    "name": "Timeless Bar",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8516,7 +8509,7 @@
   "189413848053460366": {
     "__typename": "WorldsItemDefinition",
     "id": "189413848053460366",
-    "name": "MODERN_STATUE_02",
+    "name": "Man Statue One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8544,7 +8537,7 @@
   "1895606130456158": {
     "__typename": "WorldsItemDefinition",
     "id": "1895606130456158",
-    "name": "MAT_FLOOR_TEST090",
+    "name": "Floor Light Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8571,7 +8564,7 @@
   "1896165753832798": {
     "__typename": "WorldsItemDefinition",
     "id": "1896165753832798",
-    "name": "PIRATES_SHELF_02",
+    "name": "Driftwood Small Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8598,7 +8591,7 @@
   "1900673836854715": {
     "__typename": "WorldsItemDefinition",
     "id": "1900673836854715",
-    "name": "MODERN_PLANT_01",
+    "name": "Plant Small One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8626,7 +8619,7 @@
   "1901576683493201": {
     "__typename": "WorldsItemDefinition",
     "id": "1901576683493201",
-    "name": "PAINTING_SMALL_07",
+    "name": "Painting Moonlit Stronghold",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8653,7 +8646,7 @@
   "1902219703218674": {
     "__typename": "WorldsItemDefinition",
     "id": "1902219703218674",
-    "name": "WINTER_SNOWDOG_01",
+    "name": "Popsicle the Snowpuppy",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8680,7 +8673,7 @@
   "1904521462978974": {
     "__typename": "WorldsItemDefinition",
     "id": "1904521462978974",
-    "name": "ART_FLOOR_01",
+    "name": "Floor Art Deco Mat",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8707,7 +8700,7 @@
   "1906329306150971": {
     "__typename": "WorldsItemDefinition",
     "id": "1906329306150971",
-    "name": "INDUSTRIAL_SCULPTURE_01",
+    "name": "Modern Sculpture",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8734,7 +8727,7 @@
   "1907088479349388": {
     "__typename": "WorldsItemDefinition",
     "id": "1907088479349388",
-    "name": "FANTASY_29",
+    "name": "Calvary Mini",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8761,7 +8754,7 @@
   "1908005949315772": {
     "__typename": "WorldsItemDefinition",
     "id": "1908005949315772",
-    "name": "INDUSTRIAL_COUNTER_01",
+    "name": "Minimalist Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8788,7 +8781,7 @@
   "1908528652568621": {
     "__typename": "WorldsItemDefinition",
     "id": "1908528652568621",
-    "name": "PIRATES_WALL_01",
+    "name": "Wall Pirate Hideout",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8815,7 +8808,7 @@
   "1908994725856074": {
     "__typename": "WorldsItemDefinition",
     "id": "1908994725856074",
-    "name": "SOUND_OBJECT_Halloween_SpookyChildren",
+    "name": "SFX - Child's Laugh (Spooky)",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -8842,7 +8835,7 @@
   "1909021222524408": {
     "__typename": "WorldsItemDefinition",
     "id": "1909021222524408",
-    "name": "SUMMER_DINING_CHAIR_01",
+    "name": "Molded Dining Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8869,7 +8862,7 @@
   "190914601611926195": {
     "__typename": "WorldsItemDefinition",
     "id": "190914601611926195",
-    "name": "GOLDEN_DK1",
+    "name": "Golden DK1",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8877,10 +8870,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -8897,7 +8889,7 @@
   "1909290549395496": {
     "__typename": "WorldsItemDefinition",
     "id": "1909290549395496",
-    "name": "FANTASY_27",
+    "name": "Mace Soldier Mini",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8924,7 +8916,7 @@
   "1909573405774999": {
     "__typename": "WorldsItemDefinition",
     "id": "1909573405774999",
-    "name": "BOHO_WALL_01",
+    "name": "Wall Weathered Bricks",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8951,7 +8943,7 @@
   "1910376452386844": {
     "__typename": "WorldsItemDefinition",
     "id": "1910376452386844",
-    "name": "WINTER_REINDEERM_01",
+    "name": "Comet",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -8978,7 +8970,7 @@
   "1910590382401639": {
     "__typename": "WorldsItemDefinition",
     "id": "1910590382401639",
-    "name": "ART_SCONCE_01",
+    "name": "Retro Wall Sconce",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9005,7 +8997,7 @@
   "191235167130461173": {
     "__typename": "WorldsItemDefinition",
     "id": "191235167130461173",
-    "name": "CAFE_BOTTLE_04",
+    "name": "Cafe Bottle Four",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9013,7 +9005,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Object"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -9032,7 +9024,7 @@
   "191352137756755412": {
     "__typename": "WorldsItemDefinition",
     "id": "191352137756755412",
-    "name": "FANTASY_20",
+    "name": "Faerie House",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9059,7 +9051,7 @@
   "1913578132061415": {
     "__typename": "WorldsItemDefinition",
     "id": "1913578132061415",
-    "name": "BOHO_COUNTER_01",
+    "name": "Mosaic Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9086,7 +9078,7 @@
   "1917408224981988": {
     "__typename": "WorldsItemDefinition",
     "id": "1917408224981988",
-    "name": "SUMMER_BOOKCASE_01",
+    "name": "Angled Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9113,7 +9105,7 @@
   "1918145158233856": {
     "__typename": "WorldsItemDefinition",
     "id": "1918145158233856",
-    "name": "INDUSTRIAL_COUNTER_02",
+    "name": "Minimalist Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9140,7 +9132,7 @@
   "1918847228242114": {
     "__typename": "WorldsItemDefinition",
     "id": "1918847228242114",
-    "name": "FAERIE_SCULPTURE_01",
+    "name": "Chess Piece Sculpture",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9167,7 +9159,7 @@
   "1919945178323261": {
     "__typename": "WorldsItemDefinition",
     "id": "1919945178323261",
-    "name": "FLOOR_00",
+    "name": "Floor Brown Stone",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9194,7 +9186,7 @@
   "1921108581284939": {
     "__typename": "WorldsItemDefinition",
     "id": "1921108581284939",
-    "name": "SUMMER_LIVING_CHAIR_01",
+    "name": "Retro-Modern Lounge Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9221,7 +9213,7 @@
   "1921823124569960": {
     "__typename": "WorldsItemDefinition",
     "id": "1921823124569960",
-    "name": "WINTER_COUNTER_02",
+    "name": "Rustic Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9248,7 +9240,7 @@
   "1922758624512328": {
     "__typename": "WorldsItemDefinition",
     "id": "1922758624512328",
-    "name": "INDUSTRIAL_SHELF_01",
+    "name": "Industrial Kitchen Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9275,7 +9267,7 @@
   "192321297504397569": {
     "__typename": "WorldsItemDefinition",
     "id": "192321297504397569",
-    "name": "REX_FC_05",
+    "name": "Robot Head",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9303,7 +9295,7 @@
   "1923441731069428": {
     "__typename": "WorldsItemDefinition",
     "id": "1923441731069428",
-    "name": "BOHO_WALL_ART_02",
+    "name": "Golden Rose Decoration",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9330,7 +9322,7 @@
   "192423626955172054": {
     "__typename": "WorldsItemDefinition",
     "id": "192423626955172054",
-    "name": "UGC_AMBIENT_Space_Station",
+    "name": "UGC Ambience - Space Station",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9357,7 +9349,7 @@
   "1925750947544645": {
     "__typename": "WorldsItemDefinition",
     "id": "1925750947544645",
-    "name": "INDUSTRIAL_CEILING_01",
+    "name": "Ceiling Cement",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9384,7 +9376,7 @@
   "192674809313468625": {
     "__typename": "WorldsItemDefinition",
     "id": "192674809313468625",
-    "name": "SOUND_OBJECT_WATER_UNDER",
+    "name": "SFX - Under Water",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -9411,7 +9403,7 @@
   "1927178734040021": {
     "__typename": "WorldsItemDefinition",
     "id": "1927178734040021",
-    "name": "SPOOKY_SHELF_01",
+    "name": "Long Gothic Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9438,7 +9430,7 @@
   "1930756370500731": {
     "__typename": "WorldsItemDefinition",
     "id": "1930756370500731",
-    "name": "GENERIC_06",
+    "name": "Cube Stone",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9466,7 +9458,7 @@
   "1932387093546726": {
     "__typename": "WorldsItemDefinition",
     "id": "1932387093546726",
-    "name": "ART_DINING_TABLE_01",
+    "name": "Fine Dining Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9493,7 +9485,7 @@
   "1933451036713059": {
     "__typename": "WorldsItemDefinition",
     "id": "1933451036713059",
-    "name": "SPOOKY_DINING_TABLE_01",
+    "name": "Forgotten Banquet Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9520,7 +9512,7 @@
   "1933667843389169": {
     "__typename": "WorldsItemDefinition",
     "id": "1933667843389169",
-    "name": "BOHO_BENCH_01",
+    "name": "Reclaimed Bench",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9547,7 +9539,7 @@
   "1933726746694296": {
     "__typename": "WorldsItemDefinition",
     "id": "1933726746694296",
-    "name": "PIRATES_THRONE_01",
+    "name": "Captain's Throne",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9574,7 +9566,7 @@
   "1934465926635734": {
     "__typename": "WorldsItemDefinition",
     "id": "1934465926635734",
-    "name": "BOHO_DIVIDER_01",
+    "name": "Boho Divider",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9601,7 +9593,7 @@
   "1934755319894613": {
     "__typename": "WorldsItemDefinition",
     "id": "1934755319894613",
-    "name": "SPOOKY_COUNTER_02",
+    "name": "Gothic Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9628,7 +9620,7 @@
   "1935414706722952": {
     "__typename": "WorldsItemDefinition",
     "id": "1935414706722952",
-    "name": "GENERIC_09",
+    "name": "Rock Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9656,7 +9648,7 @@
   "1940478426276126": {
     "__typename": "WorldsItemDefinition",
     "id": "1940478426276126",
-    "name": "MODERN_PLANT_09",
+    "name": "Plant Medium Four",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9684,7 +9676,7 @@
   "1940790285997775": {
     "__typename": "WorldsItemDefinition",
     "id": "1940790285997775",
-    "name": "WINTER_CUP_01",
+    "name": "Unity Cup",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9711,7 +9703,7 @@
   "1940849879506391": {
     "__typename": "WorldsItemDefinition",
     "id": "1940849879506391",
-    "name": "DREAMDECK_06",
+    "name": "Poly Bird",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9738,7 +9730,7 @@
   "1941195205943149": {
     "__typename": "WorldsItemDefinition",
     "id": "1941195205943149",
-    "name": "MUS_SUMMER_THEME",
+    "name": "Modern Bop",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9765,7 +9757,7 @@
   "1942931445738296": {
     "__typename": "WorldsItemDefinition",
     "id": "1942931445738296",
-    "name": "FLOOR_05",
+    "name": "Floor Carpet",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9792,7 +9784,7 @@
   "1943041969267707": {
     "__typename": "WorldsItemDefinition",
     "id": "1943041969267707",
-    "name": "FARLANDS_FLORA_07",
+    "name": "Fungus Shroom",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9819,7 +9811,7 @@
   "1943953515821008": {
     "__typename": "WorldsItemDefinition",
     "id": "1943953515821008",
-    "name": "CEILING_00",
+    "name": "Ceiling Triangle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9846,7 +9838,7 @@
   "1944461932488133": {
     "__typename": "WorldsItemDefinition",
     "id": "1944461932488133",
-    "name": "PAINTING_LARGE_02",
+    "name": "Painting Jungle of the Koleron",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9873,7 +9865,7 @@
   "1946445535481303": {
     "__typename": "WorldsItemDefinition",
     "id": "1946445535481303",
-    "name": "FAERIE_CEILING_01",
+    "name": "Ceiling Grass",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9900,7 +9892,7 @@
   "1946901585403341": {
     "__typename": "WorldsItemDefinition",
     "id": "1946901585403341",
-    "name": "SOUND_OBJECT_MACHINE_HUM",
+    "name": "SFX - Machine Hum",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -9927,7 +9919,7 @@
   "1948394325199223": {
     "__typename": "WorldsItemDefinition",
     "id": "1948394325199223",
-    "name": "SOUND_OBJECT_SCIFI_DRONE",
+    "name": "SFX - Drone (Scifi)",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -9954,7 +9946,7 @@
   "1950040635054761": {
     "__typename": "WorldsItemDefinition",
     "id": "1950040635054761",
-    "name": "FLOOR_06",
+    "name": "Floor Bamboo",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -9981,7 +9973,7 @@
   "1951655188246431": {
     "__typename": "WorldsItemDefinition",
     "id": "1951655188246431",
-    "name": "WINTER_DINING_CHAIR_01",
+    "name": "Rustic Dining Stool",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10008,7 +10000,7 @@
   "1952957648086198": {
     "__typename": "WorldsItemDefinition",
     "id": "1952957648086198",
-    "name": "ART_WALL_ART_04",
+    "name": "Vintage Ad: Recursive",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10035,7 +10027,7 @@
   "195604254501395": {
     "__typename": "WorldsItemDefinition",
     "id": "195604254501395",
-    "name": "GENERIC_ARCADE_CABINET_01",
+    "name": "Vortex Arcade Cabinet",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10063,7 +10055,7 @@
   "1956047021118862": {
     "__typename": "WorldsItemDefinition",
     "id": "1956047021118862",
-    "name": "BOHO_FLOOR_01",
+    "name": "Floor Polished Slats",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10115,7 +10107,7 @@
   "195624531063926": {
     "__typename": "WorldsItemDefinition",
     "id": "195624531063926",
-    "name": "GENERIC_RETRO_TV_01",
+    "name": "Retro TV",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10143,7 +10135,7 @@
   "195903785209657530": {
     "__typename": "WorldsItemDefinition",
     "id": "195903785209657530",
-    "name": "PAINTING_MEDIUM_14",
+    "name": "Painting Sanctum of the Cats",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10170,7 +10162,7 @@
   "1961451673913914": {
     "__typename": "WorldsItemDefinition",
     "id": "1961451673913914",
-    "name": "SPOOKY_BRANCH_01",
+    "name": "Broken Tree Branch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10197,7 +10189,7 @@
   "1962948500430018": {
     "__typename": "WorldsItemDefinition",
     "id": "1962948500430018",
-    "name": "PIRATES_WHEEL_01",
+    "name": "Captain's Wheel",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10224,7 +10216,7 @@
   "1964420006942537": {
     "__typename": "WorldsItemDefinition",
     "id": "1964420006942537",
-    "name": "SUMMER_END_TABLE_01",
+    "name": "Chic End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10251,7 +10243,7 @@
   "1964548226934025": {
     "__typename": "WorldsItemDefinition",
     "id": "1964548226934025",
-    "name": "INDUSTRIAL_PIPES_01",
+    "name": "Exposed Piping",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10278,7 +10270,7 @@
   "1964686363742889": {
     "__typename": "WorldsItemDefinition",
     "id": "1964686363742889",
-    "name": "FARLANDS_PAINTINGS_05",
+    "name": "Oh Oleant",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10305,7 +10297,7 @@
   "1965372510361566": {
     "__typename": "WorldsItemDefinition",
     "id": "1965372510361566",
-    "name": "MODERN_SPORTS_03",
+    "name": "Golf Ball",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10333,7 +10325,7 @@
   "1965744876887037": {
     "__typename": "WorldsItemDefinition",
     "id": "1965744876887037",
-    "name": "WALL_12",
+    "name": "Wall Dark Blue Granite",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10360,7 +10352,7 @@
   "1966966200009908": {
     "__typename": "WorldsItemDefinition",
     "id": "1966966200009908",
-    "name": "SUMMER_LIVING_TABLE_01",
+    "name": "Elegant Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10387,7 +10379,7 @@
   "1970096183083607": {
     "__typename": "WorldsItemDefinition",
     "id": "1970096183083607",
-    "name": "INDUSTRIAL_PLANT_01",
+    "name": "Flower Vase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10414,7 +10406,7 @@
   "1970734313048928": {
     "__typename": "WorldsItemDefinition",
     "id": "1970734313048928",
-    "name": "FAERIE_TREE_01",
+    "name": "Twig Tree",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10441,7 +10433,7 @@
   "1971516773126673": {
     "__typename": "WorldsItemDefinition",
     "id": "1971516773126673",
-    "name": "FARLANDS_PAINTINGS_00",
+    "name": "Gaggle of Kolerons",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10468,7 +10460,7 @@
   "1971617122886157": {
     "__typename": "WorldsItemDefinition",
     "id": "1971617122886157",
-    "name": "INDUSTRIAL_BOOKCASE_01",
+    "name": "Utilitarian Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10495,7 +10487,7 @@
   "197259074832855483": {
     "__typename": "WorldsItemDefinition",
     "id": "197259074832855483",
-    "name": "PIRATES_PAINTING_02",
+    "name": "Neptune's Deceit (Reclaimed)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10503,7 +10495,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -10522,7 +10514,7 @@
   "1977104839037612": {
     "__typename": "WorldsItemDefinition",
     "id": "1977104839037612",
-    "name": "WINTER_REINDEERF_01",
+    "name": "Clarice",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10549,7 +10541,7 @@
   "1980027612055375": {
     "__typename": "WorldsItemDefinition",
     "id": "1980027612055375",
-    "name": "BOHO_CEILING_01",
+    "name": "Ceiling Beige Slats",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10576,7 +10568,7 @@
   "1980999538605552": {
     "__typename": "WorldsItemDefinition",
     "id": "1980999538605552",
-    "name": "WINTER_PILLOW_01",
+    "name": "Cheerful Throw Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10603,7 +10595,7 @@
   "198146953505784928": {
     "__typename": "WorldsItemDefinition",
     "id": "198146953505784928",
-    "name": "SOUND_OBJECT_FLAME_SMALL",
+    "name": "SFX - Small Flames",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -10630,7 +10622,7 @@
   "1984401854969104": {
     "__typename": "WorldsItemDefinition",
     "id": "1984401854969104",
-    "name": "WINTER_ANTLERS_01",
+    "name": "Regal Buck",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10657,7 +10649,7 @@
   "1984472405208997": {
     "__typename": "WorldsItemDefinition",
     "id": "1984472405208997",
-    "name": "PAINTING_SMALL_16",
+    "name": "Painting Eve of the Dragon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10684,7 +10676,7 @@
   "1984761971642218": {
     "__typename": "WorldsItemDefinition",
     "id": "1984761971642218",
-    "name": "ART_BAR_STOOL_01",
+    "name": "Timeless Bar Stool",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10711,7 +10703,7 @@
   "198625496075423798": {
     "__typename": "WorldsItemDefinition",
     "id": "198625496075423798",
-    "name": "PIRATES_STATUE_02",
+    "name": "Neptune Statue Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10719,7 +10711,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Object"
+      "Decorations"
     ],
     "rarity": "UNCOMMON",
     "local_bounds_origin": {
@@ -10738,7 +10730,7 @@
   "198927093542653656": {
     "__typename": "WorldsItemDefinition",
     "id": "198927093542653656",
-    "name": "CAFE_MUG_01",
+    "name": "Coffee Mug",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10746,7 +10738,7 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Special"
+      "Object"
     ],
     "rarity": "RARE",
     "local_bounds_origin": {
@@ -10765,7 +10757,7 @@
   "1991269714276245": {
     "__typename": "WorldsItemDefinition",
     "id": "1991269714276245",
-    "name": "UGC_AMBIENT_Cafe",
+    "name": "UGC Ambience - Cafe",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10792,7 +10784,7 @@
   "199305321081311964": {
     "__typename": "WorldsItemDefinition",
     "id": "199305321081311964",
-    "name": "OC2_STATUE",
+    "name": "Oculus Connect Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10800,10 +10792,9 @@
     "world_placement_cap": -1,
     "stackable": true,
     "tags": [
-      "Material",
-      "Starter"
+      "Special"
     ],
-    "rarity": "COMMON",
+    "rarity": "MASTERPIECE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -10820,7 +10811,7 @@
   "1996585107237528": {
     "__typename": "WorldsItemDefinition",
     "id": "1996585107237528",
-    "name": "PAINTING_MEDIUM_02",
+    "name": "Painting Upgraded",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10847,7 +10838,7 @@
   "1997029847244885": {
     "__typename": "WorldsItemDefinition",
     "id": "1997029847244885",
-    "name": "MODERN_PLANT_22",
+    "name": "Planter Large Stone",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10875,7 +10866,7 @@
   "1997259783886885": {
     "__typename": "WorldsItemDefinition",
     "id": "1997259783886885",
-    "name": "TRIM_MODERN",
+    "name": "Details Modern",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10903,7 +10894,7 @@
   "1999071230171547": {
     "__typename": "WorldsItemDefinition",
     "id": "1999071230171547",
-    "name": "INDUSTRIAL_DIVIDER_01",
+    "name": "Brick Room Divider",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10930,7 +10921,7 @@
   "2000469189999392": {
     "__typename": "WorldsItemDefinition",
     "id": "2000469189999392",
-    "name": "WINTER_SHELF_02",
+    "name": "Rustic Short Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10957,7 +10948,7 @@
   "2002469656687600": {
     "__typename": "WorldsItemDefinition",
     "id": "2002469656687600",
-    "name": "FANTASY_39",
+    "name": "Ornate Corner Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -10984,7 +10975,7 @@
   "2006134699426277": {
     "__typename": "WorldsItemDefinition",
     "id": "2006134699426277",
-    "name": "SPOOKY_PORTRAIT_01",
+    "name": "Ghostly Portrait",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11011,7 +11002,7 @@
   "2008597522584048": {
     "__typename": "WorldsItemDefinition",
     "id": "2008597522584048",
-    "name": "FAERIE_FLOOR_01",
+    "name": "Floor Mossy Stone",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11038,7 +11029,7 @@
   "2009656029153834": {
     "__typename": "WorldsItemDefinition",
     "id": "2009656029153834",
-    "name": "FAERIE_TARGET_01",
+    "name": "Sprite's Target",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11065,7 +11056,7 @@
   "2012146475549453": {
     "__typename": "WorldsItemDefinition",
     "id": "2012146475549453",
-    "name": "MUS_THEME_FAERIE",
+    "name": "Faerie Theme",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11092,7 +11083,7 @@
   "2012620018821579": {
     "__typename": "WorldsItemDefinition",
     "id": "2012620018821579",
-    "name": "ART_COUNTER_01",
+    "name": "Deco Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11119,7 +11110,7 @@
   "2013558765396027": {
     "__typename": "WorldsItemDefinition",
     "id": "2013558765396027",
-    "name": "THEATER_SCREEN_01",
+    "name": "Cinema Screen",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11146,7 +11137,7 @@
   "2016905841753345": {
     "__typename": "WorldsItemDefinition",
     "id": "2016905841753345",
-    "name": "PRIDE_FLAG_02",
+    "name": "Trans Pride Flag",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11173,7 +11164,7 @@
   "201724697285613": {
     "__typename": "WorldsItemDefinition",
     "id": "201724697285613",
-    "name": "GENERIC_FLATSCREEN_TV_02",
+    "name": "Wall-Mounted TV",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11201,7 +11192,7 @@
   "2019316051439137": {
     "__typename": "WorldsItemDefinition",
     "id": "2019316051439137",
-    "name": "ART_COCKTAIL_GLASS_01",
+    "name": "Vintage Glass",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11228,7 +11219,7 @@
   "2021500501311667": {
     "__typename": "WorldsItemDefinition",
     "id": "2021500501311667",
-    "name": "ART_LION_01",
+    "name": "Lion Statue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11255,7 +11246,7 @@
   "2022543581145426": {
     "__typename": "WorldsItemDefinition",
     "id": "2022543581145426",
-    "name": "WINTER_PRESENT_01",
+    "name": "Christmas Present",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11282,7 +11273,7 @@
   "2027734250648687": {
     "__typename": "WorldsItemDefinition",
     "id": "2027734250648687",
-    "name": "ART_TABLE_LAMP_01",
+    "name": "Cat Table Lamp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11309,7 +11300,7 @@
   "2030047817089684": {
     "__typename": "WorldsItemDefinition",
     "id": "2030047817089684",
-    "name": "UGC_AMBIENT_Snow",
+    "name": "UGC Ambience - Snow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11336,7 +11327,7 @@
   "2034942809906719": {
     "__typename": "WorldsItemDefinition",
     "id": "2034942809906719",
-    "name": "TRIM_WINTER",
+    "name": "Details Winter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11363,7 +11354,7 @@
   "2039792169435209": {
     "__typename": "WorldsItemDefinition",
     "id": "2039792169435209",
-    "name": "ART_DIVIDER_01",
+    "name": "Inlaid Divider",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11390,7 +11381,7 @@
   "2042023865873712": {
     "__typename": "WorldsItemDefinition",
     "id": "2042023865873712",
-    "name": "CAFE_TV_01",
+    "name": "Giant Flatscreen",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11417,7 +11408,7 @@
   "2042161026011880": {
     "__typename": "WorldsItemDefinition",
     "id": "2042161026011880",
-    "name": "FARLANDS_FLORA_03",
+    "name": "Brain Bush",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11444,7 +11435,7 @@
   "2046179995412654": {
     "__typename": "WorldsItemDefinition",
     "id": "2046179995412654",
-    "name": "SUMMER_SHELVES_01",
+    "name": "Honeycomb Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11471,7 +11462,7 @@
   "2048114561969844": {
     "__typename": "WorldsItemDefinition",
     "id": "2048114561969844",
-    "name": "WALL_18",
+    "name": "Wall Orange Granite",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11498,7 +11489,7 @@
   "2049826808417429": {
     "__typename": "WorldsItemDefinition",
     "id": "2049826808417429",
-    "name": "FAERIE_WAND_01",
+    "name": "Wand of Gwylion",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11525,7 +11516,7 @@
   "2053472474750466": {
     "__typename": "WorldsItemDefinition",
     "id": "2053472474750466",
-    "name": "SCIFI_DIGITAL_CLOCK_01",
+    "name": "Futuristic Clock",
     "item_description": "A clock from exactly 100 years and 24 hours in the future -  it's always right on time. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11552,7 +11543,7 @@
   "2054741971272684": {
     "__typename": "WorldsItemDefinition",
     "id": "2054741971272684",
-    "name": "ART_WALL_ART_06",
+    "name": "Vintage Ad: Frontier",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11579,7 +11570,7 @@
   "2055407484549016": {
     "__typename": "WorldsItemDefinition",
     "id": "2055407484549016",
-    "name": "WINTER_MISTLETOE_01",
+    "name": "Mistletoe",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11606,7 +11597,7 @@
   "2055790494534833": {
     "__typename": "WorldsItemDefinition",
     "id": "2055790494534833",
-    "name": "THEATER_FILM_REEL_01",
+    "name": "Real Gold Reel",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11633,7 +11624,7 @@
   "2059993237358705": {
     "__typename": "WorldsItemDefinition",
     "id": "2059993237358705",
-    "name": "BOHO_LIVING_TABLE_01",
+    "name": "Latticed Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11660,7 +11651,7 @@
   "2061899197175292": {
     "__typename": "WorldsItemDefinition",
     "id": "2061899197175292",
-    "name": "PIRATES_SHELF_01",
+    "name": "Driftwood Long Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11687,7 +11678,7 @@
   "2062554837166004": {
     "__typename": "WorldsItemDefinition",
     "id": "2062554837166004",
-    "name": "CAFE_TAPS_01",
+    "name": "Drink Taps",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11714,7 +11705,7 @@
   "2063600627063195": {
     "__typename": "WorldsItemDefinition",
     "id": "2063600627063195",
-    "name": "FAERIE_FLOOR_LAMP_01",
+    "name": "Crystal Lantern",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11741,7 +11732,7 @@
   "2065987653412518": {
     "__typename": "WorldsItemDefinition",
     "id": "2065987653412518",
-    "name": "PIRATES_END_TABLE_01",
+    "name": "Plundered End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11768,7 +11759,7 @@
   "2068408689895004": {
     "__typename": "WorldsItemDefinition",
     "id": "2068408689895004",
-    "name": "INDUSTRIAL_BOOKCASE_02",
+    "name": "Industrial Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11795,7 +11786,7 @@
   "2071699899572198": {
     "__typename": "WorldsItemDefinition",
     "id": "2071699899572198",
-    "name": "FAERIE_SHELF_01",
+    "name": "Popsicle Long Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11822,7 +11813,7 @@
   "2072946526082789": {
     "__typename": "WorldsItemDefinition",
     "id": "2072946526082789",
-    "name": "SUMMER_DESK_01",
+    "name": "Chic Desk",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11849,7 +11840,7 @@
   "2074357949308904": {
     "__typename": "WorldsItemDefinition",
     "id": "2074357949308904",
-    "name": "WALL_17",
+    "name": "Wall Red Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11876,7 +11867,7 @@
   "2075292239172926": {
     "__typename": "WorldsItemDefinition",
     "id": "2075292239172926",
-    "name": "FAERIE_BASKETBALL_01",
+    "name": "Blueberry Basketball",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11903,7 +11894,7 @@
   "2076250092458123": {
     "__typename": "WorldsItemDefinition",
     "id": "2076250092458123",
-    "name": "ZODIAC_PIG_01",
+    "name": "Zodiac Plushie - The Pig",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11930,7 +11921,7 @@
   "2076451779086047": {
     "__typename": "WorldsItemDefinition",
     "id": "2076451779086047",
-    "name": "SOUND_OBJECT_Halloween_WitchLaugh",
+    "name": "SFX - Witch's Laugh",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -11957,7 +11948,7 @@
   "2081320278620167": {
     "__typename": "WorldsItemDefinition",
     "id": "2081320278620167",
-    "name": "FAERIE_BIG_CRYSTAL_01",
+    "name": "Gargantuan Crystal",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11984,7 +11975,7 @@
   "2081542311893092": {
     "__typename": "WorldsItemDefinition",
     "id": "2081542311893092",
-    "name": "FAERIE_COUNTER_01",
+    "name": "Gambler's Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12011,7 +12002,7 @@
   "2081993181866091": {
     "__typename": "WorldsItemDefinition",
     "id": "2081993181866091",
-    "name": "TRIM_SUMMER",
+    "name": "Details Modern White",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12038,7 +12029,7 @@
   "2083332981888659": {
     "__typename": "WorldsItemDefinition",
     "id": "2083332981888659",
-    "name": "FARLANDS_PAINTINGS_08",
+    "name": "The Birth of Koleron",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12065,7 +12056,7 @@
   "2084023168355145": {
     "__typename": "WorldsItemDefinition",
     "id": "2084023168355145",
-    "name": "ART_WALL_01",
+    "name": "Wall Art Deco Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12092,7 +12083,7 @@
   "2084534321669452": {
     "__typename": "WorldsItemDefinition",
     "id": "2084534321669452",
-    "name": "PRIDE_LAMP_01",
+    "name": "Rainbow Lamp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12119,7 +12110,7 @@
   "2085147108394658": {
     "__typename": "WorldsItemDefinition",
     "id": "2085147108394658",
-    "name": "GENERIC_FLATSCREEN_TV_01",
+    "name": "Flatscreen TV",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12147,7 +12138,7 @@
   "2087001834749053": {
     "__typename": "WorldsItemDefinition",
     "id": "2087001834749053",
-    "name": "ART_SHELF_02",
+    "name": "Classy Small Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12174,7 +12165,7 @@
   "2087327511313453": {
     "__typename": "WorldsItemDefinition",
     "id": "2087327511313453",
-    "name": "CAFE_CHAIR_01",
+    "name": "Cafe Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12201,7 +12192,7 @@
   "2092225620845517": {
     "__typename": "WorldsItemDefinition",
     "id": "2092225620845517",
-    "name": "ART_CENTERPIECE_01",
+    "name": "Fine Floral Centerpiece",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12228,7 +12219,7 @@
   "2093032360707065": {
     "__typename": "WorldsItemDefinition",
     "id": "2093032360707065",
-    "name": "SPOOKY_LIVING_TABLE_01",
+    "name": "Sinister Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12255,7 +12246,7 @@
   "2093236044125327": {
     "__typename": "WorldsItemDefinition",
     "id": "2093236044125327",
-    "name": "ART_BAR_CART_01",
+    "name": "Luxurious Bar Cart",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12282,7 +12273,7 @@
   "209439046262584": {
     "__typename": "WorldsItemDefinition",
     "id": "209439046262584",
-    "name": "PAINTING_SMALL_12",
+    "name": "Painting Prologue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12309,7 +12300,7 @@
   "2097301836969311": {
     "__typename": "WorldsItemDefinition",
     "id": "2097301836969311",
-    "name": "BOHO_RUG_02",
+    "name": "Rug Boho",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12336,7 +12327,7 @@
   "2098427193552077": {
     "__typename": "WorldsItemDefinition",
     "id": "2098427193552077",
-    "name": "INDUSTRIAL_LIVING_TABLE_01",
+    "name": "Spartan Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12363,7 +12354,7 @@
   "2098465150185804": {
     "__typename": "WorldsItemDefinition",
     "id": "2098465150185804",
-    "name": "PIRATES_FLOOR_01",
+    "name": "Floor Deck",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12390,7 +12381,7 @@
   "2098708410189210": {
     "__typename": "WorldsItemDefinition",
     "id": "2098708410189210",
-    "name": "ART_WALL_ART_02",
+    "name": "Vintage Ad: Aspectu",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12417,7 +12408,7 @@
   "2098805763504978": {
     "__typename": "WorldsItemDefinition",
     "id": "2098805763504978",
-    "name": "PIRATES_COUNTER_02",
+    "name": "Makeshift Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12444,7 +12435,7 @@
   "2100536073349966": {
     "__typename": "WorldsItemDefinition",
     "id": "2100536073349966",
-    "name": "SPOOKY_PUMPKIN_01",
+    "name": "Jack O' Lantern",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12471,7 +12462,7 @@
   "2102067793212363": {
     "__typename": "WorldsItemDefinition",
     "id": "2102067793212363",
-    "name": "FAERIE_LIVING_TABLE_01",
+    "name": "Wood Cut Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12498,7 +12489,7 @@
   "2102830156448589": {
     "__typename": "WorldsItemDefinition",
     "id": "2102830156448589",
-    "name": "ART_DESK_01",
+    "name": "Executive's Desk",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12525,7 +12516,7 @@
   "2103218059774638": {
     "__typename": "WorldsItemDefinition",
     "id": "2103218059774638",
-    "name": "INDUSTRIAL_COUNTER_03",
+    "name": "Industrial High Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12552,7 +12543,7 @@
   "2105964652779296": {
     "__typename": "WorldsItemDefinition",
     "id": "2105964652779296",
-    "name": "SUMMER_RUG_01",
+    "name": "Geometric Rug",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12579,7 +12570,7 @@
   "2106166966127401": {
     "__typename": "WorldsItemDefinition",
     "id": "2106166966127401",
-    "name": "FAERIE_WALL_ART_02",
+    "name": "Messenger's Mark Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12606,7 +12597,7 @@
   "2107098042669255": {
     "__typename": "WorldsItemDefinition",
     "id": "2107098042669255",
-    "name": "ART_CEILING_01",
+    "name": "Ceiling Art Deco Mat",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12633,7 +12624,7 @@
   "2110793465635301": {
     "__typename": "WorldsItemDefinition",
     "id": "2110793465635301",
-    "name": "FAERIE_DIGITAL_CLOCK_01",
+    "name": "Digital Watch Clock",
     "item_description": "Inscribed with curious runes and powered by the sun, supposedly the Giants use this to keep track of time. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12660,7 +12651,7 @@
   "211216709469189": {
     "__typename": "WorldsItemDefinition",
     "id": "211216709469189",
-    "name": "GENERIC_COMPUTER_MONITOR_01",
+    "name": "Computer Monitor",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12688,7 +12679,7 @@
   "2120771771290298": {
     "__typename": "WorldsItemDefinition",
     "id": "2120771771290298",
-    "name": "SPOOKY_END_TABLE_01",
+    "name": "Sinister End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12715,7 +12706,7 @@
   "2124944557552161": {
     "__typename": "WorldsItemDefinition",
     "id": "2124944557552161",
-    "name": "FAERIE_COUCH_01",
+    "name": "Faerie Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12742,7 +12733,7 @@
   "212589812600677": {
     "__typename": "WorldsItemDefinition",
     "id": "212589812600677",
-    "name": "MODERN_MISC_03",
+    "name": "Dining Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12770,7 +12761,7 @@
   "2126936550696148": {
     "__typename": "WorldsItemDefinition",
     "id": "2126936550696148",
-    "name": "ART_BACK_BAR_01",
+    "name": "Timeless Back Bar",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12797,7 +12788,7 @@
   "2133638430064526": {
     "__typename": "WorldsItemDefinition",
     "id": "2133638430064526",
-    "name": "THEATER_BOOTH_01",
+    "name": "Dine-In Theater Booth",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12824,7 +12815,7 @@
   "2134621309943871": {
     "__typename": "WorldsItemDefinition",
     "id": "2134621309943871",
-    "name": "SUMMER_BOOK_01",
+    "name": "Beach Read",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12851,7 +12842,7 @@
   "2138671439488688": {
     "__typename": "WorldsItemDefinition",
     "id": "2138671439488688",
-    "name": "ZODIAC_HORSE_01",
+    "name": "Zodiac Plushie - The Horse",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12878,7 +12869,7 @@
   "2138994519491875": {
     "__typename": "WorldsItemDefinition",
     "id": "2138994519491875",
-    "name": "UGC_AMBIENT_Room",
+    "name": "UGC Ambience - Small Room",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12905,7 +12896,7 @@
   "2140581865954967": {
     "__typename": "WorldsItemDefinition",
     "id": "2140581865954967",
-    "name": "PIRATES_PAINTING_03",
+    "name": "Neptune's Deceit (Gold)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12932,7 +12923,7 @@
   "2140765622682347": {
     "__typename": "WorldsItemDefinition",
     "id": "2140765622682347",
-    "name": "UGC_AMBIENT_ROOM_LARGE",
+    "name": "UGC Ambience - Large Room",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -12959,7 +12950,7 @@
   "2146494048715486": {
     "__typename": "WorldsItemDefinition",
     "id": "2146494048715486",
-    "name": "SOUND_OBJECT_Halloween_Ghosts",
+    "name": "SFX - Ghosts (Spooky)",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -12986,7 +12977,7 @@
   "2146930845366498": {
     "__typename": "WorldsItemDefinition",
     "id": "2146930845366498",
-    "name": "ZODIAC_TIGER_01",
+    "name": "Zodiac Plushie - The Tiger",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13013,7 +13004,7 @@
   "2148718138536909": {
     "__typename": "WorldsItemDefinition",
     "id": "2148718138536909",
-    "name": "PIRATES_CROSSBONES_01",
+    "name": "Skull and Crossbones",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13040,7 +13031,7 @@
   "2149630251714165": {
     "__typename": "WorldsItemDefinition",
     "id": "2149630251714165",
-    "name": "WINTER_DINING_TABLE_01",
+    "name": "Rustic Island",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13067,7 +13058,7 @@
   "2152035994816393": {
     "__typename": "WorldsItemDefinition",
     "id": "2152035994816393",
-    "name": "SOUND_OBJECT_Halloween_SpookyWind",
+    "name": "SFX - Haunting Wind",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -13094,7 +13085,7 @@
   "215272572345177": {
     "__typename": "WorldsItemDefinition",
     "id": "215272572345177",
-    "name": "PAINTING_SMALL_24",
+    "name": "Painting Thi-7",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13121,7 +13112,7 @@
   "2157859044238799": {
     "__typename": "WorldsItemDefinition",
     "id": "2157859044238799",
-    "name": "WINTER_SHELF_01",
+    "name": "Rustic Long Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13148,7 +13139,7 @@
   "2159749047481196": {
     "__typename": "WorldsItemDefinition",
     "id": "2159749047481196",
-    "name": "PRIDE_POSTER_02",
+    "name": "Pride Heart Poster",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13175,7 +13166,7 @@
   "2159821670749407": {
     "__typename": "WorldsItemDefinition",
     "id": "2159821670749407",
-    "name": "ZODIAC_ROOSTER_01",
+    "name": "Zodiac Plushie - The Rooster",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13202,7 +13193,7 @@
   "2160660850663176": {
     "__typename": "WorldsItemDefinition",
     "id": "2160660850663176",
-    "name": "UGC_AMBIENT_Forest",
+    "name": "UGC Ambience - Forest",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13229,7 +13220,7 @@
   "2165269456825019": {
     "__typename": "WorldsItemDefinition",
     "id": "2165269456825019",
-    "name": "INDUSTRIAL_PAINTING_01",
+    "name": "Abstract Art",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13256,7 +13247,7 @@
   "2166962223324557": {
     "__typename": "WorldsItemDefinition",
     "id": "2166962223324557",
-    "name": "ZODIAC_RABBIT_01",
+    "name": "Zodiac Plushie - The Rabbit",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13283,7 +13274,7 @@
   "2171284809590867": {
     "__typename": "WorldsItemDefinition",
     "id": "2171284809590867",
-    "name": "BOHO_RUG_01",
+    "name": "Rug Kilim",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13310,7 +13301,7 @@
   "2174503619288728": {
     "__typename": "WorldsItemDefinition",
     "id": "2174503619288728",
-    "name": "WALL_10",
+    "name": "Wall Tropical Wallpaper Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13337,7 +13328,7 @@
   "2183848144977108": {
     "__typename": "WorldsItemDefinition",
     "id": "2183848144977108",
-    "name": "SUMMER_PLANTER_01",
+    "name": "Pineapple Planter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13364,7 +13355,7 @@
   "2184614154933903": {
     "__typename": "WorldsItemDefinition",
     "id": "2184614154933903",
-    "name": "ART_EAGLE_01",
+    "name": "Eagle Statue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13391,7 +13382,7 @@
   "2184887711571952": {
     "__typename": "WorldsItemDefinition",
     "id": "2184887711571952",
-    "name": "FAERIE_SHELF_02",
+    "name": "Popsicle Small Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13418,7 +13409,7 @@
   "2185535784899204": {
     "__typename": "WorldsItemDefinition",
     "id": "2185535784899204",
-    "name": "PRIDE_POSTER_01",
+    "name": "Love is Love Poster",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13445,7 +13436,7 @@
   "2187484044698203": {
     "__typename": "WorldsItemDefinition",
     "id": "2187484044698203",
-    "name": "PRIDE_PLUSH_01",
+    "name": "Marsha the Unicorn Plushie",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13472,7 +13463,7 @@
   "2187745147902873": {
     "__typename": "WorldsItemDefinition",
     "id": "2187745147902873",
-    "name": "PIRATES_CANDLE_01",
+    "name": "Benjamin",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13499,7 +13490,7 @@
   "2192376180794233": {
     "__typename": "WorldsItemDefinition",
     "id": "2192376180794233",
-    "name": "INDUSTRIAL_RUG_01",
+    "name": "Rug Abstract",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13526,7 +13517,7 @@
   "2194326167273827": {
     "__typename": "WorldsItemDefinition",
     "id": "2194326167273827",
-    "name": "PROMOTION_WRATH_01",
+    "name": "Runic Door",
     "item_description": "Adventure awaits through this door. How will you forge your destiny? A new journey coming soon, from Oculus Studios.",
     "is_scalable": false,
     "is_unlimited": true,
@@ -13553,7 +13544,7 @@
   "2194358317270287": {
     "__typename": "WorldsItemDefinition",
     "id": "2194358317270287",
-    "name": "INDUSTRIAL_LIVING_TABLE_02",
+    "name": "Designer's Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13580,7 +13571,7 @@
   "2196373530404510": {
     "__typename": "WorldsItemDefinition",
     "id": "2196373530404510",
-    "name": "BOHO_PALLET_BOX_01",
+    "name": "Pallet Box",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13607,7 +13598,7 @@
   "219646651898822": {
     "__typename": "WorldsItemDefinition",
     "id": "219646651898822",
-    "name": "GENERIC_01",
+    "name": "Cube Concrete",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13635,7 +13626,7 @@
   "2196551027068911": {
     "__typename": "WorldsItemDefinition",
     "id": "2196551027068911",
-    "name": "ART_CHAMPAGNE_BOTTLE_01",
+    "name": "Celebratory Bottle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13662,7 +13653,7 @@
   "2198631100183000": {
     "__typename": "WorldsItemDefinition",
     "id": "2198631100183000",
-    "name": "CAFE_BAR_STOOL_01",
+    "name": "Simple Bar Stool",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13689,7 +13680,7 @@
   "2198668650156454": {
     "__typename": "WorldsItemDefinition",
     "id": "2198668650156454",
-    "name": "FAERIE_BOOKCASE_01",
+    "name": "Fishy Tin Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13716,7 +13707,7 @@
   "2202250753179965": {
     "__typename": "WorldsItemDefinition",
     "id": "2202250753179965",
-    "name": "SPOOKY_WALL_01",
+    "name": "Wall Decayed Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13743,7 +13734,7 @@
   "2206718006027473": {
     "__typename": "WorldsItemDefinition",
     "id": "2206718006027473",
-    "name": "SPOOKY_STATUE_01",
+    "name": "Ruby-Eyed Crow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13770,7 +13761,7 @@
   "2207294669321451": {
     "__typename": "WorldsItemDefinition",
     "id": "2207294669321451",
-    "name": "ZODIAC_SHEEP_01",
+    "name": "Zodiac Plushie - The Sheep",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13797,7 +13788,7 @@
   "2209476745758122": {
     "__typename": "WorldsItemDefinition",
     "id": "2209476745758122",
-    "name": "ZODIAC_RAT_01",
+    "name": "Zodiac Plushie - The Rat",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13824,7 +13815,7 @@
   "220966095105474": {
     "__typename": "WorldsItemDefinition",
     "id": "220966095105474",
-    "name": "FARLANDS_FLORA_05",
+    "name": "Ember Plant",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13851,7 +13842,7 @@
   "2216581015021733": {
     "__typename": "WorldsItemDefinition",
     "id": "2216581015021733",
-    "name": "PORTAL_DOOR_01",
+    "name": "Standard Gateway",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13878,7 +13869,7 @@
   "2216872188375159": {
     "__typename": "WorldsItemDefinition",
     "id": "2216872188375159",
-    "name": "CAFE_ESPRESSO_MACHINE_01",
+    "name": "Espresso Machine",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13905,7 +13896,7 @@
   "2218818201494188": {
     "__typename": "WorldsItemDefinition",
     "id": "2218818201494188",
-    "name": "SUMMER_PILLOW_01",
+    "name": "Geometric Throw Pillow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13932,7 +13923,7 @@
   "2225215517497085": {
     "__typename": "WorldsItemDefinition",
     "id": "2225215517497085",
-    "name": "WINTER_COUCH_01",
+    "name": "Lodge Sofa",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13959,7 +13950,7 @@
   "2225343680829336": {
     "__typename": "WorldsItemDefinition",
     "id": "2225343680829336",
-    "name": "ART_END_TABLE_01",
+    "name": "Opulent End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -13986,7 +13977,7 @@
   "2225447817527115": {
     "__typename": "WorldsItemDefinition",
     "id": "2225447817527115",
-    "name": "PIRATES_COUNTER_01",
+    "name": "Makeshift Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14013,7 +14004,7 @@
   "2226635680691772": {
     "__typename": "WorldsItemDefinition",
     "id": "2226635680691772",
-    "name": "FAERIE_TABLE_LAMP_01",
+    "name": "Crystal Lamp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14040,7 +14031,7 @@
   "2227493017302962": {
     "__typename": "WorldsItemDefinition",
     "id": "2227493017302962",
-    "name": "SPOOKY_COUCH_01",
+    "name": "Sinister Sofa",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14067,7 +14058,7 @@
   "2236673819710558": {
     "__typename": "WorldsItemDefinition",
     "id": "2236673819710558",
-    "name": "ART_LIVING_CHAIR_01",
+    "name": "Extravagant Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14094,7 +14085,7 @@
   "2238026416268886": {
     "__typename": "WorldsItemDefinition",
     "id": "2238026416268886",
-    "name": "BOHO_SHELF_01",
+    "name": "Hanging Long Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14121,7 +14112,7 @@
   "2240314152656813": {
     "__typename": "WorldsItemDefinition",
     "id": "2240314152656813",
-    "name": "FAERIE_BASKETBALL_HOOP_01",
+    "name": "Thimble Hoop",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14148,7 +14139,7 @@
   "2243775772349391": {
     "__typename": "WorldsItemDefinition",
     "id": "2243775772349391",
-    "name": "FAERIE_DINING_TABLE_01",
+    "name": "Breakfast Jam Breakfast Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14175,7 +14166,7 @@
   "2246866852073404": {
     "__typename": "WorldsItemDefinition",
     "id": "2246866852073404",
-    "name": "LIGHTSABER_GREEN_01",
+    "name": "Lightsaber (Green Luke Skywalker)",
     "item_description": "The blade of choice for many guardians of peace and justice, including legendary Jedi Masters Luke Skywalker and Yoda. Vader Immortal: A Star Wars VR Series now available in the Rift Store.",
     "is_scalable": false,
     "is_unlimited": true,
@@ -14202,7 +14193,7 @@
   "2248038825266846": {
     "__typename": "WorldsItemDefinition",
     "id": "2248038825266846",
-    "name": "WINTER_BOOKCASE_01",
+    "name": "Rustic Bookcase",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14229,7 +14220,7 @@
   "2251569364873064": {
     "__typename": "WorldsItemDefinition",
     "id": "2251569364873064",
-    "name": "SPOOKY_DINING_CHAIR_01",
+    "name": "Forgotten Dining Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14256,7 +14247,7 @@
   "2252290644815958": {
     "__typename": "WorldsItemDefinition",
     "id": "2252290644815958",
-    "name": "ART_SHAKER_01",
+    "name": "Shaker",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14283,7 +14274,7 @@
   "2252396564786759": {
     "__typename": "WorldsItemDefinition",
     "id": "2252396564786759",
-    "name": "SUMMER_DINING_TABLE_01",
+    "name": "Tulip Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14310,7 +14301,7 @@
   "2261282590579963": {
     "__typename": "WorldsItemDefinition",
     "id": "2261282590579963",
-    "name": "MUS_THEME_WINTER",
+    "name": "Winter Theme",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14337,7 +14328,7 @@
   "2262055293913991": {
     "__typename": "WorldsItemDefinition",
     "id": "2262055293913991",
-    "name": "CAFE_TABLE_01",
+    "name": "Cafe Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14364,7 +14355,7 @@
   "2263598826994552": {
     "__typename": "WorldsItemDefinition",
     "id": "2263598826994552",
-    "name": "FAERIE_SWORD_01",
+    "name": "Blade of Grass",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14391,7 +14382,7 @@
   "2265301403519975": {
     "__typename": "WorldsItemDefinition",
     "id": "2265301403519975",
-    "name": "ZODIAC_SNAKE_01",
+    "name": "Zodiac Plushie - The Snake",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14418,7 +14409,7 @@
   "2266697923365134": {
     "__typename": "WorldsItemDefinition",
     "id": "2266697923365134",
-    "name": "PIRATES_PAINTING_06",
+    "name": "Voyage (Gold)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14445,7 +14436,7 @@
   "2267006303369423": {
     "__typename": "WorldsItemDefinition",
     "id": "2267006303369423",
-    "name": "PIRATES_CEILING_02",
+    "name": "Ceiling Ship Ropes",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14472,7 +14463,7 @@
   "2274699545873936": {
     "__typename": "WorldsItemDefinition",
     "id": "2274699545873936",
-    "name": "ART_WALL_ART_01",
+    "name": "Vintage Ad: Toast",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14499,7 +14490,7 @@
   "2276128089095670": {
     "__typename": "WorldsItemDefinition",
     "id": "2276128089095670",
-    "name": "BOHO_DEERHEAD_01",
+    "name": "Metal Deer Skull",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14526,7 +14517,7 @@
   "2281368541933882": {
     "__typename": "WorldsItemDefinition",
     "id": "2281368541933882",
-    "name": "WINTER_MKEKA_01",
+    "name": "Mkeka",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14553,7 +14544,7 @@
   "2282153901855064": {
     "__typename": "WorldsItemDefinition",
     "id": "2282153901855064",
-    "name": "INDUSTRIAL_PIPES_02",
+    "name": "More Exposed Piping",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14580,7 +14571,7 @@
   "2282427555168103": {
     "__typename": "WorldsItemDefinition",
     "id": "2282427555168103",
-    "name": "LIGHTSABER_RED_01",
+    "name": "Lightsaber (Red Kylo Ren)",
     "item_description": "Typically wielded by users of the dark side of the Force, blades of this color were favored by Sith Lords such as Darth Vader and his master, Darth Sidious. Vader Immortal: A Star Wars VR Series now available in the Rift Store.",
     "is_scalable": false,
     "is_unlimited": true,
@@ -14607,7 +14598,7 @@
   "228560250999676": {
     "__typename": "WorldsItemDefinition",
     "id": "228560250999676",
-    "name": "SCIFI_00",
+    "name": "Jelly Tank",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14635,7 +14626,7 @@
   "2286745221399829": {
     "__typename": "WorldsItemDefinition",
     "id": "2286745221399829",
-    "name": "INDUSTRIAL_DINING_TABLE_01",
+    "name": "Industrial Dining Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14662,7 +14653,7 @@
   "2291196100954931": {
     "__typename": "WorldsItemDefinition",
     "id": "2291196100954931",
-    "name": "WINTER_COUNTER_01",
+    "name": "Rustic Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14689,7 +14680,7 @@
   "2305267399513711": {
     "__typename": "WorldsItemDefinition",
     "id": "2305267399513711",
-    "name": "SUMMER_FLOATIE_03",
+    "name": "Sidewinding Serpent",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -14716,7 +14707,7 @@
   "2308540522496269": {
     "__typename": "WorldsItemDefinition",
     "id": "2308540522496269",
-    "name": "PIRATES_BOOKEND_01F",
+    "name": "Alligator Bookend (Front)",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14743,7 +14734,7 @@
   "2310736458967475": {
     "__typename": "WorldsItemDefinition",
     "id": "2310736458967475",
-    "name": "INDUSTRIAL_DINING_CHAIR_01",
+    "name": "Utilitarian Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14770,7 +14761,7 @@
   "2315526445156619": {
     "__typename": "WorldsItemDefinition",
     "id": "2315526445156619",
-    "name": "SPOOKY_STATUE_03",
+    "name": "Gargoyle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14797,7 +14788,7 @@
   "2318301194853019": {
     "__typename": "WorldsItemDefinition",
     "id": "2318301194853019",
-    "name": "BOHO_LIVING_CHAIR_01",
+    "name": "Egg Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14824,7 +14815,7 @@
   "2320765397987451": {
     "__typename": "WorldsItemDefinition",
     "id": "2320765397987451",
-    "name": "FAERIE_DINING_CHAIR_01",
+    "name": "Bottlecap Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14851,7 +14842,7 @@
   "2329094947159968": {
     "__typename": "WorldsItemDefinition",
     "id": "2329094947159968",
-    "name": "FANTASY_ANALOG_CLOCK_01_STREAMING",
+    "name": "Ancient Clock",
     "item_description": "A clock so old, barely anyone remembers how to read it. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14878,7 +14869,7 @@
   "2329860227044459": {
     "__typename": "WorldsItemDefinition",
     "id": "2329860227044459",
-    "name": "FAERIE_END_TABLE_01",
+    "name": "Toadstool End Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14905,7 +14896,7 @@
   "2335367996488098": {
     "__typename": "WorldsItemDefinition",
     "id": "2335367996488098",
-    "name": "CAFE_PROJECTOR_SCREEN_01",
+    "name": "Projector Screen",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14933,7 +14924,7 @@
   "2342117922479006": {
     "__typename": "WorldsItemDefinition",
     "id": "2342117922479006",
-    "name": "FAERIE_LIVING_CHAIR_01",
+    "name": "Faerie Living Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14960,7 +14951,7 @@
   "2342968522411942": {
     "__typename": "WorldsItemDefinition",
     "id": "2342968522411942",
-    "name": "BOHO_COUNTER_02",
+    "name": "Mosaic Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -14987,7 +14978,7 @@
   "2349553515072215": {
     "__typename": "WorldsItemDefinition",
     "id": "2349553515072215",
-    "name": "WINTER_RUG_01",
+    "name": "Lodge Rug",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15014,7 +15005,7 @@
   "2350207191763925": {
     "__typename": "WorldsItemDefinition",
     "id": "2350207191763925",
-    "name": "SPOOKY_ANALOG_CLOCK_01_STREAMING",
+    "name": "Gothic Clock",
     "item_description": "A not-so-subtle reminder that Time is the most dangerous monster of all. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15041,7 +15032,7 @@
   "2351228281561283": {
     "__typename": "WorldsItemDefinition",
     "id": "2351228281561283",
-    "name": "SOUND_OBJECT_Halloween_WerewolfHowls",
+    "name": "SFX - Werewolf Howls",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -15068,7 +15059,7 @@
   "2355151587848887": {
     "__typename": "WorldsItemDefinition",
     "id": "2355151587848887",
-    "name": "FAERIE_PLANTER_01",
+    "name": "Acorn Planter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15095,7 +15086,7 @@
   "2356784044335267": {
     "__typename": "WorldsItemDefinition",
     "id": "2356784044335267",
-    "name": "WINTER_MUHINDI_01",
+    "name": "Muhindi",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15122,7 +15113,7 @@
   "2357198667643175": {
     "__typename": "WorldsItemDefinition",
     "id": "2357198667643175",
-    "name": "WINTER_WALL_01",
+    "name": "Wall Winter Cabin",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15149,7 +15140,7 @@
   "2359201124165137": {
     "__typename": "WorldsItemDefinition",
     "id": "2359201124165137",
-    "name": "ART_COUCH_01",
+    "name": "Extravagant Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15176,7 +15167,7 @@
   "2365021103536235": {
     "__typename": "WorldsItemDefinition",
     "id": "2365021103536235",
-    "name": "PRIDE_SIGN_01",
+    "name": "Pride Sign",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15203,7 +15194,7 @@
   "2372214866152325": {
     "__typename": "WorldsItemDefinition",
     "id": "2372214866152325",
-    "name": "BOHO_DINING_TABLE_01",
+    "name": "Boho Dining Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15230,7 +15221,7 @@
   "2372512676154078": {
     "__typename": "WorldsItemDefinition",
     "id": "2372512676154078",
-    "name": "INDUSTRIAL_FOSSIL_01",
+    "name": "Almighty Ammonite",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15257,7 +15248,7 @@
   "2388621201162350": {
     "__typename": "WorldsItemDefinition",
     "id": "2388621201162350",
-    "name": "UGC_AMBIENT_Jungle",
+    "name": "UGC Ambience - Jungle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15284,7 +15275,7 @@
   "2391359084240118": {
     "__typename": "WorldsItemDefinition",
     "id": "2391359084240118",
-    "name": "INDUSTRIAL_MAMMOTH_01",
+    "name": "Mini-Mammoth Mammoth",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15311,7 +15302,7 @@
   "2395801230462186": {
     "__typename": "WorldsItemDefinition",
     "id": "2395801230462186",
-    "name": "INDUSTRIAL_WALL_01",
+    "name": "Wall Paint-Splattered",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15338,7 +15329,7 @@
   "2398092610206966": {
     "__typename": "WorldsItemDefinition",
     "id": "2398092610206966",
-    "name": "SPOOKY_SHELF_02",
+    "name": "Small Gothic Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15365,7 +15356,7 @@
   "2411343975574341": {
     "__typename": "WorldsItemDefinition",
     "id": "2411343975574341",
-    "name": "WINTER_MENORAH_01",
+    "name": "Menorah",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15392,7 +15383,7 @@
   "2417278818343773": {
     "__typename": "WorldsItemDefinition",
     "id": "2417278818343773",
-    "name": "CAFE_BAR_STOOL_02",
+    "name": "Simpler Bar Stool",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15419,7 +15410,7 @@
   "2438034152888431": {
     "__typename": "WorldsItemDefinition",
     "id": "2438034152888431",
-    "name": "SOUND_OBJECT_Halloween_CreatureGrowl",
+    "name": "SFX - Creature's Growl",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -15446,7 +15437,7 @@
   "2438415509562606": {
     "__typename": "WorldsItemDefinition",
     "id": "2438415509562606",
-    "name": "SUMMER_DIGITAL_CLOCK_01",
+    "name": "Watermelon Clock",
     "item_description": "It's always summertime with this fresh take on your standard digital clock. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15473,7 +15464,7 @@
   "2451689438205320": {
     "__typename": "WorldsItemDefinition",
     "id": "2451689438205320",
-    "name": "WINTER_LIVING_TABLE_01",
+    "name": "Antique Sled Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15500,7 +15491,7 @@
   "2459121637452449": {
     "__typename": "WorldsItemDefinition",
     "id": "2459121637452449",
-    "name": "PRIDE_POSTER_03",
+    "name": "Pride Unicorn Poster",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15527,7 +15518,7 @@
   "246271432551950": {
     "__typename": "WorldsItemDefinition",
     "id": "246271432551950",
-    "name": "SCIFI_TOYS_00",
+    "name": "Blaster",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15555,7 +15546,7 @@
   "246679895821800": {
     "__typename": "WorldsItemDefinition",
     "id": "246679895821800",
-    "name": "FX_STATUE_00",
+    "name": "Spell Dust",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15582,7 +15573,7 @@
   "2471020216248640": {
     "__typename": "WorldsItemDefinition",
     "id": "2471020216248640",
-    "name": "INDUSTRIAL_LAMP_01",
+    "name": "Designer's Floor Lamp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15609,7 +15600,7 @@
   "2471205299575127": {
     "__typename": "WorldsItemDefinition",
     "id": "2471205299575127",
-    "name": "UGC_AMBIENT_City",
+    "name": "UGC Ambience - City",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15636,7 +15627,7 @@
   "2478827538900171": {
     "__typename": "WorldsItemDefinition",
     "id": "2478827538900171",
-    "name": "BOHO_ANALOG_CLOCK_01_STREAMING",
+    "name": "Bohemian Wall Clock",
     "item_description": "Add a little bohemian flair to your apartment, with this trendy, rustic timekeeper.",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15663,7 +15654,7 @@
   "2490535991021248": {
     "__typename": "WorldsItemDefinition",
     "id": "2490535991021248",
-    "name": "CAFE_BAR_TABLE_01",
+    "name": "Cafe High Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15690,7 +15681,7 @@
   "249351395569302": {
     "__typename": "WorldsItemDefinition",
     "id": "249351395569302",
-    "name": "MODERN_SPORTS_04",
+    "name": "Ping-Pong Ball",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15718,7 +15709,7 @@
   "2502793886402367": {
     "__typename": "WorldsItemDefinition",
     "id": "2502793886402367",
-    "name": "WINTER_LIVING_CHAIR_01",
+    "name": "Lodge Armchair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15745,7 +15736,7 @@
   "250776285431098": {
     "__typename": "WorldsItemDefinition",
     "id": "250776285431098",
-    "name": "FANTASY_22",
+    "name": "Octagonal Marble Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15772,7 +15763,7 @@
   "251611442009052": {
     "__typename": "WorldsItemDefinition",
     "id": "251611442009052",
-    "name": "MODERN_SPORTS_06",
+    "name": "Miniature Golf Putter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15800,7 +15791,7 @@
   "2518355878182442": {
     "__typename": "WorldsItemDefinition",
     "id": "2518355878182442",
-    "name": "WINTER_STOCKINGS_01",
+    "name": "Christmas Stockings",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15827,7 +15818,7 @@
   "251917181965467": {
     "__typename": "WorldsItemDefinition",
     "id": "251917181965467",
-    "name": "BASE_01",
+    "name": "Console Cartridge",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -15854,7 +15845,7 @@
   "2521792957835357": {
     "__typename": "WorldsItemDefinition",
     "id": "2521792957835357",
-    "name": "FAERIE_WALL_01",
+    "name": "Wall Scrap Paper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15881,7 +15872,7 @@
   "2527414250632001": {
     "__typename": "WorldsItemDefinition",
     "id": "2527414250632001",
-    "name": "WINTER_BOOK_01",
+    "name": "Tales for the Solistic Seasons",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15908,7 +15899,7 @@
   "2536674813071834": {
     "__typename": "WorldsItemDefinition",
     "id": "2536674813071834",
-    "name": "FAERIE_COUNTER_02",
+    "name": "Gambler's Square Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15935,7 +15926,7 @@
   "2537032746338819": {
     "__typename": "WorldsItemDefinition",
     "id": "2537032746338819",
-    "name": "FAERIE_WALL_ART_01",
+    "name": "Messenger's Mark",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15962,7 +15953,7 @@
   "254265258430147": {
     "__typename": "WorldsItemDefinition",
     "id": "254265258430147",
-    "name": "PAINTING_MEDIUM_15",
+    "name": "Painting The Way to Jellyfish Cove",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -15989,7 +15980,7 @@
   "2550027031736148": {
     "__typename": "WorldsItemDefinition",
     "id": "2550027031736148",
-    "name": "INDUSTRIAL_ISLAND_01",
+    "name": "Industrial Kitchen Island",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16016,7 +16007,7 @@
   "2575056472534958": {
     "__typename": "WorldsItemDefinition",
     "id": "2575056472534958",
-    "name": "ART_DINING_CHAIR_01",
+    "name": "Fine Dining Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16043,7 +16034,7 @@
   "2590063874342602": {
     "__typename": "WorldsItemDefinition",
     "id": "2590063874342602",
-    "name": "ZODIAC_OX_01",
+    "name": "Zodiac Plushie - The Ox",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16070,7 +16061,7 @@
   "2594009317293554": {
     "__typename": "WorldsItemDefinition",
     "id": "2594009317293554",
-    "name": "PIRATES_DINING_TABLE_01",
+    "name": "Reclaimed Dining Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16097,7 +16088,7 @@
   "260957460975220": {
     "__typename": "WorldsItemDefinition",
     "id": "260957460975220",
-    "name": "FANTASY_14",
+    "name": "Carpenter's Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16124,7 +16115,7 @@
   "2613444922059071": {
     "__typename": "WorldsItemDefinition",
     "id": "2613444922059071",
-    "name": "ART_WALL_ART_03",
+    "name": "Vintage Ad: Converse",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16151,7 +16142,7 @@
   "262204447615129": {
     "__typename": "WorldsItemDefinition",
     "id": "262204447615129",
-    "name": "FANTASY_25",
+    "name": "Noble Armor",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16178,7 +16169,7 @@
   "2627602587265400": {
     "__typename": "WorldsItemDefinition",
     "id": "2627602587265400",
-    "name": "SUMMER_SURFBOARD_01",
+    "name": "Surfboard",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16205,7 +16196,7 @@
   "264517877377010": {
     "__typename": "WorldsItemDefinition",
     "id": "264517877377010",
-    "name": "SCIFI_TOYS_03",
+    "name": "Cyber Bow",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -16232,7 +16223,7 @@
   "2655877044424432": {
     "__typename": "WorldsItemDefinition",
     "id": "2655877044424432",
-    "name": "ART_ANALOG_CLOCK_01_STREAMING",
+    "name": "Vintage Wall Clock",
     "item_description": "A handsome clock from yesteryear. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16259,7 +16250,7 @@
   "2661354807231864": {
     "__typename": "WorldsItemDefinition",
     "id": "2661354807231864",
-    "name": "INDUSTRIAL_ANALOG_CLOCK_01_STREAMING",
+    "name": "Ultramodern Clock",
     "item_description": "One part timekeeper, one part modern art piece. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16286,7 +16277,7 @@
   "2679081905435624": {
     "__typename": "WorldsItemDefinition",
     "id": "2679081905435624",
-    "name": "THEATER_TABLE_01",
+    "name": "Dine-In Theater Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16313,7 +16304,7 @@
   "268649833656140": {
     "__typename": "WorldsItemDefinition",
     "id": "268649833656140",
-    "name": "MAT_WALL_TEST010",
+    "name": "Wall Brick",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16341,7 +16332,7 @@
   "2688975134464737": {
     "__typename": "WorldsItemDefinition",
     "id": "2688975134464737",
-    "name": "FX_STATUE_03",
+    "name": "Red Bokeh",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16368,7 +16359,7 @@
   "2691845820833043": {
     "__typename": "WorldsItemDefinition",
     "id": "2691845820833043",
-    "name": "ART_SHELF_01",
+    "name": "Classy Long Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16395,7 +16386,7 @@
   "269791876855675": {
     "__typename": "WorldsItemDefinition",
     "id": "269791876855675",
-    "name": "GENERIC_05",
+    "name": "Cube Steel",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16423,7 +16414,7 @@
   "2716044938437551": {
     "__typename": "WorldsItemDefinition",
     "id": "2716044938437551",
-    "name": "EVENT_THANKSGIVING_01",
+    "name": "Turkey Plushie",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16450,7 +16441,7 @@
   "271899326624194": {
     "__typename": "WorldsItemDefinition",
     "id": "271899326624194",
-    "name": "PAINTING_00",
+    "name": "Painting The Secret",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16478,7 +16469,7 @@
   "2744224358981284": {
     "__typename": "WorldsItemDefinition",
     "id": "2744224358981284",
-    "name": "PRIDE_FLAG_01",
+    "name": "LGBTQ+ Pride Flag",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16505,7 +16496,7 @@
   "277815119402739": {
     "__typename": "WorldsItemDefinition",
     "id": "277815119402739",
-    "name": "FARLANDS_PAINTINGS_03",
+    "name": "The Loud Mouth",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16532,7 +16523,7 @@
   "2803981559627755": {
     "__typename": "WorldsItemDefinition",
     "id": "2803981559627755",
-    "name": "WINTER_WREATH_01",
+    "name": "Winter Wreath",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16559,7 +16550,7 @@
   "280559219104123": {
     "__typename": "WorldsItemDefinition",
     "id": "280559219104123",
-    "name": "SCIFI_07",
+    "name": "Neon Sign",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16586,7 +16577,7 @@
   "2812036805493807": {
     "__typename": "WorldsItemDefinition",
     "id": "2812036805493807",
-    "name": "WINTER_ANALOG_CLOCK_01_STREAMING",
+    "name": "Wooden Clock",
     "item_description": "A rustic wall clock for those long winter nights. ",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16613,7 +16604,7 @@
   "285881651936483": {
     "__typename": "WorldsItemDefinition",
     "id": "285881651936483",
-    "name": "MUS_FUTURE_OPTIMISTIC",
+    "name": "Future Optimistic",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16640,7 +16631,7 @@
   "287769988358570": {
     "__typename": "WorldsItemDefinition",
     "id": "287769988358570",
-    "name": "MODERN_MISC_09",
+    "name": "Table Lamp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16668,7 +16659,7 @@
   "288298051655895": {
     "__typename": "WorldsItemDefinition",
     "id": "288298051655895",
-    "name": "MAT_FLOOR_TEST070",
+    "name": "Floor Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16695,7 +16686,7 @@
   "288557718330270": {
     "__typename": "WorldsItemDefinition",
     "id": "288557718330270",
-    "name": "GENERIC_07",
+    "name": "Rock One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16723,7 +16714,7 @@
   "288949424936696": {
     "__typename": "WorldsItemDefinition",
     "id": "288949424936696",
-    "name": "MODERN_PLANT_23",
+    "name": "Planter Round Marble Small",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16751,7 +16742,7 @@
   "289533974875678": {
     "__typename": "WorldsItemDefinition",
     "id": "289533974875678",
-    "name": "MAT_WALL_TEST020",
+    "name": "Wall White Brick",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16778,7 +16769,7 @@
   "2937057006308018": {
     "__typename": "WorldsItemDefinition",
     "id": "2937057006308018",
-    "name": "WALL_15",
+    "name": "Wall Purple Paint",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16805,7 +16796,7 @@
   "297865400692471": {
     "__typename": "WorldsItemDefinition",
     "id": "297865400692471",
-    "name": "FARLANDS_PAINTINGS_01",
+    "name": "Poop",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16832,7 +16823,7 @@
   "3026281367398055": {
     "__typename": "WorldsItemDefinition",
     "id": "3026281367398055",
-    "name": "EVENT_WOMEN_01",
+    "name": "Opportunity",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16859,7 +16850,7 @@
   "3091980437494223": {
     "__typename": "WorldsItemDefinition",
     "id": "3091980437494223",
-    "name": "WALL_13",
+    "name": "Wall Light Green Wallpaper",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16886,7 +16877,7 @@
   "312942309193504": {
     "__typename": "WorldsItemDefinition",
     "id": "312942309193504",
-    "name": "WALL_07",
+    "name": "Wall Fantasy Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16913,7 +16904,7 @@
   "316471742161196": {
     "__typename": "WorldsItemDefinition",
     "id": "316471742161196",
-    "name": "MAT_WALL_TEST040",
+    "name": "Wall Yellow Fabric",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16940,7 +16931,7 @@
   "318427495301580": {
     "__typename": "WorldsItemDefinition",
     "id": "318427495301580",
-    "name": "MODERN_PLANT_16",
+    "name": "Plant Potted Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16968,7 +16959,7 @@
   "321777211629952": {
     "__typename": "WorldsItemDefinition",
     "id": "321777211629952",
-    "name": "PAINTING_SMALL_20",
+    "name": "Painting One Day He Will Wake",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -16995,7 +16986,7 @@
   "327080724399772": {
     "__typename": "WorldsItemDefinition",
     "id": "327080724399772",
-    "name": "REX_FC_POLO_02",
+    "name": "SELF",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17022,7 +17013,7 @@
   "334165453693912": {
     "__typename": "WorldsItemDefinition",
     "id": "334165453693912",
-    "name": "REX_FC_06",
+    "name": "Robot Arm",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17049,7 +17040,7 @@
   "3386798754671610": {
     "__typename": "WorldsItemDefinition",
     "id": "3386798754671610",
-    "name": "PIRATES_HOOK_01",
+    "name": "Mauvebeard's Hook",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17076,7 +17067,7 @@
   "339253609836402": {
     "__typename": "WorldsItemDefinition",
     "id": "339253609836402",
-    "name": "MODERN_PLANT_04",
+    "name": "Plant Medium Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17104,7 +17095,7 @@
   "348291252280074": {
     "__typename": "WorldsItemDefinition",
     "id": "348291252280074",
-    "name": "SCIFI_05",
+    "name": "Rug Neon Blue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17131,7 +17122,7 @@
   "351248038634266": {
     "__typename": "WorldsItemDefinition",
     "id": "351248038634266",
-    "name": "MAT_WALL_TEST070",
+    "name": "Wall White Tiled Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17158,7 +17149,7 @@
   "352658778534513": {
     "__typename": "WorldsItemDefinition",
     "id": "352658778534513",
-    "name": "MUS_FANTASY_ORCH",
+    "name": "Fantasy Orchestral",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -17186,7 +17177,7 @@
   "354139418344038": {
     "__typename": "WorldsItemDefinition",
     "id": "354139418344038",
-    "name": "GENERIC_11",
+    "name": "Rock Five",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17214,7 +17205,7 @@
   "354455561653961": {
     "__typename": "WorldsItemDefinition",
     "id": "354455561653961",
-    "name": "REX_FC_03",
+    "name": "Product Box",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17241,7 +17232,7 @@
   "357657488017953": {
     "__typename": "WorldsItemDefinition",
     "id": "357657488017953",
-    "name": "SCIFI_06",
+    "name": "Space Couch",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17268,7 +17259,7 @@
   "361661244271394": {
     "__typename": "WorldsItemDefinition",
     "id": "361661244271394",
-    "name": "SCIFI_03",
+    "name": "Space Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17295,7 +17286,7 @@
   "364937200622026": {
     "__typename": "WorldsItemDefinition",
     "id": "364937200622026",
-    "name": "MODERN_PLANT_25",
+    "name": "Planter Round Black Small",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17323,7 +17314,7 @@
   "367452177017362": {
     "__typename": "WorldsItemDefinition",
     "id": "367452177017362",
-    "name": "MI_SCI_TILE_FLOOR_PANEL_01",
+    "name": "Floor Space Base",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17350,7 +17341,7 @@
   "368031213625985": {
     "__typename": "WorldsItemDefinition",
     "id": "368031213625985",
-    "name": "TRIM_NEO",
+    "name": "Details Space Base",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17377,7 +17368,7 @@
   "369871383473039": {
     "__typename": "WorldsItemDefinition",
     "id": "369871383473039",
-    "name": "FLOOR_04",
+    "name": "Floor Herringbone Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17404,7 +17395,7 @@
   "380467632377727": {
     "__typename": "WorldsItemDefinition",
     "id": "380467632377727",
-    "name": "WALL_06",
+    "name": "Wall Checkered",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17431,7 +17422,7 @@
   "381664608913746": {
     "__typename": "WorldsItemDefinition",
     "id": "381664608913746",
-    "name": "MUS_MOD_CONTEMPLATIVE",
+    "name": "Modern Contemplative",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17458,7 +17449,7 @@
   "388417434925726": {
     "__typename": "WorldsItemDefinition",
     "id": "388417434925726",
-    "name": "REX_FARLANDS_02",
+    "name": "Zoie Statue",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17485,7 +17476,7 @@
   "389106108173252": {
     "__typename": "WorldsItemDefinition",
     "id": "389106108173252",
-    "name": "FARLANDS_FLORA_09",
+    "name": "Space Succulent",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17512,7 +17503,7 @@
   "395295614222659": {
     "__typename": "WorldsItemDefinition",
     "id": "395295614222659",
-    "name": "MAT_FLOOR_TEST060",
+    "name": "Floor White Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17540,7 +17531,7 @@
   "412458069155458": {
     "__typename": "WorldsItemDefinition",
     "id": "412458069155458",
-    "name": "BASE_05",
+    "name": "Achievement Plaque",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17567,7 +17558,7 @@
   "419277578474359": {
     "__typename": "WorldsItemDefinition",
     "id": "419277578474359",
-    "name": "PAINTING_MEDIUM_09",
+    "name": "Painting Prologue Lakeside Vista",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17594,7 +17585,7 @@
   "4210237435702639": {
     "__typename": "WorldsItemDefinition",
     "id": "4210237435702639",
-    "name": "UGC_AMBIENT_Rain",
+    "name": "UGC Ambience - Rain",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17621,7 +17612,7 @@
   "433920523689959": {
     "__typename": "WorldsItemDefinition",
     "id": "433920523689959",
-    "name": "MUS_MOD_DOWNTEMPO",
+    "name": "Modern Downtempo",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17648,7 +17639,7 @@
   "442205872848831": {
     "__typename": "WorldsItemDefinition",
     "id": "442205872848831",
-    "name": "MUS_MOD_DRAMATIC",
+    "name": "Modern Dramatic",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17675,7 +17666,7 @@
   "447713402276969": {
     "__typename": "WorldsItemDefinition",
     "id": "447713402276969",
-    "name": "FANTASY_01",
+    "name": "Hunter and Horse",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17702,7 +17693,7 @@
   "453077805067678": {
     "__typename": "WorldsItemDefinition",
     "id": "453077805067678",
-    "name": "MODERN_MISC_06",
+    "name": "Stone Step",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17730,7 +17721,7 @@
   "462890010755113": {
     "__typename": "WorldsItemDefinition",
     "id": "462890010755113",
-    "name": "MODERN_PLANT_02",
+    "name": "Plant Large One",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17758,7 +17749,7 @@
   "470470293287903": {
     "__typename": "WorldsItemDefinition",
     "id": "470470293287903",
-    "name": "MODERN_MISC_00",
+    "name": "Bar Cart",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17786,7 +17777,7 @@
   "477984859222136": {
     "__typename": "WorldsItemDefinition",
     "id": "477984859222136",
-    "name": "FANTASY_07",
+    "name": "Commoner's Bow",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -17814,7 +17805,7 @@
   "481113102231155": {
     "__typename": "WorldsItemDefinition",
     "id": "481113102231155",
-    "name": "FANTASY_17",
+    "name": "Talon Sconce",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17841,7 +17832,7 @@
   "484302615252432": {
     "__typename": "WorldsItemDefinition",
     "id": "484302615252432",
-    "name": "FANTASY_15",
+    "name": "Ornate Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17868,7 +17859,7 @@
   "485156441838272": {
     "__typename": "WorldsItemDefinition",
     "id": "485156441838272",
-    "name": "MODERN_VAR1_02",
+    "name": "Round Coffee Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17896,7 +17887,7 @@
   "490609521311100": {
     "__typename": "WorldsItemDefinition",
     "id": "490609521311100",
-    "name": "PAINTING_MEDIUM_16",
+    "name": "Painting Lumiere Couture",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17923,7 +17914,7 @@
   "490611951290806": {
     "__typename": "WorldsItemDefinition",
     "id": "490611951290806",
-    "name": "MODERN_VAR1_03",
+    "name": "Round Side Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17951,7 +17942,7 @@
   "494605354205475": {
     "__typename": "WorldsItemDefinition",
     "id": "494605354205475",
-    "name": "PAINTING_04",
+    "name": "Painting Faragon Horizon",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -17979,7 +17970,7 @@
   "495687620804546": {
     "__typename": "WorldsItemDefinition",
     "id": "495687620804546",
-    "name": "FARLANDS_FLORA_01",
+    "name": "Purple Space Plant",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18006,7 +17997,7 @@
   "496302324082352": {
     "__typename": "WorldsItemDefinition",
     "id": "496302324082352",
-    "name": "MAT_FLOOR_TEST010",
+    "name": "Floor Concrete",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18033,7 +18024,7 @@
   "496410367367341": {
     "__typename": "WorldsItemDefinition",
     "id": "496410367367341",
-    "name": "FX_STATUE_02",
+    "name": "Ember Ambiance",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18060,7 +18051,7 @@
   "497544297282359": {
     "__typename": "WorldsItemDefinition",
     "id": "497544297282359",
-    "name": "SCIFI_08",
+    "name": "High Tech Fan",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18087,7 +18078,7 @@
   "500893293587929": {
     "__typename": "WorldsItemDefinition",
     "id": "500893293587929",
-    "name": "FANTASY_24",
+    "name": "Royal Armor",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18114,7 +18105,7 @@
   "501781036840048": {
     "__typename": "WorldsItemDefinition",
     "id": "501781036840048",
-    "name": "MODERN_04",
+    "name": "Wooden Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18142,7 +18133,7 @@
   "502226183476617": {
     "__typename": "WorldsItemDefinition",
     "id": "502226183476617",
-    "name": "PAINTING_MEDIUM_04",
+    "name": "Painting Wisple Home",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18169,7 +18160,7 @@
   "505721069766942": {
     "__typename": "WorldsItemDefinition",
     "id": "505721069766942",
-    "name": "MODERN_PLANT_07",
+    "name": "Plant Medium Three",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18197,7 +18188,7 @@
   "505864786460759": {
     "__typename": "WorldsItemDefinition",
     "id": "505864786460759",
-    "name": "SKY_VERTIGO",
+    "name": "Surroundings Vertigo",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18224,7 +18215,7 @@
   "506632246342130": {
     "__typename": "WorldsItemDefinition",
     "id": "506632246342130",
-    "name": "MODERN_VAR2_00",
+    "name": "Red Lounge Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18252,7 +18243,7 @@
   "516779115324043": {
     "__typename": "WorldsItemDefinition",
     "id": "516779115324043",
-    "name": "WALL_01",
+    "name": "Wall Circuit",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18279,7 +18270,7 @@
   "520951774918402": {
     "__typename": "WorldsItemDefinition",
     "id": "520951774918402",
-    "name": "DREAMDECK_09",
+    "name": "Tyrannosaurus Rex",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18306,7 +18297,7 @@
   "521878381477484": {
     "__typename": "WorldsItemDefinition",
     "id": "521878381477484",
-    "name": "BASE_03",
+    "name": "Farlands Book",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18334,7 +18325,7 @@
   "526788700992534": {
     "__typename": "WorldsItemDefinition",
     "id": "526788700992534",
-    "name": "PAINTING_SMALL_23",
+    "name": "Painting Pandering",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18361,7 +18352,7 @@
   "527572527576631": {
     "__typename": "WorldsItemDefinition",
     "id": "527572527576631",
-    "name": "DREAMDECK_05",
+    "name": "Poly Bunny",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18388,7 +18379,7 @@
   "532473933756765": {
     "__typename": "WorldsItemDefinition",
     "id": "532473933756765",
-    "name": "MAT_WALL_TEST050",
+    "name": "Wall White",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18415,7 +18406,7 @@
   "533494030326818": {
     "__typename": "WorldsItemDefinition",
     "id": "533494030326818",
-    "name": "PAINTING_SMALL_25",
+    "name": "Painting Defender Knight",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18442,7 +18433,7 @@
   "541019079572858": {
     "__typename": "WorldsItemDefinition",
     "id": "541019079572858",
-    "name": "SCIFI_15",
+    "name": "Space Shelf Long",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18469,7 +18460,7 @@
   "552923528428243": {
     "__typename": "WorldsItemDefinition",
     "id": "552923528428243",
-    "name": "CEILING_06",
+    "name": "Ceiling Metal",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18496,7 +18487,7 @@
   "559602151096629": {
     "__typename": "WorldsItemDefinition",
     "id": "559602151096629",
-    "name": "PAINTING_01",
+    "name": "Painting Jellyfish Cove",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18524,7 +18515,7 @@
   "563590323973090": {
     "__typename": "WorldsItemDefinition",
     "id": "563590323973090",
-    "name": "DREAMDECK_07",
+    "name": "T-Rex Head",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18551,7 +18542,7 @@
   "574538189336855": {
     "__typename": "WorldsItemDefinition",
     "id": "574538189336855",
-    "name": "MAT_CEILING_TEST020",
+    "name": "Ceiling Gold Tiled",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18578,7 +18569,7 @@
   "599444123777304": {
     "__typename": "WorldsItemDefinition",
     "id": "599444123777304",
-    "name": "BASE_02",
+    "name": "Virtual Console",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -18607,7 +18598,7 @@
   "673093836170894": {
     "__typename": "WorldsItemDefinition",
     "id": "673093836170894",
-    "name": "TRIM_FANTASY",
+    "name": "Details Ornate",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
@@ -18634,7 +18625,7 @@
   "673993002795422": {
     "__typename": "WorldsItemDefinition",
     "id": "673993002795422",
-    "name": "FANTASY_38",
+    "name": "Planter Marble",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18661,7 +18652,7 @@
   "683145331887502": {
     "__typename": "WorldsItemDefinition",
     "id": "683145331887502",
-    "name": "MODERN_VAR2_03",
+    "name": "Marble Side Table",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18689,7 +18680,7 @@
   "697989370401939": {
     "__typename": "WorldsItemDefinition",
     "id": "697989370401939",
-    "name": "MODERN_RUG_02",
+    "name": "Rug Arrow",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18717,7 +18708,7 @@
   "698796933647974": {
     "__typename": "WorldsItemDefinition",
     "id": "698796933647974",
-    "name": "MODERN_05",
+    "name": "Wooden Square Shelf",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18745,7 +18736,7 @@
   "699306283604181": {
     "__typename": "WorldsItemDefinition",
     "id": "699306283604181",
-    "name": "MODERN_STATUE_01",
+    "name": "Head Sculpture",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18773,7 +18764,7 @@
   "705429289653534": {
     "__typename": "WorldsItemDefinition",
     "id": "705429289653534",
-    "name": "FANTASY_16",
+    "name": "Pedestal",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18800,7 +18791,7 @@
   "712892495578104": {
     "__typename": "WorldsItemDefinition",
     "id": "712892495578104",
-    "name": "REX_FC_POLO_04",
+    "name": "Aww",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18827,7 +18818,7 @@
   "727576220917064": {
     "__typename": "WorldsItemDefinition",
     "id": "727576220917064",
-    "name": "SCIFI_18",
+    "name": "Alien Technology",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18854,7 +18845,7 @@
   "742922672558302": {
     "__typename": "WorldsItemDefinition",
     "id": "742922672558302",
-    "name": "MODERN_PLANT_14",
+    "name": "Plant Medium Eight",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18882,7 +18873,7 @@
   "743744799161429": {
     "__typename": "WorldsItemDefinition",
     "id": "743744799161429",
-    "name": "MODERN_PLANT_05",
+    "name": "Plant Large Two",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18910,7 +18901,7 @@
   "764187900432633": {
     "__typename": "WorldsItemDefinition",
     "id": "764187900432633",
-    "name": "MODERN_PLANT_11",
+    "name": "Plant Medium Five",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18938,7 +18929,7 @@
   "768236093385304": {
     "__typename": "WorldsItemDefinition",
     "id": "768236093385304",
-    "name": "FANTASY_37",
+    "name": "Planter Wood",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18965,7 +18956,7 @@
   "785313498304992": {
     "__typename": "WorldsItemDefinition",
     "id": "785313498304992",
-    "name": "MODERN_01",
+    "name": "Modern Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -18993,7 +18984,7 @@
   "789829797868756": {
     "__typename": "WorldsItemDefinition",
     "id": "789829797868756",
-    "name": "SKY_NEO",
+    "name": "Surroundings Future City",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19020,7 +19011,7 @@
   "806618469462212": {
     "__typename": "WorldsItemDefinition",
     "id": "806618469462212",
-    "name": "CEILING_07",
+    "name": "Ceiling Linen Tiles",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19047,7 +19038,7 @@
   "817065641751650": {
     "__typename": "WorldsItemDefinition",
     "id": "817065641751650",
-    "name": "CEILING_02",
+    "name": "Ceiling Black Hex Tile",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19074,7 +19065,7 @@
   "818316878349179": {
     "__typename": "WorldsItemDefinition",
     "id": "818316878349179",
-    "name": "PAINTING_SMALL_05",
+    "name": "Painting Eos-X58",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19101,7 +19092,7 @@
   "846530722165392": {
     "__typename": "WorldsItemDefinition",
     "id": "846530722165392",
-    "name": "MODERN_00",
+    "name": "Modern Corner Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19129,7 +19120,7 @@
   "857321697780292": {
     "__typename": "WorldsItemDefinition",
     "id": "857321697780292",
-    "name": "FLOOR_02",
+    "name": "Floor Rubber",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19156,7 +19147,7 @@
   "862677427244276": {
     "__typename": "WorldsItemDefinition",
     "id": "862677427244276",
-    "name": "MODERN_PLANT_20",
+    "name": "Planter Round Black Large",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19184,7 +19175,7 @@
   "874785409355795": {
     "__typename": "WorldsItemDefinition",
     "id": "874785409355795",
-    "name": "PAINTING_LARGE_04",
+    "name": "Painting Cezar and His Cats",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19211,7 +19202,7 @@
   "880249618765852": {
     "__typename": "WorldsItemDefinition",
     "id": "880249618765852",
-    "name": "BOHO_POUFFE_01",
+    "name": "Kilim Pouffe",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19238,7 +19229,7 @@
   "888294867961050": {
     "__typename": "WorldsItemDefinition",
     "id": "888294867961050",
-    "name": "PIRATES_RUG_01",
+    "name": "Rug Compass Rose",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19265,7 +19256,7 @@
   "890762487740918": {
     "__typename": "WorldsItemDefinition",
     "id": "890762487740918",
-    "name": "REX_FC_00",
+    "name": "Retro Monitor",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19292,7 +19283,7 @@
   "893457384144029": {
     "__typename": "WorldsItemDefinition",
     "id": "893457384144029",
-    "name": "MODERN_PLANT_13",
+    "name": "Plant Medium Seven",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19320,7 +19311,7 @@
   "917705351709816": {
     "__typename": "WorldsItemDefinition",
     "id": "917705351709816",
-    "name": "FANTASY_40",
+    "name": "Ornate Long Counter",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19347,7 +19338,7 @@
   "919417571515749": {
     "__typename": "WorldsItemDefinition",
     "id": "919417571515749",
-    "name": "INDUSTRIAL_LIVING_CHAIR_01",
+    "name": "Stylish Lounge Chair",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -19374,7 +19365,7 @@
   "952545168216863": {
     "__typename": "WorldsItemDefinition",
     "id": "952545168216863",
-    "name": "MODERN_PLANT_24",
+    "name": "Planter Round Cement Small",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
