@@ -19,11 +19,6 @@ namespace fs = std::filesystem;
 
 namespace applibraries {
 
-    std::string DefaultRoot()
-    {
-        return "C:\\Program Files\\Oculus\\Software";
-    }
-
     // ---- Extract library display names from the Oculus cache ----
     // %APPDATA%\Oculus\sessions\_oaf\data.sqlite (Objects table) caches the full app catalog
     // A string-scalar field in the blob is <u32 nameLen><name>\x01\x01<u64 valLen><value>. Return the value for `name`, or "" if not present as a string scalar.
@@ -58,40 +53,11 @@ namespace applibraries {
         return std::string();
     }
 
-    // Offset just past the <u32 nameLen><name> marker for `name`, or npos.
-    static size_t BlobFieldNamePos(const unsigned char* blob, size_t len, const char* name)
-    {
-        size_t nlen = std::strlen(name);
-        std::string needle;
-        needle.push_back((char)(nlen & 0xFF));
-        needle.push_back((char)((nlen >> 8) & 0xFF));
-        needle.push_back((char)((nlen >> 16) & 0xFF));
-        needle.push_back((char)((nlen >> 24) & 0xFF));
-        needle.append(name, nlen);
-
-        for (size_t i = 0; i + needle.size() <= len; ++i)
-        {
-            if (std::memcmp(blob + i, needle.data(), needle.size()) == 0) return i + needle.size();
-        }
-        return (size_t)-1;
-    }
-
-    // A cover field (cover_square_image / cover_landscape_image) holds a nested Image object whose uri is the oculuscdn url. Return that uri.
-    static std::string BlobCoverUri(const unsigned char* blob, size_t len, const char* coverField)
-    {
-        size_t pos = BlobFieldNamePos(blob, len, coverField);
-        if (pos == (size_t)-1) return std::string();
-
-        return BlobStringField(blob, len, "uri", pos);
-    }
-
-    // Per-app info pulled from the oaf cache: canonical name, display name and the two oculuscdn cover uris.
+    // Per-app info pulled from the oaf cache: canonical name and display name
     struct OafApp
     {
         std::string canonicalName;
         std::string displayName;
-        std::string coverSquareUri;
-        std::string coverLandscapeUri;
     };
 
     static std::map<std::string, OafApp> LoadOafApps(std::string* errorOut = nullptr)
@@ -165,8 +131,6 @@ namespace applibraries {
                         OafApp a;
                         a.canonicalName = BlobStringField(blob, (size_t)blen, "canonical_name");
                         a.displayName = BlobStringField(blob, (size_t)blen, "display_name");
-                        a.coverSquareUri = BlobCoverUri(blob, (size_t)blen, "cover_square_image");
-                        a.coverLandscapeUri = BlobCoverUri(blob, (size_t)blen, "cover_landscape_image");
                         out[std::string((const char*)hk)] = a;
 
                         homeLogger.write() << "AppLibraries: Found app: " << a.displayName.c_str() << std::endl;
@@ -328,18 +292,6 @@ namespace applibraries {
         return f.good();
     }
 
-    // The two graph.oculus.com persisted queries for an app's store art. Both need a valid access_token.
-    static const char* kDocAppCover       = "2562966287070020"; // portrait cover, response node.images is a single {uri}
-    static const char* kDocAppScreenshots = "2841468849260027"; // screenshots, response node.images is a list of {uri}
-
-    // oculuscdn urls for an app's portrait cover and first two screenshots. Empty fields on any failure should fall back to any existing covers.
-    struct AppArt
-    {
-        std::string portraitUrl;
-        std::string shot0Url;
-        std::string shot1Url;
-    };
-
     // Relative store path of a downloaded app image named "<id><suffix>.<ext>", or "" when none is cached.
     static std::string FindCachedImage(const std::vector<std::string>& files, const std::string& id, const std::string& suffix)
     {
@@ -352,18 +304,42 @@ namespace applibraries {
         return std::string();
     }
 
-    // Query the live backend for an app's portrait cover and screenshots.
+    // Query the live backend for an app's covers and screenshots.
     // token is the user's cached access_token, appId is the numeric id.
-    // wantCover and wantShots permit each request so cached art is not fetched again. Returns empty urls when the token is absent or a query fails.
-    static AppArt FetchAppArt(const std::string& token, const std::string& appId, bool wantCover, bool wantShots)
+    // The want flags control each request so cached art is not fetched again. It returns empty urls if the token is absent or a query fails.
+    static AppArt FetchAppArt(const std::string& token, const std::string& appId, const ArtWants& want)
     {
         AppArt art;
         if (token.empty() || appId.empty()) return art;
 
         std::string err;
 
-        if (wantCover)
+        if (want.square)
         {
+            std::string vars = json11::Json(json11::Json::object{ { "applicationID", appId } }).dump();
+            json11::Json r = fetchworlds::GraphQL(token, kDocAppSquare, vars, err);
+            if (err.empty())
+            {
+                const json11::Json& uri = r["data"]["node"]["cover_square_image"]["uri"];
+                if (uri.is_string()) art.squareUrl = uri.string_value();
+            }
+        }
+
+        if (want.landscape)
+        {
+            err.clear();
+            std::string vars = json11::Json(json11::Json::object{ { "applicationID", appId } }).dump();
+            json11::Json r = fetchworlds::GraphQL(token, kDocAppLandscape, vars, err);
+            if (err.empty())
+            {
+                const json11::Json& uri = r["data"]["node"]["cover_landscape_image"]["uri"];
+                if (uri.is_string()) art.landscapeUrl = uri.string_value();
+            }
+        }
+
+        if (want.portrait)
+        {
+            err.clear();
             std::string coverVars = json11::Json(json11::Json::object{ { "size", "252x360" }, { "app_id", appId } }).dump();
             json11::Json cover = fetchworlds::GraphQL(token, kDocAppCover, coverVars, err);
             if (err.empty())
@@ -373,7 +349,7 @@ namespace applibraries {
             }
         }
 
-        if (wantShots)
+        if (want.shots)
         {
             err.clear();
             std::string shotVars = json11::Json(json11::Json::object{ { "size", "1280x720" }, { "app_id", appId } }).dump();
@@ -408,7 +384,7 @@ namespace applibraries {
             roots.push_back(r);
         };
 
-        addRoot(prefs::Widen(DefaultRoot()));
+        addRoot(prefs::Widen(DefaultRoot));
         for (const auto& u : userRoots)
         {
             addRoot(prefs::Widen(u));
@@ -419,7 +395,7 @@ namespace applibraries {
         std::map<std::string, OafApp> oafApps = LoadOafApps(&oafErr);
         if (oafError) *oafError = oafErr;
 
-        // Read the user's cached access_token once. When present, each app is enriched with real portrait and screenshot art from the live backend, otherwise the local covers are reused as before. Best-effort, a dead backend or no login just keeps the fallback.
+        // Read the user's cached access_token once. When found, each app's covers and screenshots are fetched from the live backend. A dead backend or no login just leaves the art empty and the app keeps its title only.
         fetchworlds::LocalCreds creds = fetchworlds::LoadLocalCreds();
 
         // Cover images download into store\apps\images and the stored field is the store-relative path. The backend resolves it to an absolute file:// at serve time so the library remains portable.
@@ -452,63 +428,47 @@ namespace applibraries {
 
             std::string base = BaseCanonical(oaf.canonicalName);
 
-            std::string squareUri, landscapeUri;
-            if (!oaf.coverSquareUri.empty())
-            {
-                std::string fn = id + "_square" + ImageExtFromUrl(oaf.coverSquareUri);
-                if (DownloadImage(oaf.coverSquareUri, imagesDir / fn))
-                {
-                    squareUri = "apps/images/" + fn;
-                }
-                else
-                {
-                    ++failures; // a uri was present but the fetch failed, likely an expired oculuscdn link?
-                } 
-            }
-            if (!oaf.coverLandscapeUri.empty())
-            {
-                std::string fn = id + "_landscape" + ImageExtFromUrl(oaf.coverLandscapeUri);
-                if (DownloadImage(oaf.coverLandscapeUri, imagesDir / fn))
-                {
-                    landscapeUri = "apps/images/" + fn;
-                }
-                else
-                {
-                    ++failures;
-                }
-            }
+            std::string squareUri    = FindCachedImage(cachedImageFiles, id, "_square");
+            std::string landscapeUri = FindCachedImage(cachedImageFiles, id, "_landscape");
+            std::string portraitUri  = FindCachedImage(cachedImageFiles, id, "_portrait");
+            std::string shot0Uri     = FindCachedImage(cachedImageFiles, id, "_shot0");
+            std::string shot1Uri     = FindCachedImage(cachedImageFiles, id, "_shot1");
 
-            // Real portrait cover and screenshots when a token is available
-            // reuse the square and landscape covers as fallback.
-            std::string portraitUri = squareUri;
-            std::string shot0Uri = landscapeUri;
-            std::string shot1Uri = landscapeUri;
+            ArtWants want;
+            want.square    = squareUri.empty();
+            want.landscape = landscapeUri.empty();
+            want.portrait  = portraitUri.empty();
+            want.shots     = shot0Uri.empty() || shot1Uri.empty();
 
-            std::string cachedPortrait = FindCachedImage(cachedImageFiles, id, "_portrait");
-            std::string cachedShot0    = FindCachedImage(cachedImageFiles, id, "_shot0");
-            std::string cachedShot1    = FindCachedImage(cachedImageFiles, id, "_shot1");
-            if (!cachedPortrait.empty()) portraitUri = cachedPortrait;
-            if (!cachedShot0.empty())    shot0Uri = cachedShot0;
-            if (!cachedShot1.empty())    shot1Uri = cachedShot1;
-
-            bool wantCover = cachedPortrait.empty();
-            bool wantShots = cachedShot0.empty() || cachedShot1.empty();
-            if (!creds.token.empty() && (wantCover || wantShots))
+            if (!creds.token.empty() && (want.square || want.landscape || want.portrait || want.shots))
             {
-                AppArt art = FetchAppArt(creds.token, id, wantCover, wantShots);
-                if (wantCover && !art.portraitUrl.empty())
+                AppArt art = FetchAppArt(creds.token, id, want);
+
+                if (want.square && !art.squareUrl.empty())
+                {
+                    std::string fn = id + "_square" + ImageExtFromUrl(art.squareUrl);
+                    if (DownloadImage(art.squareUrl, imagesDir / fn)) squareUri = "apps/images/" + fn;
+                    else ++failures;
+                }
+                if (want.landscape && !art.landscapeUrl.empty())
+                {
+                    std::string fn = id + "_landscape" + ImageExtFromUrl(art.landscapeUrl);
+                    if (DownloadImage(art.landscapeUrl, imagesDir / fn)) landscapeUri = "apps/images/" + fn;
+                    else ++failures;
+                }
+                if (want.portrait && !art.portraitUrl.empty())
                 {
                     std::string fn = id + "_portrait" + ImageExtFromUrl(art.portraitUrl);
                     if (DownloadImage(art.portraitUrl, imagesDir / fn)) portraitUri = "apps/images/" + fn;
                     else ++failures;
                 }
-                if (wantShots && !art.shot0Url.empty())
+                if (want.shots && !art.shot0Url.empty())
                 {
                     std::string fn = id + "_shot0" + ImageExtFromUrl(art.shot0Url);
                     if (DownloadImage(art.shot0Url, imagesDir / fn)) shot0Uri = "apps/images/" + fn;
                     else ++failures;
                 }
-                if (wantShots && !art.shot1Url.empty())
+                if (want.shots && !art.shot1Url.empty())
                 {
                     std::string fn = id + "_shot1" + ImageExtFromUrl(art.shot1Url);
                     if (DownloadImage(art.shot1Url, imagesDir / fn)) shot1Uri = "apps/images/" + fn;
@@ -516,17 +476,22 @@ namespace applibraries {
                 }
             }
 
+            // Fall back to the square and landscape covers so every GameBox face still has an image.
+            if (portraitUri.empty()) portraitUri = squareUri;
+            if (shot0Uri.empty()) shot0Uri = landscapeUri;
+            if (shot1Uri.empty()) shot1Uri = landscapeUri;
+
             AppEntry entry;
             entry.id = id;
             entry.canonical = base;
             entry.title = !oaf.displayName.empty() ? oaf.displayName : (!base.empty() ? Prettify(base) : id);
-            entry.acquiredTime = kUnknownAcquire; // an installed manifest overwrites this below
-            entry.squareUri = squareUri; // cover_square_image
-            entry.portraitUri = portraitUri;// portrait cover, square as fallback
-            entry.landscapeUri = landscapeUri;// cover_landscape_image
-            entry.iconUri = squareUri; // cover_square_image
-            entry.screenshot0Uri = shot0Uri; // 1280x720 screenshot, landscape as fallback
-            entry.screenshot1Uri = shot1Uri; // 1280x720 screenshot, landscape as fallback
+            entry.acquiredTime = kUnknownAcquire; // an installed manifest overwrites this later
+            entry.squareUri = squareUri; // square cover
+            entry.portraitUri = portraitUri; // portrait cover, square as fallback
+            entry.landscapeUri = landscapeUri; // landscape cover
+            entry.iconUri = squareUri; // square cover reused as the icon
+            entry.screenshot0Uri = shot0Uri; // first screenshot, landscape as fallback
+            entry.screenshot1Uri = shot1Uri; // second screenshot, landscape as fallback
             byId[id] = entry;
 
             if (progress) progress->done.fetch_add(1);
