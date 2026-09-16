@@ -276,7 +276,7 @@
   "105775525268223705": {
     "__typename": "WorldsItemDefinition",
     "id": "105775525268223705",
-    "name": "Surroundings Black",
+    "name": "SKY_MODERN",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -2926,7 +2926,7 @@
     "tags": [
       "Material"
     ],
-    "rarity": "UNCOMMON",
+    "rarity": "COMMON",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -3431,7 +3431,7 @@
   "147322868960398683": {
     "__typename": "WorldsItemDefinition",
     "id": "147322868960398683",
-    "name": "Surroundings Grey",
+    "name": "Surroundings Void",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
