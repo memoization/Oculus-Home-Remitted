@@ -675,7 +675,7 @@ namespace fetchworlds
 
         res.ok = true;
         res.achievementsSaved = (int)index.size();
-        if (res.achievementsSaved == 0) res.error = "None of your apps have achievements.";
+        if (res.achievementsSaved == 0) res.error = "No achievements found from your apps.";
         homeLogger.write() << "FetchAchievements: saved " << res.achievementsSaved << " achievement(s) from " << apps.size() << " app(s)." << std::endl;
         return res;
     }

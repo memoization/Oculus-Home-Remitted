@@ -916,7 +916,7 @@ void UI::DoApps()
                 }
             }
 
-            if (!exists && _stricmp(folder.c_str(), applibraries::DefaultRoot().c_str()) != 0)
+            if (!exists && _stricmp(folder.c_str(), applibraries::DefaultRoot.c_str()) != 0)
             {
                 libraryPaths.push_back(folder);
                 prefs::SetOculusLibraryPaths(libraryPaths);
