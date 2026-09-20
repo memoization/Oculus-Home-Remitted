@@ -28,6 +28,7 @@
 #include "Worlds.h"
 #include "FetchWorlds.h"
 #include "AppLibraries.h"
+#include "Prefs.h"
 
 struct ImScalers
 {
@@ -48,7 +49,8 @@ enum class PageType
     Worlds,
     ScreenSources,
     AppsLibrary,
-    AppAchievements
+    AppAchievements,
+    Settings
 };
 
 struct UIConst
@@ -58,6 +60,11 @@ struct UIConst
     const ImVec4 GreyButtonClick = ImVec4(0.14f, 0.14f, 0.14f, 1);
     const ImVec4 GreyButtonText = ImVec4(1, 1, 1, 1);
 
+    const ImVec4 LiteGreyButtonFill = ImVec4(0.27f, 0.28f, 0.28f, 1.0f);
+    const ImVec4 LiteGreyButtonHover = LiteGreyButtonFill;
+    const ImVec4 LiteGreyButtonClick = ImVec4(0.33f, 0.34f, 0.34f, 1.0f);
+    const ImVec4 LiteGreyButtonText = ImVec4(1, 1, 1, 1);
+
     const ImVec4 TextboxFill = ImVec4(0.212f, 0.220f, 0.220f, 1);
     const ImVec4 TextboxActive = ImVec4(0.501f, 0.317f, 1.78f, 1);
     const ImVec4 TextboxText = ImVec4(0.47f, 0.494f, 0.505f, 1);
@@ -66,6 +73,11 @@ struct UIConst
     const ImVec4 WarnText = ImVec4(0.98f, 0.76f, 0.22f, 1.0f);
     const ImVec4 ErrorText = ImVec4(1, 0, 0, 1);
     const ImVec4 SuccessText = ImVec4(0.42f, 0.85f, 0.42f, 1.0f);
+
+    const ImVec4 CheckboxFill = ImVec4(0.27f, 0.28f, 0.28f, 1.0f);
+    const ImVec4 CheckboxHover = CheckboxFill;
+    const ImVec4 CheckboxClick = ImVec4(0.33f, 0.34f, 0.34f, 1.0f);
+    const ImVec4 CheckboxIcon = ImVec4(1, 1, 1, 1);
 
     const ImVec4 ListItemHover = ImVec4(0.27f, 0.28f, 0.28f, 1.0f);
     const ImVec4 ListItemActive = ImVec4(0.33f, 0.34f, 0.34f, 1.0f);
@@ -87,7 +99,7 @@ struct UIConst
     const int WindowWidth = 1100;
     const int WindowHeight = 663;
     const float SliderPadThickness = 4;
-    const float CheckboxScale = 1.5f;
+    const float CheckboxScale = 1.4f;
 
     const int PageContentPadding = 26;
 
@@ -110,6 +122,14 @@ struct Env
     std::wstring selectedProfilePath = L"";// staging selection for profile icon browse
     int sourceKind = 0; // Screen Sources single-select: 0 = monitor, 1 = app
     uint64_t selectedSourceId = 0;// chosen HMONITOR/HWND (selection truth, survives list refresh)
+};
+
+struct SettingsToggle
+{
+    std::string name;
+    std::string desc;
+    std::function<bool()> get;
+    std::function<void(bool)> set;
 };
 
 // One selectable Screen-Sources row: a stable handle id & the display label. Both the Monitors and Apps columns build a vector of these from the enumerated sources.
@@ -145,14 +165,15 @@ struct UI
     void DoScreens();
     void DoApps();
     void DoAchievements();
+    void DoSettings();
     void RefreshSources();
     void SourceColumn(const char* title, int kind, const std::vector<SourceRowVM>& items, ImVec2 size, int entryTextWidth);
     bool SourceRow(const char* label, bool selected, int textWidth);
     void DoPopups(Env& rs);
+    void LoadPreferences();
 
-    void DoLaunchHome();
-    void DoExitHome();
-    void DoSetExecutable();
+    void DoSetExecutable(const wchar_t* defaultDir);
+    void DoSetRevive();
     void RebuildAppsLibrary(); // re-scan library roots into store\apps-library.json, refreshes appsFoundCount
     bool BrowseForFolder(std::string& outPath); // shell folder picker, true if the user chose a folder
 
@@ -163,10 +184,15 @@ struct UI
     std::string profileImagePath; // abs path to the user's profile.png (from prefs), "" means default
     bool reloadProfileOnOpen = true; // re-read prefs when the Profile page is (re)opened (no poll)
     std::string home2ExePath; // Home2 exe for the Launch Home button (from preferences.json)
-    bool launchPending = false; // set when Launch Home is clicked, cleared once the watcher sees the process
-    std::atomic<bool> closePending; // set when Exit Home is clicked and cleared once the watcher sees the home process is gone
     std::string iconPakStatus;// last result of building the profile override pak (shown on Profile page)
+    prefs::SetCaptureFlags setCaptureFlags;// dev tools capture flags
+    std::string reviveInjectorPath;// path to Revive executable
+    bool launchWithRevive = false;
+    bool autoLaunchEnabled = false;
     const char* appVersion = "0.0.0";
+
+    std::vector<SettingsToggle> behaviorSettings;
+    std::vector<SettingsToggle> devSettings;
 
     // "Changes have been saved!" toast above Launch Home. Flashes up when preferences.json is written to
     unsigned lastSavedTick = 0;

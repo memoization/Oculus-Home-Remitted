@@ -6,16 +6,25 @@
 // user_options block which is backend owned. Every write op does load-modify-write so it preserves fields it does not own
 namespace prefs
 {
+    struct SetCaptureFlags
+    {
+        bool flagOafCapture;
+        bool flagVertsCapture;
+        bool flagGraphqlCapture;
+    };
+
     // Directory of the running exe
     std::wstring AppDir();
 
-    std::string GetHome2ExePath();
-    void SetHome2ExePath(const std::string& path);
+    std::string GetPrefString(std::string pField);
+    void SetExePath(std::string pathField, const std::string& path);
 
     std::string GetDisplayName();
     void SetDisplayName(const std::string& name);
     std::string GetProfileImagePath();
     void SetProfileImagePath(const std::string& path);
+    bool GetPrefBool(std::string pField, bool fallback);
+    void SetPrefBool(std::string flagType, bool newB);
 
     std::string GetDefaultWorldId();
     void SetDefaultWorldId(const std::string& id);
@@ -27,6 +36,7 @@ namespace prefs
     // Writes the full settings schema if preferences.json does not yet exist
     void SeedDefaultsIfMissing();
 
+    SetCaptureFlags GetCaptureFlags();
     unsigned SaveTick();
 
     std::wstring Widen(const std::string& utf8);

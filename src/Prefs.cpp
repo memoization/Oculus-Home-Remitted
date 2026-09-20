@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include "Prefs.h"
+#include "UI.h"
 #include <windows.h>
 #include <fstream>
 #include <sstream>
@@ -8,7 +9,6 @@
 
 namespace prefs
 {
-
     // Bumped after every successful settings write. SaveTick exposes it so the UI can flash a saved toast on change.
     static std::atomic<unsigned> g_saveTick{ 0 };
 
@@ -62,7 +62,7 @@ namespace prefs
         return ss.str();
     }
 
-    std::string GetHome2ExePath()
+    std::string GetPrefString(std::string pField)
     {
         std::string text = ReadFileUtf8(PrefsPath());
         if (text.empty()) return std::string();
@@ -71,10 +71,10 @@ namespace prefs
         json11::Json j = json11::Json::parse(text, err);
         if (!err.empty()) return std::string();
 
-        return j["wrapper"]["home2ExePath"].string_value();
+        return j["wrapper"][pField].string_value();
     }
 
-    void SetHome2ExePath(const std::string& path)
+    void SetExePath(std::string pathField, const std::string& path)
     {
         // Load-modify-write so any other fields already in preferences.json survive.
         std::string text = ReadFileUtf8(PrefsPath());
@@ -83,7 +83,7 @@ namespace prefs
 
         json11::Json::object root = existing.is_object() ? existing.object_items() : json11::Json::object();
         json11::Json::object wrapper = root["wrapper"].is_object() ? root["wrapper"].object_items() : json11::Json::object();
-        wrapper["home2ExePath"] = path;
+        wrapper[pathField] = path;
         root["wrapper"] = wrapper;
 
         std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
@@ -250,6 +250,56 @@ namespace prefs
         }
     }
 
+    SetCaptureFlags GetCaptureFlags()
+    {
+        std::string text = ReadFileUtf8(PrefsPath());
+        if (text.empty()) return SetCaptureFlags();
+
+        std::string err;
+        json11::Json j = json11::Json::parse(text, err);
+        if (!err.empty()) return SetCaptureFlags();
+
+        SetCaptureFlags flags =
+        {
+            j["wrapper"]["flagOafCapture"].bool_value(),
+            j["wrapper"]["flagVertsCapture"].bool_value(),
+            j["wrapper"]["flagGraphqlCapture"].bool_value(),
+        };
+
+        return flags;
+    }
+
+    void SetPrefBool(std::string flagType, bool newB)
+    {
+        std::string text = ReadFileUtf8(PrefsPath());
+        std::string err;
+        json11::Json existing = text.empty() ? json11::Json() : json11::Json::parse(text, err);
+
+        json11::Json::object root = existing.is_object() ? existing.object_items() : json11::Json::object();
+        json11::Json::object wrapper = root["wrapper"].is_object() ? root["wrapper"].object_items() : json11::Json::object();
+
+        wrapper[flagType] = newB;
+        root["wrapper"] = wrapper;
+
+        std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
+        if (f)
+        {
+            f << json11::Json(root).dump();
+            g_saveTick.fetch_add(1, std::memory_order_relaxed);
+        }
+    }
+
+    bool GetPrefBool(std::string pField, bool fallback)
+    {
+        std::string text = ReadFileUtf8(PrefsPath());
+        if (text.empty()) return fallback;
+        std::string err;
+        json11::Json j = json11::Json::parse(text, err);
+        if (!err.empty()) return fallback;
+
+        return j["wrapper"][pField].bool_value();
+    }
+
     void SeedDefaultsIfMissing()
     {
         // Do not clobber an existing file (preserves user edits and the backend's userOptions writes)
@@ -261,6 +311,12 @@ namespace prefs
         json11::Json::object wrapper;
         wrapper["home2ExePath"] = std::string();
         wrapper["profileImagePath"] = std::string();
+
+        wrapper["flagOafCapture"] = false;
+        wrapper["flagVertsCapture"] = false;
+        wrapper["flagGraphqlCapture"] = false;
+        wrapper["launchWithRevive"] = false;
+        wrapper["autoLaunchEnabled"] = false;
 
         json11::Json::object identity;
         identity["userId"] = std::string("111111111111111");

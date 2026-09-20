@@ -12,12 +12,11 @@
 #include "HomeLogger.h"
 #include <CommCtrl.h>
 #include <commdlg.h>
-#include "Prefs.h"
 #include "IconPak.h"
 #include "AppLibraries.h"
 #include "BroadcastSource.h"
 #include "Watcher.h"
-#include "Injector.h"
+#include "LaunchHandler.h"
 #include "UpdateCheck.h"
 #include <shobjidl.h>
 #include <cpr/cpr.h>
@@ -64,6 +63,15 @@ int PushButtonStyleGrey()
     return 4;
 }
 
+int PushButtonStyleLiteGrey()
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, UIConsts.LiteGreyButtonFill);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UIConsts.LiteGreyButtonHover);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, UIConsts.LiteGreyButtonClick);
+    ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.LiteGreyButtonText);
+    return 4;
+}
+
 int PushLaunchButtonStyle()
 {
     ImGui::PushStyleColor(ImGuiCol_Button, UIConsts.LaunchButtonFill);
@@ -79,6 +87,15 @@ int PushNavItemStyle(bool active)
     ImGui::PushStyleColor(ImGuiCol_HeaderHovered, active ? UIConsts.NavItemActive : UIConsts.NavItemHover);
     ImGui::PushStyleColor(ImGuiCol_HeaderActive, UIConsts.NavItemActive);
     ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.GreyButtonText);
+    return 4;
+}
+
+int PushCheckboxStyle()
+{
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, UIConsts.CheckboxFill);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UIConsts.CheckboxHover);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UIConsts.CheckboxClick);
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, UIConsts.CheckboxIcon);
     return 4;
 }
 
@@ -303,6 +320,27 @@ ImVec2 UI::UpdateScale()
     return ImVec2(xscale, yscale);
 }
 
+void UI::LoadPreferences()
+{
+    // Exe paths
+    home2ExePath = prefs::GetPrefString("home2ExePath");
+    reviveInjectorPath = prefs::GetPrefString("reviveInjectorPath");
+
+    // The profile identity and sidebar image (backend reads the same file)
+    profileName = prefs::GetDisplayName();
+    profileImagePath = prefs::GetProfileImagePath();
+    LoadProfileImage();
+
+    // Load any saved library paths
+    libraryPaths = prefs::GetOculusLibraryPaths();
+
+    // Capture flags
+    setCaptureFlags = prefs::GetCaptureFlags();
+
+    autoLaunchEnabled = prefs::GetPrefBool("autoLaunchEnabled", false);
+    launchWithRevive = prefs::GetPrefBool("launchWithRevive", false);
+}
+
 void UI::Create()
 {
     if (glfwInit() == GLFW_FALSE)
@@ -363,6 +401,7 @@ void UI::Create()
     texLoader.LoadPng("images/desktop.png");
     texLoader.LoadPng("images/library.png");
     texLoader.LoadPng("images/achievement.png");
+    texLoader.LoadPng("images/settings.png");
     texLoader.LoadPng("images/world-default.png");
 
     // Profile-picture presets for the selector modal (images/profiles/1.png .. 32.png)
@@ -387,21 +426,12 @@ void UI::Create()
         }
     }
 
-    // Home2 exe path for the Launch Home button
-    home2ExePath = prefs::GetHome2ExePath();
-
-    // The profile identity and sidebar image (backend reads the same file)
-    profileName = prefs::GetDisplayName();
-    profileImagePath = prefs::GetProfileImagePath();
-    LoadProfileImage();
-
     // Screen Sources live channel: create the shared block and default to the primary monitor. The selection is in memory, this session only
     broadcast::Init();
     env.sourceKind = 0;
     env.selectedSourceId = broadcast::PrimaryMonitor();
 
-    // Load any saved library paths
-    libraryPaths = prefs::GetOculusLibraryPaths();
+    LoadPreferences();
 }
 
 #pragma region Rendered Pages
@@ -1038,6 +1068,149 @@ void UI::DoAchievements()
     ImGui::PopStyleColor(pushedStyles);
 }
 
+void UI::DoSettings()
+{
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+
+    // On page open, load the saved achievement index and refresh the app-library count
+
+    ImGui::Dummy(iScale.Vec2(0, 25));
+
+    ImGui::PushFont(fontTitle);
+    ImGui::Text("Settings");
+    ImGui::PopFont();
+
+    ImGui::Dummy(iScale.Vec2(0, 25));
+
+    auto panePosAnchor = ImGui::GetCursorPos();
+    float colGap = iScale.F(24);
+
+    ImGui::BeginGroup();
+    ImGui::PushFont(fontHeader);
+    ImGui::Text("Launch Behavior");
+    ImGui::PopFont();
+    ImGui::Dummy(iScale.Vec2(0, 4));
+
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
+    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 200), true);
+
+    for (int t = 0; t < behaviorSettings.size(); t++)
+    {
+        auto toggle = behaviorSettings[t];
+
+        bool val = toggle.get();
+        ImGui::PushID(toggle.name.c_str());
+        ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
+
+        pushedStyles = PushCheckboxStyle();
+        ImGui::Checkbox(("##" + toggle.name).c_str(), &val);
+        ImGui::PopStyleColor(pushedStyles);
+
+        ImGui::SetWindowFontScale(1);
+        ImGui::SameLine();
+        auto cursorPos = ImGui::GetCursorPos();
+
+        ImGui::SetCursorPosY(cursorPos.y - iScale.F(6));
+        ImGui::Text(toggle.name.c_str());
+
+        ImGui::SetWindowFontScale(0.8f);
+        ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + iScale.F(17)));
+        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
+        ImGui::TextWrapped(toggle.desc.c_str());
+        ImGui::PopID();
+        ImGui::PopStyleColor();
+        ImGui::SetWindowFontScale(1);
+
+        if (toggle.get() != val)
+        {
+            toggle.set(val);
+        }
+        ImGui::Dummy(iScale.Vec2(0, 10));
+    }
+
+    if (launchWithRevive)
+    {
+        pushedStyles = PushButtonStyleLiteGrey();
+        if (ImGui::Button("Set Revive Injector", iScale.Vec2(180, 36)))
+        {
+            DoSetRevive();
+        }
+        ImGui::PopStyleColor(pushedStyles);
+
+        if (reviveInjectorPath.empty())
+        {
+            ImGui::SameLine();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + iScale.F(2));
+            ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.WarnText);
+            ImGui::TextWrapped("Revive injector not set!");
+            ImGui::PopStyleColor();
+        }
+    }
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    ImGui::EndGroup();
+
+    ImGui::SameLine(0.0f, colGap);
+
+    ImGui::BeginGroup();
+    ImGui::PushFont(fontHeader);
+    ImGui::Text("Develop Tools");
+    ImGui::PopFont();
+    ImGui::Dummy(iScale.Vec2(0, 4));
+
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
+    ImGui::BeginChild("##paneRight", iScale.Vec2(400, 260), true);
+
+    for (int t = 0; t < devSettings.size(); t++)
+    {
+        auto toggle = devSettings[t];
+
+        bool val = toggle.get();
+        ImGui::PushID(toggle.name.c_str());
+        ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
+
+        pushedStyles = PushCheckboxStyle();
+        ImGui::Checkbox(("##" + toggle.name).c_str(), &val);
+        ImGui::PopStyleColor(pushedStyles);
+
+        ImGui::SetWindowFontScale(1);
+        ImGui::SameLine();
+        auto cursorPos = ImGui::GetCursorPos();
+
+        ImGui::SetCursorPosY(cursorPos.y - iScale.F(6));
+        ImGui::Text(toggle.name.c_str());
+
+        ImGui::SetWindowFontScale(0.8f);
+        ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + iScale.F(17)));
+        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
+        ImGui::TextWrapped(toggle.desc.c_str());
+        ImGui::PopID();
+        ImGui::PopStyleColor();
+        ImGui::SetWindowFontScale(1);
+
+        if (toggle.get() != val)
+        {
+            toggle.set(val);
+        }
+        ImGui::Dummy(iScale.Vec2(0, 10));
+    }
+
+    ImGui::SetWindowFontScale(0.8f);
+    ImGui::TextWrapped("Capture tools should only be used for recording an online session of Oculus Home. Enabling any captures will disable the offline feature. Home should be launched through the old Oculus Client dashboard to go online.");
+    ImGui::SetWindowFontScale(1);
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    ImGui::EndGroup();
+}
+
 // Re-scan the default CoreData location and the user's added libraries into store\apps\apps-library.json
 // The backend feeds this to the worlds_apps_and_achievements graphql request on next launch.
 void UI::RebuildAppsLibrary()
@@ -1308,6 +1481,7 @@ void UI::DrawSidebar()
     NavItem("Screen Sources", "images/desktop.png", PageType::ScreenSources);
     NavItem("Apps Library", "images/library.png", PageType::AppsLibrary);
     NavItem("App Achievements", "images/achievement.png", PageType::AppAchievements);
+    NavItem("Settings", "images/settings.png", PageType::Settings);
 
     // Pinned bottom of nav: Launch Home (blue) and Set Executable
     float launchHeight = iScale.F(44);
@@ -1365,8 +1539,7 @@ void UI::DrawSidebar()
         pushedStyles = PushButtonStyleGrey();
 
         // Any time the home process is up, set the launch button to exit
-        launchPending = false;
-        if (closePending.load())
+        if (g_launchHandler.ClosePending())
         {
             // A close is already in progress, keep the button off until the process exits.
             ImGui::BeginDisabled();
@@ -1375,14 +1548,13 @@ void UI::DrawSidebar()
         }
         else if (ImGui::Button("Exit Home", ImVec2(btnWidth, launchHeight)))
         {
-            DoExitHome();
+            g_launchHandler.DoExitHome();
         }
     }
     else
     {
         // Home is not running so any close request has finished.
-        closePending.store(false);
-        if (launchPending)
+        if (g_launchHandler.LaunchPending())
         {
             pushedStyles = PushButtonStyleGrey();
 
@@ -1396,7 +1568,7 @@ void UI::DrawSidebar()
             pushedStyles = PushLaunchButtonStyle();
             if (ImGui::Button("Launch Home", ImVec2(btnWidth, launchHeight)))
             {
-                DoLaunchHome();
+                g_launchHandler.DoLaunchHome();
             }
         }
     }
@@ -1408,7 +1580,7 @@ void UI::DrawSidebar()
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Set Executable", ImVec2(btnWidth, setExecHeight)))
     {
-        DoSetExecutable();
+        DoSetExecutable(L"C:\\Program Files\\Oculus\\Support\\oculus-worlds\\Home2\\Binaries\\Win64");
     }
     ImGui::PopStyleColor(pushedStyles);
 
@@ -1537,6 +1709,7 @@ void UI::DrawContent()
     case PageType::ScreenSources: DoScreens(); break;
     case PageType::AppsLibrary:   DoApps(); break;
     case PageType::AppAchievements:   DoAchievements(); break;
+    case PageType::Settings:   DoSettings(); break;
     }
 
     ImGui::EndChild();
@@ -1544,129 +1717,16 @@ void UI::DrawContent()
     ImGui::PopStyleColor();
 }
 
-void UI::DoLaunchHome()
+void UI::DoSetExecutable(const wchar_t* defaultDir)
 {
-    // Just launch Home executable normally. Not required for injection! Launching from explorer or shortcut can also work
-    if (home2ExePath.empty())
-    {
-        env.noticeMessage = "Set the home's executable first using \"Set Executable\", then retry \"Launch Home\".";
-        env.nextPopup = "Notice";
-        return;
-    }
-
-    std::wstring exeW = prefs::Widen(home2ExePath);
-    std::wstring dir = exeW;
-    size_t slash = dir.find_last_of(L"\\/");
-    if (slash != std::wstring::npos)
-    {
-        dir = dir.substr(0, slash);
-    }
-
-    std::wstring cmd = L"\"" + exeW +L"\"" + L" -windowed -HideAllWindows -UNATTENDED";
-    STARTUPINFOW si = {};
-    si.cb = sizeof(si);
-    PROCESS_INFORMATION pi = {};
-    if (CreateProcessW(exeW.c_str(), &cmd[0], nullptr, nullptr, FALSE, 0, nullptr, dir.empty() ? nullptr : dir.c_str(), &si, &pi))
-    {
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-        launchPending = true;
-        homeLogger.write() << "Launched Home! Injection happens automatically" << std::endl;
-    }
-    else
-    {
-        homeLogger.write() << "Launch failed (error " << GetLastError() << ")." << std::endl;
-        env.noticeMessage = "Could not launch the Home2 executable. Check the path in Set Executable.";
-        env.nextPopup = "Notice";
-    }
-}
-
-namespace
-{
-    struct EnumWindowContext
-    {
-        DWORD pid;
-        bool sentClose;
-    };
-
-    // Post WM_CLOSE to each visible top-level window owned by the target pid
-    BOOL CALLBACK CloseWindowForPid(HWND hwnd, LPARAM lParam)
-    {
-        auto* context = reinterpret_cast<EnumWindowContext*>(lParam);
-        DWORD windowPid = 0;
-        GetWindowThreadProcessId(hwnd, &windowPid);
-
-        if (windowPid == context->pid && IsWindowVisible(hwnd))
-        {
-            PostMessageW(hwnd, WM_CLOSE, 0, 0);
-            context->sentClose = true;
-        }
-        return TRUE;
-    }
-
-    // Ask the home process to close by posting WM_CLOSE to its window, wait up to waitMs for a clean exit, then fall back to TerminateProcess only if it is still alive
-    bool RequestCloseThenKill(DWORD pid, DWORD waitMs)
-    {
-        HANDLE process = OpenProcess(PROCESS_TERMINATE | SYNCHRONIZE, FALSE, pid);
-        if (!process)
-        {
-            return false;
-        }
-
-        EnumWindowContext context{ pid, false };
-        EnumWindows(CloseWindowForPid, reinterpret_cast<LPARAM>(&context));
-
-        if (context.sentClose && WaitForSingleObject(process, waitMs) == WAIT_OBJECT_0)
-        {
-            CloseHandle(process);
-            return true;
-        }
-
-        // No window took the close, so force it down as a last resort.
-        BOOL terminated = TerminateProcess(process, 0);
-        if (terminated)
-        {
-            WaitForSingleObject(process, waitMs);
-        }
-        CloseHandle(process);
-        return terminated == TRUE;
-    }
-}
-
-void UI::DoExitHome()
-{
-    DWORD pid = injector::FindProcessId(L"Home2-Win64-Shipping.exe");
-    if (pid == 0)
-    {
-        // Already gone
-        homeLogger.write() << "Exit Home: no Home process found." << std::endl;
-        return;
-    }
-
-    closePending.store(true);
-    homeLogger.write() << "Exit Home: requesting clean close of Home (pid " << pid << ") ..." << std::endl;
-
-    // The watcher notices the process is gone and re-arms. Now flip the button back to "Launch Home".
-    std::thread([this, pid]()
-    {
-        bool closed = RequestCloseThenKill(pid, 6000);
-        if (closed)
-        {
-            homeLogger.write() << "Exit Home: Home closed (pid " << pid << ")." << std::endl;
-        }
-        else
-        {
-            // Could not open or kill the process
-            closePending.store(false);
-            homeLogger.write() << "Exit Home: could not close Home (pid " << pid << ")." << std::endl;
-        }
-    }).detach();
-}
-
-void UI::DoSetExecutable()
-{
-    wchar_t file[MAX_PATH] = {0};
+    wchar_t file[MAX_PATH] = { 0 };
     OPENFILENAMEW ofn = {};
+
+    if (defaultDir != nullptr && defaultDir[0] != L'\0' && std::filesystem::exists(defaultDir) && std::filesystem::is_directory(defaultDir))
+    {
+        ofn.lpstrInitialDir = defaultDir;
+    }
+
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = glfwGetWin32Window(window);
     ofn.lpstrFilter = L"Executable (Home2-Win64-Shipping.exe)\0Home2-Win64-Shipping.exe\0All Files (*.*)\0*.*\0";
@@ -1678,8 +1738,28 @@ void UI::DoSetExecutable()
     if (GetOpenFileNameW(&ofn))
     {
         home2ExePath = prefs::Narrow(file);
-        prefs::SetHome2ExePath(home2ExePath);
+        prefs::SetExePath("home2ExePath", home2ExePath);
         homeLogger.write() << "Set Home2 executable." << std::endl;
+    }
+}
+
+void UI::DoSetRevive()
+{
+    wchar_t file[MAX_PATH] = { 0 };
+    OPENFILENAMEW ofn = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = glfwGetWin32Window(window);
+    ofn.lpstrFilter = L"Executable (ReviveInjector.exe)\0ReviveInjector.exe\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = file;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrTitle = L"Select ReviveInjector.exe (Located where you installed Revive)";
+    ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER | OFN_NOCHANGEDIR;
+
+    if (GetOpenFileNameW(&ofn))
+    {
+        reviveInjectorPath = prefs::Narrow(file);
+        prefs::SetExePath("reviveInjectorPath", reviveInjectorPath);
+        homeLogger.write() << "Set Revive executable." << std::endl;
     }
 }
 #pragma endregion
@@ -2260,6 +2340,65 @@ void UI::Run()
     // Set new window scale here to avoid startup font rebuild
     env.lastWinScale = UpdateScale();
     homeLogger.write() << "New window scale: " << env.lastWinScale.x << " x " << env.lastWinScale.y << std::endl;
+
+    // Define settings
+    behaviorSettings =
+    {
+        {
+            "Auto-launch Home",
+            "Attempt to automatically start Oculus Home from detecting dashboard presence.",
+            [&]() { return autoLaunchEnabled; },
+            [&](bool v)
+            {
+                prefs::SetPrefBool("autoLaunchEnabled", v);
+                autoLaunchEnabled = v;
+            }
+        },
+        {
+            "Launch with Revive",
+            "Launch Oculus Home via the tool using the Revive SteamVR layer.",
+            [&]() { return launchWithRevive; },
+            [&](bool v)
+            {
+                prefs::SetPrefBool("launchWithRevive", v);
+                launchWithRevive = v;
+            }
+        }
+    };
+
+    devSettings =
+    {
+        {
+            "Enable Graphql Capture",
+            "Record Graphql traffic from the Oculus Home process.",
+            [&]() { return setCaptureFlags.flagGraphqlCapture; },
+            [&](bool v)
+            {
+                prefs::SetPrefBool("flagGraphqlCapture", v);
+                setCaptureFlags.flagGraphqlCapture = v;
+            }
+        },
+        {
+            "Enable Verts Client Capture",
+            "Record verts multiplayer traffic in a online session.",
+            [&]() { return setCaptureFlags.flagVertsCapture; },
+            [&](bool v)
+            {
+                prefs::SetPrefBool("flagVertsCapture", v);
+                setCaptureFlags.flagVertsCapture = v;
+            }
+        },
+        {
+            "Enable Oaf Traffic Capture",
+            "Record Home <> OVRServer messaging over the pipe.",
+            [&]() { return setCaptureFlags.flagOafCapture; },
+            [&](bool v)
+            {
+                prefs::SetPrefBool("flagOafCapture", v);
+                setCaptureFlags.flagOafCapture = v;
+            }
+        }
+    };
 
     // Interface loop
     while (ui.keepAlive.load())
