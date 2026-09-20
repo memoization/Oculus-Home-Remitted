@@ -21,19 +21,36 @@ namespace home2backend {
     typedef OvrpResult(*ShouldQuit2Fn)(OvrpBool*);
     typedef OvrpBool(*HasVrFocusFn)();
     typedef OvrpResult(*HasVrFocus2Fn)(OvrpBool*);
+    typedef OvrpResult(*HasInputFocusFn)(OvrpBool*);
+    typedef OvrpResult(*HasSystemOverlayFn)(OvrpBool*);
 
     static ShouldQuitFn GOrigShouldQuit = nullptr;
     static ShouldQuit2Fn GOrigShouldQuit2 = nullptr;
     static HasVrFocusFn GOrigHasVrFocus = nullptr;
     static HasVrFocus2Fn GOrigHasVrFocus2 = nullptr;
+    static HasInputFocusFn GOrigHasInputFocus = nullptr;
+    static HasSystemOverlayFn GOrigHasSystemOverlay = nullptr;
 
     static volatile long GQuitLogged = 0;
     static volatile long GFocusLogged = 0;
+    static volatile long GInputFocusLogged = 0;
+    static volatile long GOverlayLogged = 0;
+    static volatile long GHadRealVrFocus = 0; // latched once the runtime has genuinely granted the app VR focus
+
+    // A real quit request only counts once the app has actually held VR focus
+    static void MaybeHonorQuit(bool realShouldQuit)
+    {
+        if (realShouldQuit && GHadRealVrFocus)
+        {
+            LogLine("ovr: quit requested after the app held focus, exiting the process");
+            ExitProcess(0);
+        }
+    }
 
     static OvrpBool DetourShouldQuit()
     {
-        if (GOrigShouldQuit)
-            GOrigShouldQuit(); // preserve any runtime side effects
+        OvrpBool real = GOrigShouldQuit ? GOrigShouldQuit() : 0; // the runtime's real answer, also preserves side effects
+        MaybeHonorQuit(real != 0);
         if (InterlockedIncrement(&GQuitLogged) <= 2)
             LogLine("ovr: ovrp_GetAppShouldQuit forced false (keep app alive)");
         return 0; // ovrpBool_False
@@ -41,8 +58,13 @@ namespace home2backend {
 
     static OvrpResult DetourShouldQuit2(OvrpBool* out)
     {
+        OvrpBool real = 0;
         if (GOrigShouldQuit2)
+        {
             GOrigShouldQuit2(out);
+            if (out) real = *out;
+        }
+        MaybeHonorQuit(real != 0);
         if (out)
             *out = 0;
         if (InterlockedIncrement(&GQuitLogged) <= 2)
@@ -52,8 +74,8 @@ namespace home2backend {
 
     static OvrpBool DetourHasVrFocus()
     {
-        if (GOrigHasVrFocus)
-            GOrigHasVrFocus();
+        if (GOrigHasVrFocus && GOrigHasVrFocus())
+            InterlockedExchange(&GHadRealVrFocus, 1); // the app truly has focus now, so later quits are user-driven
         if (InterlockedIncrement(&GFocusLogged) <= 2)
             LogLine("ovr: ovrp_GetAppHasVrFocus forced true");
         return 1; // ovrpBool_True
@@ -62,11 +84,38 @@ namespace home2backend {
     static OvrpResult DetourHasVrFocus2(OvrpBool* out)
     {
         if (GOrigHasVrFocus2)
+        {
             GOrigHasVrFocus2(out);
+            if (out && *out)
+                InterlockedExchange(&GHadRealVrFocus, 1);
+        }
         if (out)
             *out = 1;
         if (InterlockedIncrement(&GFocusLogged) <= 2)
             LogLine("ovr: ovrp_GetAppHasVrFocus2 forced true");
+        return 0;
+    }
+
+    static OvrpResult DetourHasInputFocus(OvrpBool* out)
+    {
+        if (GOrigHasInputFocus)
+            GOrigHasInputFocus(out); // preserve any runtime side effects
+        if (out)
+            *out = 1; // ovrpBool_True
+        if (InterlockedIncrement(&GInputFocusLogged) <= 2)
+            LogLine("ovr: ovrp_GetAppHasInputFocus forced true (keep controllers live)");
+        return 0; // ovrpSuccess
+    }
+
+    // A present system overlay can suppress input. Report none so input is never held off for it.
+    static OvrpResult DetourHasSystemOverlayPresent(OvrpBool* out)
+    {
+        if (GOrigHasSystemOverlay)
+            GOrigHasSystemOverlay(out);
+        if (out)
+            *out = 0; // ovrpBool_False, no overlay present
+        if (InterlockedIncrement(&GOverlayLogged) <= 2)
+            LogLine("ovr: ovrp_GetAppHasSystemOverlayPresent forced false");
         return 0;
     }
 
@@ -89,6 +138,8 @@ namespace home2backend {
 
     static void InstallNow(HMODULE ovrp)
     {
+        bool underRevive = IsUnderRevive();
+
         bool q1 = HookByName(ovrp, "ovrp_GetAppShouldQuit",
                              reinterpret_cast<void*>(&DetourShouldQuit),
                              reinterpret_cast<void**>(&GOrigShouldQuit));
@@ -101,7 +152,19 @@ namespace home2backend {
         HookByName(ovrp, "ovrp_GetAppHasVrFocus2",
                    reinterpret_cast<void*>(&DetourHasVrFocus2),
                    reinterpret_cast<void**>(&GOrigHasVrFocus2));
-        LogLine(std::string("ovr: OVRPlugin runtime hooks installed (ShouldQuit forced false, VrFocus forced true). ShouldQuit ") + ((q1 || q2) ? "hooked" : "not hooked, app may still quit"));
+
+        // Keep hand and controller input alive regardless of the dashboard, but only under Revive, which is where the input focus can break
+        if (underRevive)
+        {
+            HookByName(ovrp, "ovrp_GetAppHasInputFocus",
+                       reinterpret_cast<void*>(&DetourHasInputFocus),
+                       reinterpret_cast<void**>(&GOrigHasInputFocus));
+            HookByName(ovrp, "ovrp_GetAppHasSystemOverlayPresent",
+                       reinterpret_cast<void*>(&DetourHasSystemOverlayPresent),
+                       reinterpret_cast<void**>(&GOrigHasSystemOverlay));
+        }
+
+        LogLine(std::string("ovr: OVRPlugin runtime hooks installed (ShouldQuit forced false, VrFocus forced true") + (underRevive ? ", InputFocus forced true and SystemOverlay forced absent for Revive" : ", InputFocus left native") + "). ShouldQuit " + ((q1 || q2) ? "hooked" : "not hooked, app may still quit"));
     }
 
     static DWORD WINAPI Waiter(LPVOID)

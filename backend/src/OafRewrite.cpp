@@ -441,15 +441,22 @@ namespace home2backend {
     static std::wstring GReviveInjector;      // ReviveInjector.exe path when under Revive, else empty
     static volatile long GReviveChecked = 0;  // detection runs once
 
-    // Launch an installed app ourselves, replacing OVRServer's app-launch which the platform refuses because it thinks home is a third-party client.
-    // Under Revive the app is run through ReviveInjector so it gets the OVR-to-OpenVR shim, otherwise the exe runs directly. It runs from its own install directory.
-    static void LaunchApp(const std::wstring& exePath, const std::string& params)
+    // Detect Revive once and cache the result, logging it a single time.
+    static void EnsureReviveDetected()
     {
         if (InterlockedCompareExchange(&GReviveChecked, 1, 0) == 0)
         {
             GReviveInjector = DetectReviveInjector();
-            LogLine(GReviveInjector.empty() ? std::string("oaf-rewrite: launch: launching selected app") : "oaf-rewrite: launch: Revive detected, launching with the injector " + Utf8FromWide(GReviveInjector.c_str()));
+            LogLine(GReviveInjector.empty() ? std::string("revive: not detected, Home runs directly") : "revive: detected via " + Utf8FromWide(GReviveInjector.c_str()));
         }
+    }
+
+    // Launch an installed app manually, replacing OVRServer's app-launch which the platform refuses because it thinks home is a third-party client.
+    // Under Revive the app is run through ReviveInjector so it gets the OVR-to-OpenVR shim, otherwise the exe runs directly. It runs from its own install directory.
+    static void LaunchApp(const std::wstring& exePath, const std::string& params)
+    {
+        EnsureReviveDetected();
+        LogLine(GReviveInjector.empty() ? std::string("oaf-rewrite: launch: launching selected app directly") : "oaf-rewrite: launch: launching via the Revive injector " + Utf8FromWide(GReviveInjector.c_str()));
 
         std::wstring targetExe;
         std::wstring cmd;
@@ -490,6 +497,12 @@ namespace home2backend {
         {
             LogLine("oaf-rewrite: CreateProcess failed (err " + std::to_string(GetLastError()) + ") for the app launch");
         }
+    }
+
+    bool IsUnderRevive()
+    {
+        EnsureReviveDetected();
+        return !GReviveInjector.empty();
     }
 
     static void* DetourSend(const char* req)
