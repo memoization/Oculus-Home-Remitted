@@ -118,6 +118,32 @@ static DWORD WINAPI ResultThread(LPVOID)
     }
 }
 
+// Live-session capture recorders, read from preferences.json
+// Returns true when at least one recorder was installed
+static bool InstallRecorders(const std::wstring& dir, RecorderFlags* foundFlags)
+{
+    RecorderFlags flags;
+    LoadRecorderFlags(dir + L"\\preferences.json", flags); // a missing or unparseable file leaves every flag off
+
+    if (!flags.oafCapture && !flags.vertsCapture && !flags.graphqlCapture)
+    {
+        return false; // nothing requested, run the normal offline backend
+    }
+
+    // Keep the dumps together in a capture folder beside the DLL, away from the store and the log.
+    std::wstring outDir = dir + L"\\capture";
+    CreateDirectoryW(outDir.c_str(), nullptr); // ignore ERROR_ALREADY_EXISTS
+
+    if (flags.oafCapture)     InstallOafCapture(outDir);
+    if (flags.vertsCapture)   InstallVertsCapture(outDir);
+    if (flags.graphqlCapture) InstallGraphqlCapture(outDir);
+
+    foundFlags->oafCapture = flags.oafCapture;
+    foundFlags->vertsCapture = flags.vertsCapture;
+    foundFlags->graphqlCapture = flags.graphqlCapture;
+    return true;
+}
+
 static DWORD WINAPI InitThread(LPVOID)
 {
     if (selfDir.empty())
@@ -129,6 +155,31 @@ static DWORD WINAPI InitThread(LPVOID)
     {
         LogLine("FATAL: MH_Initialize failed");
         return 1;
+    }
+
+    // If any recorder flag is set in preferences.json, install flagged tools and stop here.
+    // The offline redirect/spoof hooks below must not run against a live online session
+    RecorderFlags foundRecordFlags;
+    if (InstallRecorders(selfDir, &foundRecordFlags))
+    {
+        if (!GLog.Open(selfDir + L"\\backend.log"))
+        {
+            wchar_t temp[MAX_PATH] = { 0 };
+            if (GetTempPathW(MAX_PATH, temp) > 0)
+            {
+                GLog.Open(std::wstring(temp) + L"backend.log");
+            }
+        }
+
+        LogLine("========== home2backend.dll loaded ==========");
+        LogLine(std::string("recorders: live capture mode (oaf=") + (foundRecordFlags.oafCapture ? "on" : "off")
+            + " verts=" + (foundRecordFlags.vertsCapture ? "on" : "off")
+            + " graphql=" + (foundRecordFlags.graphqlCapture ? "on" : "off")
+            + ") into " + NarrowUtf8(selfDir) + ", offline hooks skipped");
+
+        // Resolve the startup crash on newer CPUs
+        InstallShaCapPatch();
+        return 0;
     }
 
     // TIME SENSITIVE
