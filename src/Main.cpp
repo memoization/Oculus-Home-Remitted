@@ -12,6 +12,8 @@
 #include "HomeLogger.h"
 #include "UI.h"
 #include "Watcher.h"
+#include "LaunchHandler.h"
+#include "OVRLogWatch.h"
 #include "Prefs.h"
 #include "Tray.h"
 #include "UpdateCheck.h"
@@ -84,6 +86,12 @@ int main(int argc, char* argv[])
         g_homeWatcher.Start(dllPath);
     }
 
+    // Track Oculus app lifecycle from the runtime service log for the Meta/Oculus auto-launch handling
+    g_ovrLogWatch.Start();
+
+    // Auto launch Home when the headset is idle in the SteamVR or Oculus dashboard void
+    g_launchHandler.Start();
+
     // Sys tray presence so closing the window keeps the frontend in background
     tray::Install(glfwGetWin32Window(ui.window));
 
@@ -91,6 +99,8 @@ int main(int argc, char* argv[])
     ui.Run(); // Blocks the main() thread until execution stops.
 
     tray::Remove();
+    g_launchHandler.Stop();
+    g_ovrLogWatch.Stop();
     g_homeWatcher.Stop();
     ui.Shutdown(); // Cleanup after closure.
 
