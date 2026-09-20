@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 
+static std::string kHomeProcess = "Home2-Win64-Shipping.exe";
+static const wchar_t* kHomeProcessW = L"Home2-Win64-Shipping.exe";
+
 // preferences.json: the file lives beside the exe and carries app settings. {home2ExePath,profileImagePath}, identity.{userId,oculusId,displayName}, and the
 // user_options block which is backend owned. Every write op does load-modify-write so it preserves fields it does not own
 namespace prefs

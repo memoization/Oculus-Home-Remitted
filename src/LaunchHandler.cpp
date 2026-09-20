@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <openvr.h>
 #include <string>
-#include <cctype>
+#include <filesystem>
 #include "Watcher.h"
 #include "Injector.h"
 #include "Prefs.h"
@@ -121,7 +121,7 @@ bool HmdIsOculus()
 
 void LaunchHandler::DoExitHome()
 {
-    DWORD pid = injector::FindProcessId(L"Home2-Win64-Shipping.exe");
+    DWORD pid = injector::FindProcessId(kHomeProcessW);
     if (pid == 0)
     {
         return;
@@ -154,14 +154,27 @@ void LaunchHandler::DoLaunchHome()
     // Can't run with Steam barring Revive
     if ((!ui.launchWithRevive || ui.reviveInjectorPath.empty()) && openvrReady && !HmdIsOculus())
     {
-        ui.GetEnv() -> noticeMessage = "Unable to launch Oculus Home: Revive is not configured.\nTo run with SteamVR, setup Revive in the \"Settings\" page.";
-        ui.GetEnv() -> nextPopup = "Notice";
+        if (!autoLaunchedHome)
+        {
+            ui.GetEnv()->noticeMessage = "Unable to launch Oculus Home: Revive is not configured.\nTo run with SteamVR, setup Revive in the \"Settings\" page.";
+            ui.GetEnv()->nextPopup = "Notice";
+        }
         return;
     }
 
-    DWORD pid = injector::FindProcessId(L"Home2-Win64-Shipping.exe");
+    DWORD pid = injector::FindProcessId(kHomeProcessW);
     if (pid != 0)
     {
+        return;
+    }
+
+    if (!std::filesystem::exists(ui.home2ExePath))
+    {
+        if (!autoLaunchedHome)
+        {
+            ui.GetEnv()->noticeMessage = "Unable to launch Oculus Home: The set executable does not exist.";
+            ui.GetEnv()->nextPopup = "Notice";
+        }
         return;
     }
 
@@ -187,6 +200,17 @@ void LaunchHandler::DoLaunchHome()
     // Add Revive injector as the main app targeting home shipping
     if (ui.launchWithRevive && !ui.reviveInjectorPath.empty() && !OculusDashRunning())
     {
+        // Check if the injector exists
+        if (!std::filesystem::exists(ui.reviveInjectorPath))
+        {
+            if (!autoLaunchedHome)
+            {
+                ui.GetEnv()->noticeMessage = "Unable to launch Oculus Home: Revive injector does not exist.";
+                ui.GetEnv()->nextPopup = "Notice";
+            }
+            return;
+        }
+
         cmd = L"\"" + prefs::Widen(ui.reviveInjectorPath) + L"\"" + L" " + cmd;
         appContext = prefs::Widen(ui.reviveInjectorPath);
     }

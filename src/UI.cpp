@@ -1727,12 +1727,15 @@ void UI::DoSetExecutable(const wchar_t* defaultDir)
         ofn.lpstrInitialDir = defaultDir;
     }
 
+    std::wstring title = L"Select " + std::wstring(kHomeProcessW) + L" (Located at \"Home2\\Binaries\\Win64\")";
+    std::wstring filter = L"Executable (" + std::wstring(kHomeProcessW) + L")" + std::wstring(L"\0*.exe\0\0", 11);
+
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = glfwGetWin32Window(window);
-    ofn.lpstrFilter = L"Executable (Home2-Win64-Shipping.exe)\0Home2-Win64-Shipping.exe\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFilter = filter.c_str();
     ofn.lpstrFile = file;
     ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrTitle = L"Select Home2-Win64-Shipping.exe (Located at \"Home2\\Binaries\\Win64\")";
+    ofn.lpstrTitle = title.c_str();
     ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER | OFN_NOCHANGEDIR;
 
     if (GetOpenFileNameW(&ofn))

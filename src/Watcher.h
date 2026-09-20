@@ -4,7 +4,7 @@
 #include <string>
 #include <windows.h>
 
-// Resident background injector. While the frontend is alive, a poll thread watches for "Home2-Win64-Shipping.exe" and injects home2backend.dll into any new instance, then re-arms when that process exits.
+// Resident background injector. While the frontend is alive, a poll thread watches for Oculus Home process and injects home2backend.dll into any new instance, then re-arms when that process exits.
 // It catches Home running whether it was started by the app's Launch Home button or started directly.
 class HomeWatcher
 {

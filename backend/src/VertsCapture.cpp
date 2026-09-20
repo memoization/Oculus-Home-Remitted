@@ -251,15 +251,6 @@ namespace home2backend {
 
     bool InstallVertsCapture(const std::wstring& dir)
     {
-        HMODULE game = GetModuleHandleW(nullptr);
-        wchar_t path[MAX_PATH] = {0};
-        GetModuleFileNameW(game, path, MAX_PATH);
-        if (std::wstring(path).find(L"Home2-Win64-Shipping") == std::wstring::npos)
-        {
-            LogLine("verts-capture: host is not Home2-Win64-Shipping.exe, skipping");
-            return false;
-        }
-
         GVertsDir = dir;
         HANDLE t = CreateThread(nullptr, 0, VertsWaiter, nullptr, 0, nullptr);
         if (t)

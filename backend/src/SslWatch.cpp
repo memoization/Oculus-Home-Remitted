@@ -56,14 +56,6 @@ namespace home2backend {
     bool InstallSslWatch()
     {
         HMODULE game = GetModuleHandleW(nullptr);
-        wchar_t path[MAX_PATH] = {0};
-        GetModuleFileNameW(game, path, MAX_PATH);
-        if (std::wstring(path).find(L"Home2-Win64-Shipping") == std::wstring::npos)
-        {
-            LogLine("ssl_watch: host is not Home2-Win64-Shipping.exe, skipping SSL hooks");
-            return false;
-        }
-
         uintptr_t base = reinterpret_cast<uintptr_t>(game);
         void* writeAddr = reinterpret_cast<void*>(base + kRvaSslWrite);
         void* readAddr = reinterpret_cast<void*>(base + kRvaSslRead);

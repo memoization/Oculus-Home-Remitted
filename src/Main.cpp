@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
     // Check for an update against the latest GitHub release
     update::StartCheck(ui.appVersion);
 
-    // Start the injector: it watches for Home2-Win64-Shipping.exe and injects home2backend.dll, re-arms on home process exit
+    // Start the injector: it watches for Oculus Home and injects home2backend.dll, re-arms on home process exit
     {
         std::wstring dllPath = prefs::AppDir() + L"home2backend.dll";
         if (GetFileAttributesW(dllPath.c_str()) == INVALID_FILE_ATTRIBUTES)

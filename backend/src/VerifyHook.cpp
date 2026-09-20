@@ -110,13 +110,6 @@ namespace home2backend {
     bool InstallVerifyHook()
     {
         HMODULE game = GetModuleHandleW(nullptr);
-        wchar_t path[MAX_PATH] = {0};
-        GetModuleFileNameW(game, path, MAX_PATH);
-        if (std::wstring(path).find(L"Home2-Win64-Shipping") == std::wstring::npos)
-        {
-            LogLine("verify: host is not Home2-Win64-Shipping.exe, skipping verify hooks");
-            return false;
-        }
         uintptr_t base = reinterpret_cast<uintptr_t>(game);
 
         static const unsigned char kX509[] = {0x40, 0x53, 0x57, 0x41, 0x55, 0x41, 0x56};

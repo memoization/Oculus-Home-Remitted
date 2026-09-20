@@ -2,10 +2,10 @@
 #include "Injector.h"
 #include "HomeLogger.h"
 #include "Worlds.h"
+#include "Prefs.h"
 
 HomeWatcher g_homeWatcher;
 
-static const wchar_t* kHomeProcess = L"Home2-Win64-Shipping.exe";
 static const DWORD kPollMs = 100;              // well inside the ~7s world_login window
 static const int kMaxAttemptsPerInstance = 80; // ~8s of retries before giving up on an instance
 
@@ -19,7 +19,7 @@ void HomeWatcher::Start(const std::wstring& dllPath)
     dllPath_ = dllPath;
     running_.store(true);
     thread_ = std::thread(&HomeWatcher::Loop, this);
-    homeLogger.write() << "Watcher armed; watching for Home2-Win64-Shipping.exe ..." << std::endl;
+    homeLogger.write() << "Watcher armed; watching for Oculus Home..." << std::endl;
 }
 
 void HomeWatcher::Stop()
@@ -37,7 +37,7 @@ void HomeWatcher::Loop()
 
     while (running_.load())
     {
-        DWORD pid = injector::FindProcessId(kHomeProcess);
+        DWORD pid = injector::FindProcessId(kHomeProcessW);
 
         if (pid == 0)
         {

@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include "HomeLogger.h"
+#include "Prefs.h"
 
 namespace fs = std::filesystem;
 
@@ -54,7 +55,7 @@ namespace
     bool IsRuntimeExe(const std::string& exe)
     {
         std::string e = LowerAscii(exe);
-        return e == "home2-win64-shipping.exe"
+        return e == LowerAscii(kHomeProcess)
             || e == "oculusdash.exe"
             || e == "ovrserver_x64.exe"
             || e == "home2remitted.exe";
