@@ -45,4 +45,20 @@ namespace home2backend {
         return true;
     }
 
+    bool LoadRecorderFlags(const std::wstring& prefsPath, RecorderFlags& out)
+    {
+        std::string text;
+        if (!ReadFileText(prefsPath, text) || text.empty()) return false;
+
+        std::string err;
+        json11::Json j = json11::Json::parse(text, err);
+        if (!err.empty() || !j.is_object()) return false;
+
+        const json11::Json& wrapper = j["wrapper"];
+        out.oafCapture = wrapper["flagOafCapture"].bool_value();
+        out.vertsCapture = wrapper["flagVertsCapture"].bool_value();
+        out.graphqlCapture = wrapper["flagGraphqlCapture"].bool_value();
+        return true;
+    }
+
 }

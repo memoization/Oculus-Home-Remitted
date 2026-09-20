@@ -13,9 +13,20 @@ struct Identity
     unsigned long long userId64 = 0; // userId parsed as uint64 (0 = unusable)
 };
 
+struct RecorderFlags
+{
+    bool oafCapture = false;
+    bool vertsCapture = false;
+    bool graphqlCapture = false;
+};
+
 // Reads identity.{userId,oculusId,displayName} from the preferences.json at prefsPath.
 // Returns false if the file is missing, unparseable, or has no usable identity
 bool LoadIdentity(const std::wstring& prefsPath, Identity& out);
+
+// Reads any set capture flags from the preferences.json at prefsPath.
+// Returns false if the file is missing or unparseable, leaving out at its defaults (all off).
+bool LoadRecorderFlags(const std::wstring& prefsPath, RecorderFlags& out);
 
 // Feeds identity into TokenInject's spoof accessors
 // Empty / zero fields leave the neutral built-in defaults in place.
