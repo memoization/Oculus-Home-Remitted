@@ -2,6 +2,7 @@
 #include "Tray.h"
 #include <shellapi.h>
 #include "UI.h"
+#include "LaunchHandler.h"
 
 static const UINT WM_TRAY = WM_APP + 1;
 enum
@@ -68,11 +69,12 @@ static LRESULT CALLBACK TrayProc(HWND h, UINT msg, WPARAM w, LPARAM l)
         if (LOWORD(w) == ID_TRAY_QUIT)
         {
             ui.keepAlive.store(false); // render loop exits, app quits (Remove() runs on the way out)
+            g_launchHandler.DoExitHome(); // Quit any running home instance
             return 0;
         }
         if (LOWORD(w) == ID_TRAY_LAUNCH)
         {
-            ui.DoLaunchHome();
+            g_launchHandler.DoLaunchHome();
             return 0;
         }
     }

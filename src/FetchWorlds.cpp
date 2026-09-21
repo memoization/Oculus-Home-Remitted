@@ -173,7 +173,7 @@ namespace fetchworlds
         {
             // file: URI with immutable=1 so there is no locking
             std::string uri = "file:///";
-            for (char c : prefs::Narrow(path))
+            for (char c : prefs.Narrow(path))
             {
                 unsigned char u = (unsigned char)c;
                 if (c == '\\' || c == '/') uri += '/';
@@ -368,7 +368,7 @@ namespace fetchworlds
         
         homeLogger.write() << "FetchWorlds: listing returned " << nodes.array_items().size() << " world(s)." << std::endl;
 
-        fs::path worldsRoot = fs::path(prefs::AppDir()) / "store" / "worlds";
+        fs::path worldsRoot = fs::path(prefs.AppDir()) / "store" / "worlds";
         std::error_code ec;
         fs::create_directories(worldsRoot, ec);
 
@@ -459,7 +459,7 @@ namespace fetchworlds
     static std::vector<std::string> ReadLibraryAppIds()
     {
         std::vector<std::string> ids;
-        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "apps" / "apps-library.json");
+        std::string txt = ReadFile(fs::path(prefs.AppDir()) / "store" / "apps" / "apps-library.json");
         if (txt.empty()) return ids;
 
         std::string perr;
@@ -502,7 +502,7 @@ namespace fetchworlds
     std::vector<AchievementInfo> LoadAchievements()
     {
         std::vector<AchievementInfo> out;
-        std::string txt = ReadFile(fs::path(prefs::AppDir()) / "store" / "achievements" / "app-achievements.json");
+        std::string txt = ReadFile(fs::path(prefs.AppDir()) / "store" / "achievements" / "app-achievements.json");
         if (txt.empty()) return out;
 
         std::string perr;
@@ -596,7 +596,7 @@ namespace fetchworlds
         for (const auto& a : apps) totalAch += (int)a["Achievements"].array_items().size();
         if (progress) progress->total.store(totalAch);
 
-        fs::path achDir = fs::path(prefs::AppDir()) / "store" / "achievements";
+        fs::path achDir = fs::path(prefs.AppDir()) / "store" / "achievements";
         fs::path iconDir = achDir / "icons";
         std::error_code ec;
         fs::create_directories(iconDir, ec);

@@ -99,6 +99,12 @@
     <ClInclude Include="src\UpdateCheck.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\LaunchHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OVRLogWatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -174,6 +180,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\UpdateCheck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LaunchHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OVRLogWatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

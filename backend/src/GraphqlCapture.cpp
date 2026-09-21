@@ -108,13 +108,6 @@ namespace home2backend {
     bool InstallGraphqlCapture(const std::wstring& dir)
     {
         HMODULE game = GetModuleHandleW(nullptr);
-        wchar_t path[MAX_PATH] = {0};
-        GetModuleFileNameW(game, path, MAX_PATH);
-        if (std::wstring(path).find(L"Home2-Win64-Shipping") == std::wstring::npos)
-        {
-            LogLine("graphql-capture: host is not Home2-Win64-Shipping.exe, skipping SSL capture");
-            return false;
-        }
 
         std::wstring outPath = dir + L"\\graphql_raw.bin";
         GGqlFile = CreateFileW(outPath.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);

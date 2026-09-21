@@ -428,7 +428,7 @@ namespace iconpak {
     {
         if (home2ExePath.empty())
         {
-            errOut = "Set the \"Home2-Win64-Shipping.exe\" executable first.";
+            errOut = "Set the Oculus Home executable first.";
             return false;
         }
 

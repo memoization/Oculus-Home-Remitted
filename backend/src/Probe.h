@@ -20,10 +20,12 @@ bool InstallOafCapture(const std::wstring& dir); // log the OAF loopback IPC to 
 bool InstallGraphqlCapture(const std::wstring& dir); // hook SSL_read/SSL_write, dump graph.oculus.com plaintext to graphql_raw.bin
 bool InstallVertsCapture(const std::wstring& dir); // enable the Verts state-capture recorder, dump verts_capture_<n>.bin
 bool InstallOafRewrite(const std::wstring& dir); // swap OAF NOTIFICATION errors for success
+bool IsUnderRevive();        //true when Home runs through the Revive OVR-to-OpenVR shim
 void InstallOafRewriteHooksNow(void* oafModule); // arm the rewrite hooks the instant OafIpc loads
 bool OafHooksInstalled();    // true once the OafIpc_Send/GetReply hooks are armed
 void PreloadOafIpc();        // load OafIpc.dll and arm OAF hooks now (removes the seq 1-3 race)
 bool InstallLoginPatch();    // force OnLoginComplete onto its success path (exe byte patch)
 bool InstallShaCapPatch();   // clear SSSE3/SHA bits in OpenSSL's cached ia32cap (avoids the startup crash on newer CPUs)
+bool InstallVertsPromptPatch(); // NOP the Verts disconnect prompt so the offline "multiplayer connection failed" dialog never shows
 
 }

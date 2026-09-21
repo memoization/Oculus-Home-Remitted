@@ -101,7 +101,7 @@ namespace applibraries {
         {
             // file: URI with immutable=1 so there is no locking against a live Oculus writer
             std::string uri = "file:///";
-            for (char c : prefs::Narrow(path))
+            for (char c : prefs.Narrow(path))
             {
                 unsigned char u = (unsigned char)c;
                 if (c == '\\' || c == '/') uri += '/';
@@ -237,7 +237,7 @@ namespace applibraries {
     // Absolute path to a file:/// URI. Backslashes to forward slashes, spaces percent-encoded
     static std::string ToFileUri(const fs::path& absPath)
     {
-        std::string p = prefs::Narrow(absPath.wstring());
+        std::string p = prefs.Narrow(absPath.wstring());
         std::string enc = "file:///";
         for (char c : p)
         {
@@ -384,10 +384,10 @@ namespace applibraries {
             roots.push_back(r);
         };
 
-        addRoot(prefs::Widen(DefaultRoot));
+        addRoot(prefs.Widen(DefaultRoot));
         for (const auto& u : userRoots)
         {
-            addRoot(prefs::Widen(u));
+            addRoot(prefs.Widen(u));
         }
 
         // Owned apps come from the Oculus offline cache. Every cached Application becomes an entry installed or not so that any owned app can be a portal destination.
@@ -399,7 +399,7 @@ namespace applibraries {
         fetchworlds::LocalCreds creds = fetchworlds::LoadLocalCreds();
 
         // Cover images download into store\apps\images and the stored field is the store-relative path. The backend resolves it to an absolute file:// at serve time so the library remains portable.
-        fs::path imagesDir = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"images";
+        fs::path imagesDir = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"images";
         std::error_code ecdir;
         fs::create_directories(imagesDir, ecdir);
 
@@ -547,7 +547,7 @@ namespace applibraries {
                 if (!entry.launchFile.empty())
                 {
                     // the exe folder is <root>\Software\<canonical title>
-                    entry.installDir = prefs::Narrow((fs::path(root) / L"Software" / prefs::Widen(canon)).wstring());
+                    entry.installDir = prefs.Narrow((fs::path(root) / L"Software" / prefs.Widen(canon)).wstring());
                     entry.acquiredTime = FileUnixTime(p); // real acquire time now that a manifest exists
                 }
             }
@@ -607,7 +607,7 @@ namespace applibraries {
         res.installed = installed;
         res.imageFailures = failures;
 
-        fs::path out = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"apps-library.json";
+        fs::path out = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"apps-library.json";
         std::error_code ec;
         fs::create_directories(out.parent_path(), ec);
 
@@ -650,7 +650,7 @@ namespace applibraries {
     {
         LibraryCounts counts;
 
-        fs::path p = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"apps-library.json";
+        fs::path p = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"apps-library.json";
         std::string text = ReadFileUtf8(p);
         if (text.empty()) return counts;
 
@@ -672,7 +672,7 @@ namespace applibraries {
 
     bool LibraryFileExists()
     {
-        fs::path p = fs::path(prefs::AppDir()) / L"store" / L"apps" / L"apps-library.json";
+        fs::path p = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"apps-library.json";
         std::error_code ec;
         return fs::is_regular_file(p, ec);
     }
