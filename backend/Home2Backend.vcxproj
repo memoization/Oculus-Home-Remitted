@@ -185,6 +185,7 @@
     <ClCompile Include="..\dependencies\minhook\src\hook.c" />
     <ClCompile Include="..\dependencies\minhook\src\hde\hde32.c" />
     <ClCompile Include="..\dependencies\minhook\src\hde\hde64.c" />
+    <ClCompile Include="src\VertsPromptPatch.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -257,6 +257,8 @@ static DWORD WINAPI InitThread(LPVOID)
     InstallSslWatch();
     InstallVerifyHook();// force game-exe X509_verify_cert to success
 
+    InstallVertsPromptPatch(); // Drop the annoying "multiplayer connection failed" error dialog
+
     LogLine("Backend installed! graph.oculus.com redirected to 127.0.0.1:443 with the leaf signed by the CA.");
     LogLine("A pass shows '*** HANDSHAKE COMPLETED ***' and '*** GAME SENT REQUEST (/graphql) ***'. A fail shows 'HANDSHAKE FAILED / REJECTED' and no request.");
 

@@ -26,5 +26,6 @@ bool OafHooksInstalled();    // true once the OafIpc_Send/GetReply hooks are arm
 void PreloadOafIpc();        // load OafIpc.dll and arm OAF hooks now (removes the seq 1-3 race)
 bool InstallLoginPatch();    // force OnLoginComplete onto its success path (exe byte patch)
 bool InstallShaCapPatch();   // clear SSSE3/SHA bits in OpenSSL's cached ia32cap (avoids the startup crash on newer CPUs)
+bool InstallVertsPromptPatch(); // NOP the Verts disconnect prompt so the offline "multiplayer connection failed" dialog never shows
 
 }
