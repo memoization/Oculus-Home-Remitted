@@ -73,8 +73,6 @@ std::string Prefs::GetPrefString(std::string pField)
 
 void Prefs::SetExePath(std::string pathField, const std::string& path)
 {
-    prefs.configuredHomeProcessW = std::filesystem::path(path).filename().wstring();
-
     // Load-modify-write so any other fields already in preferences.json survive.
     std::string text = ReadFileUtf8(PrefsPath());
     std::string err;

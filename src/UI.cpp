@@ -1747,6 +1747,7 @@ void UI::DoSetExecutable(const wchar_t* defaultDir)
     {
         home2ExePath = prefs.Narrow(file);
         prefs.SetExePath("home2ExePath", home2ExePath);
+        prefs.configuredHomeProcessW = std::filesystem::path(home2ExePath).filename().wstring();
         homeLogger.write() << "Set Home2 executable." << std::endl;
     }
 }
