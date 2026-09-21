@@ -14,6 +14,7 @@ Meta shutdown access to Oculus Home years ago evicting many users of their digit
 - Supports loading your Oculus app library offline.
 - Supports fetching all of your Oculus app achievements.
 - Allows usage of embedded-panels (or broadcasting to screens). This enables viewing your desktop with officially interactive screen objects in VR.
+- Auto-launch Oculus Home from either Oculus or SteamVR dashboard, similar to the old Oculus Dash behavior.
 
 # Setup Guide
 This tool only supports a specific version of Oculus Home. It can be downloaded from [archive.org](https://archive.org/download/oculus-worlds/worlds-2021-03-29.zip)
@@ -29,11 +30,11 @@ This tool only supports a specific version of Oculus Home. It can be downloaded 
 ## Revive setup for using a SteamVR headset
 1. Grab a copy of [Revive](https://github.com/LibreVR/Revive/releases) and install it. Using Revive with Oculus Home is confirmed working as of its version `3.2.0`.
 2. Go to the Oculus program files *Support* directory in explorer: `C:\Program Files\Oculus\Support`
-3. Take the *oculus-worlds* folder you downloaded earlier and place it into the Oculus directory in explorer.
-4. Launch Revive Dashboard. It should show an Oculus Home icon similar to the snapshot. <img width="1019" height="281" alt="image" src="https://github.com/user-attachments/assets/65d8575b-f914-4127-bf21-5e8463f1985d" />
-5. As long as the *Oculus Home Remitted* tool is running, launching Oculus Home through the *Revive Dashboard* should get you running in your SteamVR headset. Having Meta Link software running is not required!
+3. Take the *oculus-worlds* folder you downloaded earlier and place it into that Oculus directory in explorer.
+4. In the *Oculus Home Remitted* tool, go to *Settings* and enable *Launch with Revive*. Then set the location of *ReviveInjector.exe*.
+5. You can now run Oculus Home with your SteamVR headset. Having Meta Link software running is not required!
 
-*While using Revive, controller inputs may be a bit off by default compared to running a native Oculus headset. Adjust your bindings using SteamVR's *Manage Controller Bindings* for the *Oculus Home* app.*
+*While using Revive, controller inputs may be a bit off by default compared to running a native Oculus headset. Adjust your bindings using SteamVR's *Manage Controller Bindings* for the running app.*
 
 *At this time, embedded-panels (or broadcasting to screen objects) do not work with Revive*
 
