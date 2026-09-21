@@ -121,7 +121,7 @@ bool HmdIsOculus()
 
 void LaunchHandler::DoExitHome()
 {
-    DWORD pid = injector::FindProcessId(kHomeProcessW);
+    DWORD pid = injector::FindProcessId(prefs.configuredHomeProcessW.c_str());
     if (pid == 0)
     {
         return;
@@ -162,7 +162,7 @@ void LaunchHandler::DoLaunchHome()
         return;
     }
 
-    DWORD pid = injector::FindProcessId(kHomeProcessW);
+    DWORD pid = injector::FindProcessId(prefs.configuredHomeProcessW.c_str());
     if (pid != 0)
     {
         return;
@@ -186,7 +186,7 @@ void LaunchHandler::DoLaunchHome()
         return;
     }
 
-    std::wstring exeW = prefs::Widen(ui.home2ExePath);
+    std::wstring exeW = prefs.Widen(ui.home2ExePath);
     std::wstring dir = exeW;
     std::wstring appContext = exeW;
     size_t slash = dir.find_last_of(L"\\/");
@@ -211,8 +211,8 @@ void LaunchHandler::DoLaunchHome()
             return;
         }
 
-        cmd = L"\"" + prefs::Widen(ui.reviveInjectorPath) + L"\"" + L" " + cmd;
-        appContext = prefs::Widen(ui.reviveInjectorPath);
+        cmd = L"\"" + prefs.Widen(ui.reviveInjectorPath) + L"\"" + L" " + cmd;
+        appContext = prefs.Widen(ui.reviveInjectorPath);
     }
 
     STARTUPINFOW si = {};

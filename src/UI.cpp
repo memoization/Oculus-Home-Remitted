@@ -323,22 +323,27 @@ ImVec2 UI::UpdateScale()
 void UI::LoadPreferences()
 {
     // Exe paths
-    home2ExePath = prefs::GetPrefString("home2ExePath");
-    reviveInjectorPath = prefs::GetPrefString("reviveInjectorPath");
+    home2ExePath = prefs.GetPrefString("home2ExePath");
+    if (!home2ExePath.empty())
+    {
+        prefs.configuredHomeProcessW = std::filesystem::path(home2ExePath).filename().wstring();
+    }
+
+    reviveInjectorPath = prefs.GetPrefString("reviveInjectorPath");
 
     // The profile identity and sidebar image (backend reads the same file)
-    profileName = prefs::GetDisplayName();
-    profileImagePath = prefs::GetProfileImagePath();
+    profileName = prefs.GetDisplayName();
+    profileImagePath = prefs.GetProfileImagePath();
     LoadProfileImage();
 
     // Load any saved library paths
-    libraryPaths = prefs::GetOculusLibraryPaths();
+    libraryPaths = prefs.GetOculusLibraryPaths();
 
     // Capture flags
-    setCaptureFlags = prefs::GetCaptureFlags();
+    setCaptureFlags = prefs.GetCaptureFlags();
 
-    autoLaunchEnabled = prefs::GetPrefBool("autoLaunchEnabled", false);
-    launchWithRevive = prefs::GetPrefBool("launchWithRevive", false);
+    autoLaunchEnabled = prefs.GetPrefBool("autoLaunchEnabled", false);
+    launchWithRevive = prefs.GetPrefBool("launchWithRevive", false);
 }
 
 void UI::Create()
@@ -411,7 +416,7 @@ void UI::Create()
     }
 
     // Write the default preferences.json on first run
-    prefs::SeedDefaultsIfMissing();
+    prefs.SeedDefaultsIfMissing();
 
     // Auto-create the default world if store\worlds\ folder is empty (also set preferences.defaultWorldId), then scan the folders for the Worlds page and screenshot background.
     // The backend reads the folders/prefs
@@ -439,7 +444,7 @@ void UI::LoadProfileImage()
 {
     // Load the user's profile.png by absolute path.
     // Reload (not LoadPng) because the path key is fixed and only the file's bytes change between selections
-    if (!profileImagePath.empty() && std::filesystem::exists(std::filesystem::path(prefs::Widen(profileImagePath))))
+    if (!profileImagePath.empty() && std::filesystem::exists(std::filesystem::path(prefs.Widen(profileImagePath))))
     {
         texLoader.Reload(profileImagePath);
     }
@@ -448,7 +453,7 @@ void UI::LoadProfileImage()
 void UI::ApplyProfilePak()
 {
     std::string err;
-    std::string png = prefs::Narrow(prefs::AppDir() + L"profile.png");
+    std::string png = prefs.Narrow(prefs.AppDir() + L"profile.png");
     if (iconpak::BuildProfilePak(home2ExePath, png, err))
     {
         homeLogger.write() << "iconpak: wrote the icon profile .pak file" << std::endl;
@@ -467,8 +472,8 @@ void UI::DoProfile()
     // Re-read prefs on (re)open so any on-disk change (hand edit, or the file this page wrote earlier) is reflected
     if (reloadProfileOnOpen)
     {
-        profileName = prefs::GetDisplayName();
-        profileImagePath = prefs::GetProfileImagePath();
+        profileName = prefs.GetDisplayName();
+        profileImagePath = prefs.GetProfileImagePath();
         LoadProfileImage();
         reloadProfileOnOpen = false;
     }
@@ -496,7 +501,7 @@ void UI::DoProfile()
     // Persist on edit-commit (Enter / focus loss). The probe reads this at the next Home launch no restart tracking here
     if (ImGui::IsItemDeactivatedAfterEdit())
     {
-        prefs::SetDisplayName(profileName);
+        prefs.SetDisplayName(profileName);
     }
 
     ImGui::Dummy(iScale.Vec2(0, 14));
@@ -672,7 +677,7 @@ void UI::DoWorlds()
         if (ImGui::Button("Set Default", ImVec2(setW, btnH)))
         {
             // Takes effect in-VR on the next Home launch (the probe reads preferences.defaultWorldId at load)
-            prefs::SetDefaultWorldId(worldList[sel].worldId);
+            prefs.SetDefaultWorldId(worldList[sel].worldId);
             for (auto& w : worldList)
             {
                 w.isDefault = (w.worldId == worldList[sel].worldId);
@@ -949,7 +954,7 @@ void UI::DoApps()
             if (!exists && _stricmp(folder.c_str(), applibraries::DefaultRoot.c_str()) != 0)
             {
                 libraryPaths.push_back(folder);
-                prefs::SetOculusLibraryPaths(libraryPaths);
+                prefs.SetOculusLibraryPaths(libraryPaths);
                 RebuildAppsLibrary();
             }
         }
@@ -964,7 +969,7 @@ void UI::DoApps()
     if (ImGui::Button("Remove Selected", ImVec2(btnW, btnH)))
     {
         libraryPaths.erase(libraryPaths.begin() + (size_t)(env.selectedSourceId - 1));
-        prefs::SetOculusLibraryPaths(libraryPaths);
+        prefs.SetOculusLibraryPaths(libraryPaths);
         env.selectedSourceId = 0; // clear the stale selection
         RebuildAppsLibrary();
     }
@@ -1254,7 +1259,7 @@ bool UI::BrowseForFolder(std::string& outPath)
                 PWSTR psz = nullptr;
                 if (SUCCEEDED(item->GetDisplayName(SIGDN_FILESYSPATH, &psz)) && psz)
                 {
-                    outPath = prefs::Narrow(psz);
+                    outPath = prefs.Narrow(psz);
                     ok = true;
                     CoTaskMemFree(psz);
                 }
@@ -1450,7 +1455,7 @@ void UI::DrawSidebar()
     GLuint avatar = 0;
     int avatarW = 0, avatarH = 0;
     std::string avatarKey = "images/profiles/32.png";
-    if (!profileImagePath.empty() && std::filesystem::exists(std::filesystem::path(prefs::Widen(profileImagePath))))
+    if (!profileImagePath.empty() && std::filesystem::exists(std::filesystem::path(prefs.Widen(profileImagePath))))
     {
         avatarKey = profileImagePath;
     }
@@ -1492,7 +1497,7 @@ void UI::DrawSidebar()
     int btnWidth = availWidth - iScale.F(40);
 
     // "Changes have been saved!" flash above the launch button. Shows on every successful preferences.json write
-    unsigned tick = prefs::SaveTick();
+    unsigned tick = prefs.SaveTick();
     if (!savedTickInit)
     {
         lastSavedTick = tick; // to ignore any startup writes
@@ -1727,8 +1732,8 @@ void UI::DoSetExecutable(const wchar_t* defaultDir)
         ofn.lpstrInitialDir = defaultDir;
     }
 
-    std::wstring title = L"Select " + std::wstring(kHomeProcessW) + L" (Located at \"Home2\\Binaries\\Win64\")";
-    std::wstring filter = L"Executable (" + std::wstring(kHomeProcessW) + L")" + std::wstring(L"\0*.exe\0\0", 11);
+    std::wstring title = L"Select " + prefs.kDefaultHomeProcessW + L" (Located at \"Home2\\Binaries\\Win64\")";
+    std::wstring filter = L"Executable (" + prefs.kDefaultHomeProcessW + L")" + std::wstring(L"\0*.exe\0\0", 11);
 
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = glfwGetWin32Window(window);
@@ -1740,8 +1745,8 @@ void UI::DoSetExecutable(const wchar_t* defaultDir)
 
     if (GetOpenFileNameW(&ofn))
     {
-        home2ExePath = prefs::Narrow(file);
-        prefs::SetExePath("home2ExePath", home2ExePath);
+        home2ExePath = prefs.Narrow(file);
+        prefs.SetExePath("home2ExePath", home2ExePath);
         homeLogger.write() << "Set Home2 executable." << std::endl;
     }
 }
@@ -1760,8 +1765,8 @@ void UI::DoSetRevive()
 
     if (GetOpenFileNameW(&ofn))
     {
-        reviveInjectorPath = prefs::Narrow(file);
-        prefs::SetExePath("reviveInjectorPath", reviveInjectorPath);
+        reviveInjectorPath = prefs.Narrow(file);
+        prefs.SetExePath("reviveInjectorPath", reviveInjectorPath);
         homeLogger.write() << "Set Revive executable." << std::endl;
     }
 }
@@ -2308,12 +2313,12 @@ void UI::DoPopups(Env& env)
             int preset = env.selectedProfilePreset;
             if (hasSelection)
             {
-                std::wstring src = !env.selectedProfilePath.empty() ? env.selectedProfilePath : prefs::Widen("images/profiles/" + std::to_string(preset) + ".png");
-                std::wstring dst = prefs::AppDir() + L"profile.png";
+                std::wstring src = !env.selectedProfilePath.empty() ? env.selectedProfilePath : prefs.Widen("images/profiles/" + std::to_string(preset) + ".png");
+                std::wstring dst = prefs.AppDir() + L"profile.png";
                 if (CopyFileW(src.c_str(), dst.c_str(), FALSE))
                 {
-                    profileImagePath = prefs::Narrow(dst);
-                    prefs::SetProfileImagePath(profileImagePath);
+                    profileImagePath = prefs.Narrow(dst);
+                    prefs.SetProfileImagePath(profileImagePath);
                     LoadProfileImage();
                     homeLogger.write() << "Profile picture set. Writing to .pak file.." << std::endl;
                     ApplyProfilePak();
@@ -2353,7 +2358,7 @@ void UI::Run()
             [&]() { return autoLaunchEnabled; },
             [&](bool v)
             {
-                prefs::SetPrefBool("autoLaunchEnabled", v);
+                prefs.SetPrefBool("autoLaunchEnabled", v);
                 autoLaunchEnabled = v;
             }
         },
@@ -2363,7 +2368,7 @@ void UI::Run()
             [&]() { return launchWithRevive; },
             [&](bool v)
             {
-                prefs::SetPrefBool("launchWithRevive", v);
+                prefs.SetPrefBool("launchWithRevive", v);
                 launchWithRevive = v;
             }
         }
@@ -2377,7 +2382,7 @@ void UI::Run()
             [&]() { return setCaptureFlags.flagGraphqlCapture; },
             [&](bool v)
             {
-                prefs::SetPrefBool("flagGraphqlCapture", v);
+                prefs.SetPrefBool("flagGraphqlCapture", v);
                 setCaptureFlags.flagGraphqlCapture = v;
             }
         },
@@ -2387,7 +2392,7 @@ void UI::Run()
             [&]() { return setCaptureFlags.flagVertsCapture; },
             [&](bool v)
             {
-                prefs::SetPrefBool("flagVertsCapture", v);
+                prefs.SetPrefBool("flagVertsCapture", v);
                 setCaptureFlags.flagVertsCapture = v;
             }
         },
@@ -2397,7 +2402,7 @@ void UI::Run()
             [&]() { return setCaptureFlags.flagOafCapture; },
             [&](bool v)
             {
-                prefs::SetPrefBool("flagOafCapture", v);
+                prefs.SetPrefBool("flagOafCapture", v);
                 setCaptureFlags.flagOafCapture = v;
             }
         }

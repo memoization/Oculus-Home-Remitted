@@ -27,7 +27,7 @@ private:
     std::atomic<bool> running_{ false };
     std::atomic<bool> launchPending_{ false };
     std::atomic<bool> closePending_{ false };
-    std::atomic<int> cooldownMs_{ 5000 }; // Grace period while in the void before home launches
+    std::atomic<int> cooldownMs_{ 10000 }; // Grace period while in the void before home launches
 
     const int kPollMs = 2000; // freq of the void check and the event drain
     const int kReconnectMs = 3000; // gap between runtime connect attempts while disconnected

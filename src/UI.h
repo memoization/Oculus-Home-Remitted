@@ -185,7 +185,7 @@ struct UI
     bool reloadProfileOnOpen = true; // re-read prefs when the Profile page is (re)opened (no poll)
     std::string home2ExePath; // Home2 exe for the Launch Home button (from preferences.json)
     std::string iconPakStatus;// last result of building the profile override pak (shown on Profile page)
-    prefs::SetCaptureFlags setCaptureFlags;// dev tools capture flags
+    Prefs::SetCaptureFlags setCaptureFlags;// dev tools capture flags
     std::string reviveInjectorPath;// path to Revive executable
     bool launchWithRevive = false;
     bool autoLaunchEnabled = false;

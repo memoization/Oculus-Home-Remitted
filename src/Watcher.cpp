@@ -37,7 +37,7 @@ void HomeWatcher::Loop()
 
     while (running_.load())
     {
-        DWORD pid = injector::FindProcessId(kHomeProcessW);
+        DWORD pid = injector::FindProcessId(prefs.configuredHomeProcessW.c_str());
 
         if (pid == 0)
         {

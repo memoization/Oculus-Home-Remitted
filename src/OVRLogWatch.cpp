@@ -55,7 +55,7 @@ namespace
     bool IsRuntimeExe(const std::string& exe)
     {
         std::string e = LowerAscii(exe);
-        return e == LowerAscii(kHomeProcess)
+        return e == LowerAscii(prefs.Narrow(prefs.configuredHomeProcessW))
             || e == "oculusdash.exe"
             || e == "ovrserver_x64.exe"
             || e == "home2remitted.exe";

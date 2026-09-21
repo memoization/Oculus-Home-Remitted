@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 
     // Start the injector: it watches for Oculus Home and injects home2backend.dll, re-arms on home process exit
     {
-        std::wstring dllPath = prefs::AppDir() + L"home2backend.dll";
+        std::wstring dllPath = prefs.AppDir() + L"home2backend.dll";
         if (GetFileAttributesW(dllPath.c_str()) == INVALID_FILE_ATTRIBUTES)
         {
             homeLogger.write() << "WARNING: home2backend.dll not found beside the frontend ("

@@ -37,13 +37,13 @@ namespace worlds
     {
         std::vector<WorldCardInfo> out;
         std::error_code ec;
-        fs::path dir = fs::path(prefs::AppDir()) / "store" / "worlds";
+        fs::path dir = fs::path(prefs.AppDir()) / "store" / "worlds";
         if (!fs::is_directory(dir, ec))
         {
             return out;
         }
 
-        std::string defId = prefs::GetDefaultWorldId();
+        std::string defId = prefs.GetDefaultWorldId();
 
         for (const auto& entry : fs::directory_iterator(dir, ec))
         {
@@ -52,7 +52,7 @@ namespace worlds
             std::wstring folderName = entry.path().filename().wstring();
             if (folderName.rfind(L"world_", 0) != 0) continue;
 
-            std::string worldId = prefs::Narrow(folderName.substr(6));
+            std::string worldId = prefs.Narrow(folderName.substr(6));
             if (worldId.empty()) continue;
 
             std::string text = ReadFileUtf8((entry.path() / "config.json").wstring());
@@ -81,7 +81,7 @@ namespace worlds
             info.creationIndex = cfg["creation_index"].int_value();
             info.nameIndex = cfg["name_index"].int_value();
             info.isDefault = (!defId.empty() && defId == worldId);
-            info.screenshotPng = prefs::Narrow((entry.path() / "screenshot.png").c_str());
+            info.screenshotPng = prefs.Narrow((entry.path() / "screenshot.png").c_str());
             out.push_back(std::move(info));
         }
 
@@ -140,7 +140,7 @@ namespace worlds
     void SeedDefaultIfEmpty()
     {
         std::error_code ec;
-        fs::path appDir = fs::path(prefs::AppDir());
+        fs::path appDir = fs::path(prefs.AppDir());
         fs::path worldsRoot = appDir / "store" / "worlds";
 
         if (HasAnyWorldFolder(worldsRoot)) return;
@@ -232,14 +232,14 @@ namespace worlds
             return;
         }
 
-        prefs::SetDefaultWorldId(worldId);
+        prefs.SetDefaultWorldId(worldId);
         homeLogger.write() << "Worlds: auto-seeded empty default world " << worldId.c_str() << "." << std::endl;
     }
 
     void EnsureValidDefault()
     {
         std::error_code ec;
-        fs::path worldsRoot = fs::path(prefs::AppDir()) / "store" / "worlds";
+        fs::path worldsRoot = fs::path(prefs.AppDir()) / "store" / "worlds";
 
         // Nothing left on disk, recreate a new default
         if (!HasAnyWorldFolder(worldsRoot))
@@ -249,7 +249,7 @@ namespace worlds
         }
 
         // The recorded default still exists
-        std::string defId = prefs::GetDefaultWorldId();
+        std::string defId = prefs.GetDefaultWorldId();
         if (!defId.empty() && fs::exists(worldsRoot / ("world_" + defId) / "config.json", ec))
         {
             return;
@@ -270,8 +270,8 @@ namespace worlds
             json11::Json cfg = json11::Json::parse(text, err);
             if (!err.empty() || !cfg.is_object()) continue;
 
-            std::string worldId = prefs::Narrow(folderName.substr(6));
-            prefs::SetDefaultWorldId(worldId);
+            std::string worldId = prefs.Narrow(folderName.substr(6));
+            prefs.SetDefaultWorldId(worldId);
             homeLogger.write() << "Worlds: default world missing! Falling back to existing world " << worldId.c_str() << "." << std::endl;
             return;
         }
@@ -280,7 +280,7 @@ namespace worlds
     void PopulateUgcCache()
     {
         std::error_code ec;
-        fs::path appDir = fs::path(prefs::AppDir());
+        fs::path appDir = fs::path(prefs.AppDir());
         fs::path worldsRoot = appDir / "store" / "worlds";
 
         if (!fs::is_directory(worldsRoot, ec)) return;
