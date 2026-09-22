@@ -117,6 +117,9 @@ struct Env
     bool doBuildFonts = false;
     uint64_t lastDPIUpdate = 0;
 
+    bool editingWorldName = false;
+    bool worldNameInputChanged = false;
+    std::string pendingNewWorldName = "";
     int selectedWorld = 0;
     int selectedProfilePreset = -1;// staging selection for profile presets
     std::wstring selectedProfilePath = L"";// staging selection for profile icon browse

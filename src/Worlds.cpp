@@ -277,6 +277,32 @@ namespace worlds
         }
     }
 
+    bool RenameWorld(const std::string& worldId, const std::string& newName)
+    {
+        if (worldId.empty()) return false;
+
+        fs::path cfgPath = fs::path(prefs.AppDir()) / "store" / "worlds" / ("world_" + worldId) / "config.json";
+
+        std::string text = ReadFileUtf8(cfgPath.wstring());
+        if (text.empty()) return false;
+
+        std::string err;
+        json11::Json cfg = json11::Json::parse(text, err);
+        if (!err.empty() || !cfg.is_object()) return false;
+
+        json11::Json::object obj = cfg.object_items();
+        obj["name"] = newName;
+
+        if (!WriteFileAtomic(cfgPath.wstring(), json11::Json(obj).dump()))
+        {
+            homeLogger.write() << "Worlds: failed to write config.json while renaming world " << worldId.c_str() << "." << std::endl;
+            return false;
+        }
+
+        homeLogger.write() << "Worlds: renamed world " << worldId.c_str() << " to \"" << newName.c_str() << "\"." << std::endl;
+        return true;
+    }
+
     void PopulateUgcCache()
     {
         std::error_code ec;
