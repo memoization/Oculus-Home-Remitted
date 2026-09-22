@@ -3,6 +3,7 @@
 #include <shellapi.h>
 #include "UI.h"
 #include "LaunchHandler.h"
+#include "Watcher.h"
 
 static const UINT WM_TRAY = WM_APP + 1;
 enum
@@ -10,6 +11,7 @@ enum
     ID_TRAY_RESTORE = 1001,
     ID_TRAY_QUIT = 1002,
     ID_TRAY_LAUNCH = 1003,
+    ID_TRAY_EXIT = 1004,
 };
 
 static WNDPROC g_origProc = nullptr;
@@ -30,7 +32,14 @@ static void ShowTrayMenu(HWND h)
     POINT pt;
     GetCursorPos(&pt);
     HMENU menu = CreatePopupMenu();
-    AppendMenuW(menu, MF_STRING, ID_TRAY_LAUNCH, L"Launch Oculus Home");
+    if (g_homeWatcher.HomeRunning())
+    {
+        AppendMenuW(menu, MF_STRING, ID_TRAY_EXIT, L"Exit Oculus Home");
+    }
+    else 
+    {
+        AppendMenuW(menu, MF_STRING, ID_TRAY_LAUNCH, L"Launch Oculus Home");
+    }
     AppendMenuW(menu, MF_STRING, ID_TRAY_RESTORE, L"Open Oculus Home Remitted");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, ID_TRAY_QUIT, L"Quit");
@@ -75,6 +84,11 @@ static LRESULT CALLBACK TrayProc(HWND h, UINT msg, WPARAM w, LPARAM l)
         if (LOWORD(w) == ID_TRAY_LAUNCH)
         {
             g_launchHandler.DoLaunchHome();
+            return 0;
+        }
+        if (LOWORD(w) == ID_TRAY_EXIT)
+        {
+            g_launchHandler.DoExitHome();
             return 0;
         }
     }

@@ -302,12 +302,41 @@ bool LaunchHandler::OpenVRHeadsetInUse() const
     return level >= 0;
 }
 
-bool LaunchHandler::InVoid(bool ocDashActive)
+std::string getSceneExe(uint32_t pid)
 {
-    // Handle Oculus Dash
-    if (ocDashActive && g_ovrLogWatch.Ready() && !g_ovrLogWatch.AppRunning())
+    HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+    if (!h) return {};
+
+    wchar_t path[MAX_PATH];
+    DWORD sz = MAX_PATH;
+    std::string exe;
+
+    if (QueryFullProcessImageNameW(h, 0, path, &sz))
     {
-        return true;
+        std::wstring full(path, sz);
+        size_t slash = full.find_last_of(L"\\/");
+        std::wstring base = (slash == std::wstring::npos) ? full : full.substr(slash + 1);
+        exe = prefs.Narrow(base);
+    }
+
+    CloseHandle(h);
+    return exe;
+}
+
+bool LaunchHandler::InEmptyDashboard(bool ocDashActive)
+{
+    focusedApp = "";
+
+    // Handle Oculus Dash
+    if (ocDashActive && g_ovrLogWatch.Ready())
+    {
+        OVRLogWatch::TrackedApp runningApp = g_ovrLogWatch.GetActiveApp();
+        focusedApp = runningApp.image;
+
+        if (!g_ovrLogWatch.AppRunning())
+        {
+            return true;
+        }
     }
 
     // Check for a running SteamVR scene process
@@ -324,12 +353,13 @@ bool LaunchHandler::InVoid(bool ocDashActive)
             char key[vr::k_unMaxApplicationKeyLength] = {};
             if (vr::VRApplications()->GetApplicationKeyByProcessId(scenePid, key, sizeof(key)) == vr::VRApplicationError_None)
             {
-                // SteamVR Home counts
+                // SteamVR Home counts as being in a landing dashboard environment
                 if (ContainsNoCase(key, "steamvr_environments"))
                 {
                     return true;
                 }
 
+                focusedApp = getSceneExe(scenePid);
                 return false;
             }
         }
@@ -385,17 +415,24 @@ void LaunchHandler::Loop()
         if (openvrReady || ocDashActive)
         {
             // In dashboard presence with SteamVR or Oculus
-            bool inVoid = InVoid(ocDashActive);
+            bool inDashboard = InEmptyDashboard(ocDashActive);
             if (homeUp)
             {
                 armed = false;
             }
-            else if (!inVoid)
+            else if (!inDashboard)
             {
                 armed = true; // a real scene app is in focus which is not Home and not the dashboard void
             }
 
-            if (armed && !homeUp && inVoid && (ocDashActive || OpenVRHeadsetInUse()))
+            // Home is running but the focused app is something else. Exit the Home process
+            if (!inDashboard && homeUp && !focusedApp.empty() && focusedApp != prefs.Narrow(prefs.configuredHomeProcessW) && !closePending_.load())
+            {
+                homeLogger.write() << "AutoLaunch: Home is no longer the focused app, closing now." << std::endl;
+                DoExitHome();
+            }
+
+            if (armed && !homeUp && inDashboard && (ocDashActive || OpenVRHeadsetInUse()))
             {
                 eligible = ui.autoLaunchEnabled && !ui.home2ExePath.empty();
             }
@@ -403,6 +440,7 @@ void LaunchHandler::Loop()
         else
         {
             armed = true; // neither runtime present, re-arm
+            focusedApp = "";
 
             // Neither platform is active. Close a auto-launched home session
             if (autoLaunchedHome)
@@ -442,7 +480,7 @@ void LaunchHandler::Loop()
             eligibleSinceTick_ = 0;
         }
 
-        Sleep(kPollMs);
+        Sleep(homeUp ? kPollMs / 2 : kPollMs);
     }
 
     OpenVrStop();

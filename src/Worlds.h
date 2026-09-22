@@ -24,6 +24,9 @@ namespace worlds
     // Enumerate store\worlds\world_*, read each config.json, resolve the display screenshot to a PNG (transcoding the folder JPG to a screenshot.png when missing/stale). Must be called on the render thread when it will feed the texLoader
     std::vector<WorldCardInfo> Scan();
 
+    // Rewrite the "name" field of a world config.json to a new name. Returns false when the world folder or its config.json is missing or unparseable. An empty newName reverts the card to the "Home #<nameIndex>" title.
+    bool RenameWorld(const std::string& worldId, const std::string& newName);
+
     // Auto-seed the default world. mint id, atomic config.json from the store's empty template, copy world-default.png to screenshot.png and set it default iff store\worlds\ has no world_* folder yet
     void SeedDefaultIfEmpty();
 

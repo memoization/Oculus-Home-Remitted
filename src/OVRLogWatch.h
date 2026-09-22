@@ -12,21 +12,32 @@
 class OVRLogWatch
 {
 public:
+    struct TrackedApp
+    {
+        std::string image; // the process exe base name which is resolved from the live process for clear logging
+        HANDLE process; // a handle to the launched process
+    };
+
     void Start();
     void Stop();
 
     // True when at least one tracked Oculus VR app process is still alive.
     bool AppRunning() const { return appRunning_.load(); }
 
+    // Return the first tracked app
+    TrackedApp GetActiveApp() const {
+        if (apps_.empty())
+        {
+            return TrackedApp();
+        }
+
+        return apps_.begin()->second;
+    }
+
     // True once a service log has been found and is being tailed.
     bool Ready() const { return ready_.load(); }
 
 private:
-    struct TrackedApp
-    {
-        std::string image; // the process exe base name which is resolved from the live process for clear logging
-        HANDLE process; // a handle to the launched process
-    };
 
     void Loop();
     std::wstring FindLatestLog() const; // the newest Service_*.txt, or empty

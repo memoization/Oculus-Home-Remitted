@@ -203,6 +203,9 @@ static ImU32 LetterboxShade(float opacity)
     return IM_COL32(31, 33, 35, (int)(opacity * 255.0f + 0.5f));
 }
 
+// Shorten text with a trailing ellipsis to fit maxWidth px in the current font
+static std::string TruncateToWidth(const char* text, float maxWidth);
+
 // A world card for the Worlds page right-pane: cover-cropped thumbnail, name label, selection ring
 static bool WorldCard(const char* name, GLuint thumb, int thumbW, int thumbH, ImVec2 size, bool selected, bool isDefault)
 {
@@ -219,9 +222,10 @@ static bool WorldCard(const char* name, GLuint thumb, int thumbW, int thumbH, Im
 
     dl->AddRectFilled(p0, p1, ImGui::GetColorU32(isDefault ? UIConsts.ListItemActive : UIConsts.WorldCardFill), rounding);
 
-    // World name in the background band above the image
+    // World name in the background band above the image and clipped to the card width with an ellipsis
     float textH = ImGui::GetTextLineHeight();
-    dl->AddText(ImVec2(p0.x + imagePad, p0.y + (titleAreaH - textH) * 0.5f), IM_COL32_WHITE, name);
+    std::string shownName = TruncateToWidth(name, size.x - imagePad * 2.0f);
+    dl->AddText(ImVec2(p0.x + imagePad, p0.y + (titleAreaH - textH) * 0.5f), IM_COL32_WHITE, shownName.c_str());
 
     // World image below the title band, inset by imagePad on the other sides
     ImVec2 imgP0 = ImVec2(p0.x + imagePad, p0.y + titleAreaH);
@@ -407,6 +411,7 @@ void UI::Create()
     texLoader.LoadPng("images/library.png");
     texLoader.LoadPng("images/achievement.png");
     texLoader.LoadPng("images/settings.png");
+    texLoader.LoadPng("images/edit.png");
     texLoader.LoadPng("images/world-default.png");
 
     // Profile-picture presets for the selector modal (images/profiles/1.png .. 32.png)
@@ -591,12 +596,72 @@ void UI::DoWorlds()
     std::string worldName = hasWorlds ? WorldLabel(worldList[sel]) : "No Homes Available";
     int objectCount = hasWorlds ? worldList[sel].objectCount : 0;
 
-    // Main column: selected-world title, object count, and "Set Default"
+    // Main column: selected-world title, object count, and footer buttons
     ImGui::BeginChild("##worldMain", ImVec2(mainWidth, avail.y), false);
     {
-        ImGui::PushFont(fontTitle);
-        ImGui::TextUnformatted(worldName.c_str());
-        ImGui::PopFont();
+        float cursorY = ImGui::GetCursorPosY();
+
+        if (hasWorlds && !env.editingWorldName)
+        {
+            ImGui::SetCursorPosY(cursorY + iScale.F(10));
+
+            auto [nf, nw, nh] = texLoader.GetPng("images/edit.png");
+            pushedStyles = PushButtonStyleGrey();
+            if (ImGui::ImageButton("##worldNameBtn", (void*)(intptr_t)nf, iScale.Vec2(24, 27)))
+            {
+                env.editingWorldName = true;
+                env.pendingNewWorldName = worldList[sel].name;
+            }
+            ImGui::PopStyleColor(pushedStyles);
+            ImGui::SameLine();
+        }
+        
+        if (env.editingWorldName)
+        {
+            ImGui::SetCursorPosY(cursorY + iScale.F(10));
+
+            pushedStyles = PushButtonStyleGrey();
+            if (ImGui::Button("X", iScale.Vec2(32, 32)))
+            {
+                env.editingWorldName = false;
+                env.pendingNewWorldName = "";
+            }
+            ImGui::PopStyleColor(pushedStyles);
+
+            ImGui::SameLine();
+
+            ImGui::SetNextItemWidth(avail.x - railWidth - iScale.F(100));
+            pushedStyles = PushTextInputStyle();
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, iScale.Vec2(6, 5));
+            if (ImGui::InputText("##worldNameField", &env.pendingNewWorldName))
+            {
+                env.worldNameInputChanged = true;
+            };
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor(pushedStyles);
+
+            // Applies from clicking off the input field
+            if (!ImGui::IsItemActive() && env.worldNameInputChanged && env.editingWorldName)
+            {
+                env.worldNameInputChanged = false;
+                env.editingWorldName = false;
+
+                worlds::RenameWorld(worldList[sel].worldId, env.pendingNewWorldName);
+                worldList = worlds::Scan();
+            }
+
+            ImGui::Dummy(iScale.Vec2(0, 1));
+        }
+        // Render home name as page's title
+        else
+        {
+            ImGui::SetCursorPosY(cursorY);
+            ImGui::PushFont(fontTitle);
+            std::string shownTitle = TruncateToWidth(worldName.c_str(), ImGui::GetContentRegionAvail().x);
+            ImGui::TextUnformatted(shownTitle.c_str());
+            ImGui::PopFont();
+        }
+
         ImGui::Dummy(iScale.Vec2(0, 25));
 
         if (hasWorlds)
