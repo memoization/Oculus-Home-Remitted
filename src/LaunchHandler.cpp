@@ -287,8 +287,6 @@ void LaunchHandler::PollRuntimeEvents()
             DoExitHome(); // Close the home process as well to not leave it running dormant
             break;
         }
-
-        homeLogger.write() << "Event VR: " << ev.eventType << std::endl;
     }
 }
 
@@ -362,9 +360,6 @@ bool LaunchHandler::InEmptyDashboard(bool ocDashActive)
                 }
 
                 focusedApp = getSceneExe(scenePid);
-
-                homeLogger.write() << "AutoLaunch: " << focusedApp.c_str() << " " << key << std::endl;
-
                 return false;
             }
         }
