@@ -56,6 +56,7 @@ namespace
     {
         std::string e = LowerAscii(exe);
         return e == LowerAscii(prefs.Narrow(prefs.configuredHomeProcessW))
+            || e == "oculus-platform-runtime.exe"
             || e == "oculusdash.exe"
             || e == "ovrserver_x64.exe"
             || e == "home2remitted.exe";
