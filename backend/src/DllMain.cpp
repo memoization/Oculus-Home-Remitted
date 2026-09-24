@@ -221,6 +221,10 @@ static DWORD WINAPI InitThread(LPVOID)
     // Direct-launch survival: spawn a waiter that hooks OVRPlugin's ShouldQuit the moment OVRPlugin.dll loads so the app doesn't quit when launched outside OVRServer's app-launch flow.
     InstallOvrRuntimeHooks();
 
+    // Avatar assets fetch over libovravatar's own OpenSSL, which our game-exe verify hook does not cover.
+    // Spawn a waiter that defeats its cert check the moment libovravatar.dll loads, so those fetches trust the loopback.
+    InstallAvatarVerifyPatch();
+
     //Install the CA-store hooks first, before cert-gen and TLS setup, so a full root enumeration by the game's curl is logged no matter how early it imports
     InstallCaStoreHooks();
 
