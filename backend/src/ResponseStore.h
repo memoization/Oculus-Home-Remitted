@@ -66,6 +66,27 @@ namespace home2hook {
         // REST uploads (TlsServer routes non-graphql multipart POSTs here): write the raw image bytes into store\worlds\world_<worldId>\screenshot.jpg "isScreenshot" or cubemap.jpg atomically
         bool WriteWorldMedia(const std::string& worldId, bool isScreenshot, const std::string& bytes);
 
+        // The avatar editor catalog for GET /avatar_v2_editor_layout
+        // Returns a framed HTTP/1.1 response, or "" when the template or the assets folder was absent so falls back to an empty {} answer.
+        std::string GetAvatarEditorLayout() const;
+
+        // Avatar resolving (GET /<nodeId>?fields=zstd_file_id,zstd_file_uri): a framed reply pointing the asset at its local file:// mesh under store\avatar-assets.
+        // Returns "" if the node id is unknown so the it falls back an empty {} answer.
+        std::string BuildAvatarAssetResolve(const std::string& nodeId) const;
+
+        // Persist the avatar appearance from a POST /user_update_avatar_v2_metadata to file.
+        void PersistAvatarMetadata(const std::string& body) const;
+
+        // Create store/avatar-appearance.json with a random valid catalog pick so a fresh install logs in with a random avatar.
+        bool GenerateRandomAppearance() const;
+
+        // Build the login reply GET /<userId>?fields=avatar_v2{...} using the saved appearance, or empty when none is saved so it falls back to {}.
+        std::string BuildAvatarNode(const std::string& userId) const;
+
+        // Build the full Avatar spec GET (/<userId>?fields=avatar{...}avatar_v2{...}) from the saved appearance file so the rendered avatar matches
+        // Each part gets its mesh (file:// under avatar-assets) plus the catalog material's level_of_detail_five, hands take the body-to-hand skin material, and face_parameters have the color materials' base_color.
+        std::string BuildAvatarSpec(const std::string& userId) const;
+
     private:
         // per-world folder model: one entry per store\worlds\world_<id> folder.
         struct WorldEntry
@@ -77,6 +98,21 @@ namespace home2hook {
         };
         std::string worldLoginTemplate;
         bool worldLoginLoaded = false;
+
+        // The framed response for GET /avatar_v2_editor_layout, the __AVATAR_ASSETS__ tags already resolved to the file:// base of store\avatar-assets.
+        // Empty when the template or assets folder is missing.
+        std::string avatarEditorLayout;
+        bool avatarEditorLayoutLoaded = false;
+
+        // Avatar asset resolve support. avatarAssetsBase is "file:///<abs>/avatar-assets", avatarNodeToFile maps a graph asset node id to its local <fileid>.mesh in that folder from "avatar-node-map.json".
+        // The Avatar SDK asks GET /<nodeId>?fields=zstd_file_id,zstd_file_uri per asset, and it is answered with a file:// uri so the mesh loads from disk instead of cdn.
+        std::string avatarAssetsBase;
+        std::unordered_map<std::string, std::string> avatarNodeToFile;
+
+        json11::Json avatarCatalog; // the whole resolved editor layout
+        std::unordered_map<std::string, json11::Json> avatarMaterialLod; // material id to its level_of_detail_five node
+        std::unordered_map<std::string, std::string> avatarBodyToHandMat;// body material id to the matching hand skin material id
+        std::unordered_map<std::string, std::string> avatarBeardDeriv; // "<bodyMesh>_<beardMesh>" to the body-derived beard mesh id that actually renders
 
         // Canned templates keyed by file stem ("<doc_id>" or "<doc_id>__<discriminator>").
         std::unordered_map<std::string, std::string> cannedTemplates;
@@ -123,8 +159,9 @@ namespace home2hook {
         // mutable: the const build* mutation handlers append or edit entries in place.
         mutable std::vector<WorldEntry> worlds;
         mutable std::mutex worldsMutex;
-        std::wstring worldsDir;              // storeDir\worlds
-        std::wstring appDir;                // storeDir parent (portable-folder root, images\ lives here)
+        std::wstring worldsDir; // storeDir\worlds
+        std::wstring appDir;// storeDir parent (portable-folder root, images\ lives here)
+        std::wstring storeRootDir; // \store folder
 
         // UGC (user-uploaded item/place) defs loaded from each world's ugc\ugc-hashes.json at Load.
         // buildItemDefs serves these (hash_from_client with file:// asset uris) for their def ids so the game maps the UGC def to its cached blob. Empty when no world has UGC.

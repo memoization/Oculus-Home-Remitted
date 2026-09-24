@@ -8,7 +8,9 @@
 #include <ctime>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <mutex>
+#include <random>
 #include <sstream>
 #include <unordered_set>
 #include <vector>
@@ -280,6 +282,26 @@ namespace home2hook {
         return response;
     }
 
+    // Token substitution that builds a fresh string so a body with thousands of hits does not cause expensive calls
+    // Example: The avatar editor layout carries over 6000 __AVATAR_ASSETS__ tags, where the ReplaceAll alt would move massive data.
+    static std::string SubstituteTag(const std::string& body, const std::string& tag, const std::string& repl)
+    {
+        if (tag.empty()) return body;
+
+        std::string out;
+        out.reserve(body.size() + body.size() / 2); // headroom for the file:// base being longer than the token
+        size_t prev = 0, pos = 0;
+        while ((pos = body.find(tag, prev)) != std::string::npos)
+        {
+            out.append(body, prev, pos - prev);
+            out.append(repl);
+            prev = pos + tag.size();
+        }
+
+        out.append(body, prev, body.size() - prev);
+        return out;
+    }
+
     static bool ReadFileText(const std::filesystem::path& path, std::string& out)
     {
         std::ifstream file(path, std::ios::binary);
@@ -392,6 +414,7 @@ namespace home2hook {
         // Per-world folder locations, where the portable folder root is storeDir's parent.
         worldsDir = (root / "worlds").wstring();
         appDir = root.parent_path().wstring();
+        storeRootDir = root.wstring();
 
         // Canned .json templates on disk. The friendly-named files below are loaded with fixed keys.
         std::error_code ec;
@@ -437,6 +460,134 @@ namespace home2hook {
             LogLine("store: worlds: failed to read the default world seed json template. World loading fallbacks might fail.");
         }
 
+        // Avatar editor catalog served for GET /avatar_v2_editor_layout.
+        // The template on disk carries an __AVATAR_ASSETS__ path tag in every asset uri
+        // Resolve the tag once to the absolute file:// path of store\avatar-assets so each uri points at a local <id>.tex, <id>.png, or <id>.mesh.
+        std::string avatarBody;
+        if (ReadFileText(templatesDir / "avatar_v2_editor_layout.json", avatarBody))
+        {
+            fs::path assetsDir = root / "avatar-assets";
+            if (!fs::exists(assetsDir, ec))
+            {
+                LogLine("store: avatar: store\\avatar-assets folder missing, editor layout not being served");
+            }
+            else
+            {
+                // Same "file:///" then absolute path shape as FileUriIfExists
+                std::string assetsBase = NarrowUtf8(fs::absolute(assetsDir, ec).wstring());
+                for (auto& c : assetsBase)
+                {
+                    if (c == '\\')
+                    {
+                        c = '/';
+                    }
+                }
+
+                assetsBase = "file:///" + assetsBase;
+                avatarAssetsBase = assetsBase; // kept for the per-asset resolve replies
+
+                std::string resolved = SubstituteTag(avatarBody, "__AVATAR_ASSETS__", assetsBase);
+                avatarEditorLayout = FrameHttp(resolved);
+                avatarEditorLayoutLoaded = true;
+                LogLine("store: avatar: editor layout loaded, " + std::to_string(resolved.size()) + "B, assets base " + assetsBase);
+
+                // Parse the resolved catalog once and index it so the login spec can pull each part's material tree (file:// textures r already baked in).
+                std::string cerr;
+                avatarCatalog = json11::Json::parse(resolved, cerr);
+                if (cerr.empty() && avatarCatalog.is_object())
+                {
+                    // Every object carrying a level_of_detail_five is a material so key it by its id.
+                    std::function<void(const json11::Json&)> indexMaterials = [&](const json11::Json& node)
+                    {
+                        if (node.is_object())
+                        {
+                            const json11::Json& lod = node["level_of_detail_five"];
+                            const json11::Json& id = node["id"];
+                            if (lod.is_object() && id.is_string())
+                            {
+                                avatarMaterialLod[id.string_value()] = lod;
+                            }
+                                
+                            for (const auto& kv : node.object_items())
+                            {
+                                indexMaterials(kv.second);
+                            }
+                        }
+                        else if (node.is_array())
+                        {
+                            for (const auto& v : node.array_items())
+                            {
+                                indexMaterials(v);
+                            }
+                        }
+                    };
+                    indexMaterials(avatarCatalog);
+
+                    // body material id to the matching hand skin material id so that hands take on the same head skin tone.
+                    for (const auto& e : avatarCatalog["body_hand_material_id_map"].array_items())
+                    {
+                        std::string key = e["key"].is_string() ? e["key"].string_value() : (e["key"].is_number() ? std::to_string(static_cast<long long>(e["key"].number_value())) : std::string());
+                       
+                        const json11::Json& val = e["value"];
+                        if (!key.empty() && val.is_object() && val["id"].is_string())
+                        {
+                            avatarBodyToHandMat[key] = val["id"].string_value();
+                        }
+                    }
+
+                    // A beard's rendered mesh is derived from body, keyed as "<bodyMesh>_<beardMesh>" to the actual mesh id.
+                    for (const auto& e : avatarCatalog["body_to_beard_mesh_derivatives"].array_items())
+                    {
+                        if (e["key"].is_string() && e["value"]["id"].is_string())
+                        {
+                            avatarBeardDeriv[e["key"].string_value()] = e["value"]["id"].string_value();
+                        }   
+                    }
+
+                    LogLine("store: avatar: catalog indexed, " + std::to_string(avatarMaterialLod.size()) + " materials, " + std::to_string(avatarBodyToHandMat.size()) + " body-to-hand skin entries, " + std::to_string(avatarBeardDeriv.size()) + " beard derivatives");
+
+                    // With no appearance saved yet, pick a random valid avatar so a first-time session shows a real one
+                    std::error_code aec;
+                    if (!fs::exists(fs::path(storeRootDir) / "avatar-appearance.json", aec))
+                    {
+                        GenerateRandomAppearance();
+                    }
+                }
+                else
+                {
+                    LogLine("store: avatar: resolved catalog did not parse, the login spec cannot be synthesized: " + cerr);
+                }
+            }
+        }
+
+        // Avatar resolve mapping node ids to local "<fileid>.mesh". The Avatar SDK resolves each mesh by node id. This feeds file:// uris back to it.
+        std::string nodeMapText;
+        if (!avatarAssetsBase.empty() && ReadFileText(fs::path(storeRootDir) / "avatar-node-map.json", nodeMapText))
+        {
+            std::string merr;
+            json11::Json nm = json11::Json::parse(nodeMapText, merr);
+            if (merr.empty() && nm.is_object())
+            {
+                for (const auto& kv : nm.object_items())
+                {
+                    if (kv.second.is_string())
+                    {
+                        avatarNodeToFile[kv.first] = kv.second.string_value();
+                    }
+                }
+
+                LogLine("store: avatar: node-to-file map loaded, " + std::to_string(avatarNodeToFile.size()) + " mesh nodes");
+            }
+            else
+            {
+                LogLine("store: avatar: avatar-node-map.json parse failed, mesh resolves will fall back to {}");
+            }
+        }
+        else
+        {
+            LogLine("store: avatar: no avatar_v2_editor_layout.json template found, the avatar editor catalog request will fall back to {}");
+        }
+
         // Bake in the hardcoded canned templates
         for (const auto& t : kHardcodedTemplates)
         {
@@ -446,7 +597,7 @@ namespace home2hook {
             cannedDocIds.insert(sep != std::string::npos ? stem.substr(0, sep) : stem);
         }
 
-        // Fill the identity placeholders in every canned template once per launch. This is correct for the "applies on next launch" semantics and has zero per-request cost.
+        // Fill the identity placeholders in every canned template once per launch
         std::string ownerIdEsc = JsonEscape(identityUserId);
         std::string displayNameEsc = JsonEscape(identityDisplayName);
         std::string oculusIdEsc = JsonEscape(identityOculusId);
@@ -811,6 +962,364 @@ namespace home2hook {
         }
 
         return nullptr;
+    }
+
+    std::string ResponseStore::GetAvatarEditorLayout() const
+    {
+        if (!avatarEditorLayoutLoaded)
+        {
+            return std::string();
+        }
+
+        return avatarEditorLayout;
+    }
+
+    // Answer the OVR Avatar SDK's per-asset resolve for a mesh node id given a file:// uri to the local asset.
+    // The SDK asks fields=zstd_file_id,zstd_file_uri, so both fields plus the level_of_detail_five variants are returned pointing at the same file.
+    std::string ResponseStore::BuildAvatarAssetResolve(const std::string& nodeId) const
+    {
+        auto it = avatarNodeToFile.find(nodeId);
+        if (it == avatarNodeToFile.end() || avatarAssetsBase.empty()) return std::string();
+
+        const std::string& fileName = it->second; // "<fileid>.mesh"
+        std::string fileId = fileName;
+        size_t dot = fileId.find_last_of('.');
+        if (dot != std::string::npos)
+        {
+            fileId = fileId.substr(0, dot); // "<fileid>"
+        }
+
+        std::string uri = avatarAssetsBase + "/" + fileName;
+        std::string body = "{\"zstd_file_id\":\"" + fileId + "\",\"zstd_file_uri\":\"" + uri + "\","
+            + "\"zstd_level_of_detail_five_file_id\":\"" + fileId + "\",\"zstd_level_of_detail_five_file_uri\":\"" + uri + "\","
+            + "\"id\":\"" + nodeId + "\"}";
+        return FrameHttp(body);
+    }
+
+    // Pull the compact appearance fields,bodyMesh, hairMaterial, and so on, out of a save body
+    // Home's own spec uses these key names so a scan for "<key>":"<digits>" recovers them from a json object or a json string nested in a form field.
+    static bool ExtractAvatarAppearance(const std::string& body, json11::Json::object& out)
+    {
+        static const char* keys[] = {
+            "bodyMesh", "bodyMaterial", "hairMesh", "hairMaterial", "eyewearMesh", "eyewearMaterial",
+            "beardMesh", "beardMaterial", "clothingMesh", "clothingMaterial",
+            "eyeColorMaterial", "eyebrowMaterial", "eyelashMaterial", "lipMaterial"
+        };
+        bool any = false;
+        for (const char* k : keys)
+        {
+            // match "key" : "<digits>" with spacing, then fall back to "key": <digits>
+            std::string needle = std::string("\"") + k + "\"";
+            size_t p = body.find(needle);
+            if (p == std::string::npos) continue;
+            
+            p += needle.size();
+            while (p < body.size() && (body[p] == ' ' || body[p] == ':' || body[p] == '\t' || body[p] == '"'))
+            {
+                ++p;
+            }
+            
+            size_t s = p;
+            while (p < body.size() && body[p] >= '0' && body[p] <= '9') 
+            {
+                ++p;
+            }
+            
+            if (p > s)
+            {
+                out[k] = body.substr(s, p - s);
+                any = true;
+            }
+        }
+        return any;
+    }
+
+    void ResponseStore::PersistAvatarMetadata(const std::string& body) const
+    {
+        if (storeRootDir.empty()) return;
+
+        json11::Json::object appearance;
+        if (ExtractAvatarAppearance(body, appearance))
+        {
+            std::string norm = json11::Json(appearance).dump();
+            if (writeFileAtomic((std::filesystem::path(storeRootDir) / "avatar-appearance.json").wstring(), norm))
+            {
+                LogLine("avatar: saved appearance (" + std::to_string(appearance.size()) + " fields) from user_update_avatar_v2_metadata");
+            }
+        }
+    }
+
+    // One "{\"mesh\":{\"id\":\"..\"},\"material\":{\"id\":\"..\"}}" part, or result in "" if both ids are absent or "0".
+    static std::string AvatarPart(const json11::Json& a, const char* meshKey, const char* matKey)
+    {
+        std::string mesh = a[meshKey].string_value();
+        std::string mat = a[matKey].string_value();
+        bool hasMesh = !mesh.empty() && mesh != "0";
+        bool hasMat = !mat.empty() && mat != "0";
+        if (!hasMesh && !hasMat) return std::string();
+
+        std::string s = "{";
+        if (hasMesh) s += "\"mesh\":{\"id\":\"" + mesh + "\"}";
+        if (hasMesh && hasMat) s += ",";
+        if (hasMat) s += "\"material\":{\"id\":\"" + mat + "\"}";
+        s += "}";
+        return s;
+    }
+
+    std::string ResponseStore::BuildAvatarNode(const std::string& userId) const
+    {
+        if (storeRootDir.empty()) return std::string();
+
+        std::string text;
+        if (!ReadFileText(std::filesystem::path(storeRootDir) / "avatar-appearance.json", text))
+        {
+            return std::string(); // no saved appearance, let the it fall back to {}
+        }
+
+        std::string err;
+        json11::Json a = json11::Json::parse(text, err);
+        if (!err.empty() || !a.is_object()) return std::string();
+
+        // Assemble avatar_v2 in the shape the login GET req expects
+        std::string v2 = "{\"id\":\"" + userId + "\"";
+
+        std::string body = AvatarPart(a, "bodyMesh", "bodyMaterial");
+        if (!body.empty()) v2 += ",\"expressive_body_editor_option\":" + body;
+
+        std::string hair = AvatarPart(a, "hairMesh", "hairMaterial");
+        if (!hair.empty()) v2 += ",\"hair\":" + hair;
+
+        std::string eyewear = AvatarPart(a, "eyewearMesh", "eyewearMaterial");
+        if (!eyewear.empty()) v2 += ",\"expressive_eyewear_editor_option\":" + eyewear;
+
+        std::string beard = AvatarPart(a, "beardMesh", "beardMaterial");
+        if (!beard.empty()) v2 += ",\"expressive_beard_editor_option\":" + beard;
+
+        std::string clothing = AvatarPart(a, "clothingMesh", "clothingMaterial");
+        if (!clothing.empty()) v2 += ",\"clothing\":" + clothing;
+
+        // face_parameters carries the color materials, each an { "id": ".." } node
+        std::string fp;
+        auto addFace = [&](const char* field, const char* srcKey) {
+            std::string v = a[srcKey].string_value();
+            if (v.empty() || v == "0") return;
+            if (!fp.empty()) fp += ",";
+            fp += "\"" + std::string(field) + "\":{\"id\":\"" + v + "\"}";
+        };
+
+        addFace("brow_base_material", "eyebrowMaterial");
+        addFace("iris_base_material", "eyeColorMaterial");
+        addFace("lash_base_material", "eyelashMaterial");
+        addFace("lip_material", "lipMaterial");
+        
+        if (!fp.empty())
+        {
+            v2 += ",\"face_parameters\":{" + fp + "}";
+        } 
+
+        v2 += "}";
+
+        std::string out = "{\"avatar_v2\":" + v2 + ",\"id\":\"" + userId + "\"}";
+        return FrameHttp(out);
+    }
+
+    std::string ResponseStore::BuildAvatarSpec(const std::string& userId) const
+    {
+        if (storeRootDir.empty() || avatarMaterialLod.empty()) return std::string();
+
+        std::string text;
+        if (!ReadFileText(std::filesystem::path(storeRootDir) / "avatar-appearance.json", text))
+        {
+            return std::string();
+        }
+
+        std::string err;
+        json11::Json a = json11::Json::parse(text, err);
+        if (!err.empty() || !a.is_object()) return std::string();
+
+        using Obj = json11::Json::object;
+        auto sv = [&](const char* k) { return a[k].string_value(); };
+
+        // One avatar_v2 part being mesh (file:// under avatar-assets) plus the catalog material's level_of_detail_five.
+        auto part = [&](const std::string& meshId, const std::string& matId) -> json11::Json
+        {
+            if (meshId.empty() || meshId == "0") return json11::Json();
+
+            auto itF = avatarNodeToFile.find(meshId);
+            auto itM = avatarMaterialLod.find(matId);
+            if (itF == avatarNodeToFile.end() || itM == avatarMaterialLod.end()) return json11::Json();
+
+            const std::string& fileName = itF->second;
+            std::string fileId = fileName.substr(0, fileName.find_last_of('.'));
+            std::string uri = avatarAssetsBase + "/" + fileName;
+
+            Obj mesh{ {"id", meshId}, {"zstd_level_of_detail_five_file_id", fileId}, {"zstd_level_of_detail_five_file_uri", uri} };
+            Obj material{ {"level_of_detail_five", itM->second}, {"id", matId} };
+            return json11::Json(Obj{ {"mesh", json11::Json(mesh)}, {"material", json11::Json(material)}, {"id", matId} });
+        };
+
+        Obj v2;
+        v2["id"] = userId;
+
+        json11::Json body = part(sv("bodyMesh"), sv("bodyMaterial"));
+        if (!body.is_null()) v2["expressive_body"] = body;
+        json11::Json hair = part(sv("hairMesh"), sv("hairMaterial"));
+        if (!hair.is_null()) v2["hair"] = hair;
+        json11::Json clothing = part(sv("clothingMesh"), sv("clothingMaterial"));
+        if (!clothing.is_null()) v2["clothing"] = clothing;
+
+        // A beard's actual mesh is derived from body, so drop the raw beard id for the "<bodyMesh>_<beardMesh>" derivative instead.
+        std::string beardMesh = sv("beardMesh");
+        if (!beardMesh.empty() && beardMesh != "0")
+        {
+            auto itD = avatarBeardDeriv.find(sv("bodyMesh") + "_" + beardMesh);
+            if (itD != avatarBeardDeriv.end())
+            {
+                beardMesh = itD->second;
+            }
+        }
+
+        json11::Json beard = part(beardMesh, sv("beardMaterial"));
+        if (!beard.is_null()) v2["expressive_beard"] = beard;
+        json11::Json eyewear = part(sv("eyewearMesh"), sv("eyewearMaterial"));
+        if (!eyewear.is_null()) v2["expressive_eyewear"] = eyewear;
+
+        // Hands use the standard hand meshes and the body-to-hand skin material link so the tone matches the head.
+        auto hb = avatarBodyToHandMat.find(sv("bodyMaterial"));
+        if (hb != avatarBodyToHandMat.end())
+        {
+            json11::Json lh = part("266571720470908", hb->second);
+            json11::Json rh = part("1794772644183765", hb->second);
+            if (!lh.is_null()) v2["left_hand"] = lh;
+            if (!rh.is_null()) v2["right_hand"] = rh;
+        }
+
+        // face_parameters carry the color materials' base_color (iris, brow, lash, lip).
+        auto faceColor = [&](const char* matKey) -> json11::Json
+        {
+            auto it = avatarMaterialLod.find(sv(matKey));
+            if (it != avatarMaterialLod.end() && it->second["base_color"].is_object())
+            {
+                return it->second["base_color"];
+            }
+
+            return json11::Json();
+        };
+
+        Obj fp;
+        json11::Json iris = faceColor("eyeColorMaterial");
+        if (!iris.is_null()) fp["iris_base_color"] = iris;
+
+        json11::Json brow = faceColor("eyebrowMaterial");
+        if (!brow.is_null()) fp["brow_base_color"] = brow;
+
+        json11::Json lash = faceColor("eyelashMaterial");
+        if (!lash.is_null()) fp["lash_base_color"] = lash;
+
+        json11::Json lip = faceColor("lipMaterial");
+        if (!lip.is_null())  fp["lip_base_color"] = lip;
+
+        if (!fp.empty())
+        {
+            v2["face_parameters"] = json11::Json(fp);
+        }
+
+        Obj root{ {"avatar_v2", json11::Json(v2)}, {"id", userId} };
+        return FrameHttp(json11::Json(root).dump());
+    }
+
+    // Collect every material id offered by a catalog item across its material_sets and return one at random, or "" if it has none
+    static std::string PickItemMaterial(const json11::Json& item, std::mt19937& rng)
+    {
+        std::vector<std::string> mats;
+        for (const auto& set : item["material_sets"]["data"].array_items())
+        {
+            for (const auto& m : set["materials"]["data"].array_items())
+            {
+                if (m["id"].is_string())
+                {
+                    mats.push_back(m["id"].string_value());
+                }
+            }
+        }
+
+        if (mats.empty()) return std::string();
+
+        return mats[rng() % mats.size()];
+    }
+
+    bool ResponseStore::GenerateRandomAppearance() const
+    {
+        if (!avatarCatalog.is_object() || storeRootDir.empty()) return false;
+
+        std::random_device rd;
+        std::mt19937 rng(rd());
+
+        // A random item from a catalog category, or null if the category is empty.
+        auto pickItem = [&](const char* cat) -> json11::Json
+        {
+            const auto& d = avatarCatalog[cat]["data"].array_items();
+            if (d.empty()) return json11::Json();
+            return d[rng() % d.size()];
+        };
+
+        json11::Json::object app;
+        auto setPart = [&](const char* meshKey, const char* matKey, const json11::Json& item)
+        {
+            if (item.is_object() && item["id"].is_string())
+            {
+                std::string mat = PickItemMaterial(item, rng);
+                if (!mat.empty())
+                {
+                    app[meshKey] = item["id"].string_value();
+                    app[matKey] = mat;
+                    return;
+                }
+            }
+            app[meshKey] = "0";
+            app[matKey] = "0";
+        };
+
+        // Body shape and skin tone are shuffled only among bodies confirmed to properly render.
+        // Many catalog bodies do not bind their own skin materials; the mesh rejects them even though the material data is valid and its material_set lists it, yielding an "invalid material for mesh" spec and a broken, uneditable avatar.
+        // There is no reliable source for which bodies pairs are known-good, so this is hardcoded. A good pair binds all of its own unique skins, so the skin tone within it is safe to randomize.
+        static const char* kVerifiedBodies[] = {
+            "359972614552261",
+            "2113170762282316",
+            "361397707953359"
+        };
+        std::string bodyMesh = kVerifiedBodies[rng() % (sizeof(kVerifiedBodies) / sizeof(kVerifiedBodies[0]))];
+        json11::Json bodyItem;
+        for (const auto& it : avatarCatalog["bodies"]["data"].array_items())
+            if (it["id"].string_value() == bodyMesh) { bodyItem = it; break; }
+        std::string skin = bodyItem.is_object() ? PickItemMaterial(bodyItem, rng) : std::string();
+        app["bodyMesh"] = bodyMesh;
+        app["bodyMaterial"] = skin.empty() ? std::string("2248292862074170") : skin;
+
+        setPart("hairMesh", "hairMaterial", pickItem("hairstyles"));
+        setPart("clothingMesh", "clothingMaterial", pickItem("clothing"));
+        // beard on roughly half the avatars, eyewear on roughly a third, else none.
+        setPart("beardMesh", "beardMaterial", (rng() % 2 == 0) ? pickItem("beards") : json11::Json());
+        setPart("eyewearMesh", "eyewearMaterial", (rng() % 3 == 0) ? pickItem("eyewear") : json11::Json());
+
+        // Face colors: neutral, valid catalog materials (skin/hair/lip vary above, these keep eyes and lips sane).
+        app["eyeColorMaterial"] = "1154020364765444";
+        app["eyebrowMaterial"] = "1458336217615631";
+        app["eyelashMaterial"] = "1458336217615631";
+        app["lipMaterial"] = "405251680018234";
+
+        std::string out = json11::Json(app).dump();
+        bool ok = writeFileAtomic((std::filesystem::path(storeRootDir) / "avatar-appearance.json").wstring(), out);
+        if (ok)
+        {
+            LogLine("avatar: no saved appearance, created a random one from the catalog: " + out);
+        }
+        else
+        {
+            LogLine("avatar: failed to write the a random avatar appearance");
+        }
+            
+        return ok;
     }
 
     // "file:///" then the forward-slashed absolute path for an existing media file, or "" if it is absent.

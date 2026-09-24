@@ -27,5 +27,6 @@ void PreloadOafIpc();        // load OafIpc.dll and arm OAF hooks now (removes t
 bool InstallLoginPatch();    // force OnLoginComplete onto its success path (exe byte patch)
 bool InstallShaCapPatch();   // clear SSSE3/SHA bits in OpenSSL's cached ia32cap (avoids the startup crash on newer CPUs)
 bool InstallVertsPromptPatch(); // NOP the Verts disconnect prompt so the offline "multiplayer connection failed" dialog never shows
+bool InstallAvatarSSLPatch(); // force libovravatar's own OpenSSL X509_verify_cert to succeed so avatar asset fetches trust the loopback
 
 }
