@@ -104,7 +104,7 @@ namespace home2hook {
         std::string avatarEditorLayout;
         bool avatarEditorLayoutLoaded = false;
 
-        // Avatar asset resolve support. avatarAssetsBase is "file:///<abs>/avatar-assets", avatarNodeToFile maps a graph asset node id to its local <fileid>.mesh in that folder from "avatar_node_map.json".
+        // Avatar asset resolve support. avatarAssetsBase is "file:///<abs>/avatar-assets", avatarNodeToFile maps a graph asset node id to its local <fileid>.mesh in that folder from "avatar-node-map.json".
         // The Avatar SDK asks GET /<nodeId>?fields=zstd_file_id,zstd_file_uri per asset, and it is answered with a file:// uri so the mesh loads from disk instead of cdn.
         std::string avatarAssetsBase;
         std::unordered_map<std::string, std::string> avatarNodeToFile;

@@ -562,7 +562,7 @@ namespace home2hook {
 
         // Avatar resolve mapping node ids to local "<fileid>.mesh". The Avatar SDK resolves each mesh by node id. This feeds file:// uris back to it.
         std::string nodeMapText;
-        if (!avatarAssetsBase.empty() && ReadFileText(templatesDir / "avatar_node_map.json", nodeMapText))
+        if (!avatarAssetsBase.empty() && ReadFileText(fs::path(storeRootDir) / "avatar-node-map.json", nodeMapText))
         {
             std::string merr;
             json11::Json nm = json11::Json::parse(nodeMapText, merr);
@@ -580,7 +580,7 @@ namespace home2hook {
             }
             else
             {
-                LogLine("store: avatar: avatar_node_map.json parse failed, mesh resolves will fall back to {}");
+                LogLine("store: avatar: avatar-node-map.json parse failed, mesh resolves will fall back to {}");
             }
         }
         else
