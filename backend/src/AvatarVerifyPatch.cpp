@@ -155,7 +155,7 @@ namespace home2backend {
         return 0;
     }
 
-    bool InstallAvatarVerifyPatch()
+    bool InstallAvatarSSLPatch()
     {
         HANDLE t = CreateThread(nullptr, 0, Waiter, nullptr, 0, nullptr);
         if (t)
