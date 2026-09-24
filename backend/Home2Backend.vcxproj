@@ -160,6 +160,7 @@
     <ClInclude Include="src\ResponseStore.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AvatarVerifyPatch.cpp" />
     <ClCompile Include="src\CaStore.cpp" />
     <ClCompile Include="src\Certs.cpp" />
     <ClCompile Include="src\DllMain.cpp" />
