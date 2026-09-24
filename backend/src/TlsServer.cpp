@@ -193,6 +193,101 @@ namespace home2backend {
             return FrameBenign("{}");
         }
 
+        // Avatar appearance save request: POST /user_update_avatar_v2_metadata carries the new equipped meshes/materials.
+        // Persist it to file so the next login serves it back then ack empty.
+        if (line.find("/user_update_avatar_v2_metadata") != std::string::npos)
+        {
+            std::string body;
+            size_t bp = request.find("\r\n\r\n");
+            if (bp != std::string::npos)
+            {
+                body = request.substr(bp + 4);
+            }
+
+            home2hook::GStore.PersistAvatarMetadata(body);
+            GRequestOverTls = true;
+            return FrameBenign("{}");
+        }
+
+        // The full Avatar SDK spec at login: GET /<userId>?...&fields=avatar{body{...}}avatar_v2{...}
+        if (line.compare(0, 5, "GET /") == 0 && line.find("fields=avatar{") != std::string::npos)
+        {
+            size_t idStart = 5;
+            size_t idEnd = line.find_first_of("?/ ", idStart);
+            if (idEnd != std::string::npos && idEnd > idStart)
+            {
+                std::string userId = line.substr(idStart, idEnd - idStart);
+                if (!userId.empty() && userId.find_first_not_of("0123456789") == std::string::npos)
+                {
+                    std::string resp = home2hook::GStore.BuildAvatarSpec(userId);
+                    if (!resp.empty())
+                    {
+                        GRequestOverTls = true;
+                        LogLine("tls: served full avatar spec for user " + userId + " (saved appearance, " + std::to_string(resp.size()) + "B)");
+                        return resp;
+                    }
+                }
+            }
+        }
+
+        // Avatar appearance load at login: GET /<userId>?...&fields=avatar_v2{id,expressive_body_editor_option{...},...}
+        // Serve the saved appearance file so the spec deserializes instead of dropping to the placeholder avatar.
+        if (line.compare(0, 5, "GET /") == 0 && line.find("fields=avatar_v2") != std::string::npos)
+        {
+            size_t idStart = 5;
+            size_t idEnd = line.find_first_of("?/ ", idStart);
+            if (idEnd != std::string::npos && idEnd > idStart)
+            {
+                std::string userId = line.substr(idStart, idEnd - idStart);
+                if (!userId.empty() && userId.find_first_not_of("0123456789") == std::string::npos)
+                {
+                    std::string resp = home2hook::GStore.BuildAvatarNode(userId);
+                    if (!resp.empty())
+                    {
+                        GRequestOverTls = true;
+                        LogLine("tls: served avatar_v2 login node for user " + userId + " (saved appearance)");
+                        return resp;
+                    }
+                }
+            }
+        }
+
+        // Serve the avatar editor store copy with every asset uri rewritten to a local file:// path
+        if (line.find("/avatar_v2_editor_layout") != std::string::npos)
+        {
+            std::string resp = home2hook::GStore.GetAvatarEditorLayout();
+            if (!resp.empty())
+            {
+                LogLine("tls: served /avatar_v2_editor_layout (" + std::to_string(resp.size()) + "B, local file:// assets)");
+                GRequestOverTls = true;
+                return resp;
+            }
+            LogLine("tls: /avatar_v2_editor_layout requested but no store template, answering {}");
+        }
+
+        // Avatar SDK per-asset resolve: GET /<nodeId>?...&fields=zstd_file_id,zstd_file_uri
+        if (line.compare(0, 5, "GET /") == 0 && line.find("fields=zstd_file_id") != std::string::npos)
+        {
+            size_t idStart = 5; // just past "GET /"
+            size_t idEnd = line.find_first_of("?/ ", idStart);
+            if (idEnd != std::string::npos && idEnd > idStart)
+            {
+                std::string nodeId = line.substr(idStart, idEnd - idStart);
+                bool numeric = !nodeId.empty() && nodeId.find_first_not_of("0123456789") == std::string::npos;
+                if (numeric)
+                {
+                    std::string resp = home2hook::GStore.BuildAvatarAssetResolve(nodeId);
+                    if (!resp.empty())
+                    {
+                        GRequestOverTls = true;
+                        // One log per asset would flood, so keep it short.
+                        LogLine("tls: served avatar asset resolve for node " + nodeId + " (local file:// mesh)");
+                        return resp;
+                    }
+                }
+            }
+        }
+
         LogLine("tls: non-graphql request [" + line + "] answered with {}");
         return FrameBenign("{}");
     }
