@@ -225,6 +225,9 @@ static DWORD WINAPI InitThread(LPVOID)
     // Spawn a waiter that defeats its cert check the moment libovravatar.dll loads, so those fetches trust the backend.
     InstallAvatarSSLPatch();
 
+    // Create junction that links to store\avatar-assets so libovravatar reads the local store's avatar assets.
+    EnsureAvatarCacheJunction(selfDir + L"\\store\\avatar-assets");
+
     //Install the CA-store hooks first, before cert-gen and TLS setup, so a full root enumeration by the game's curl is logged no matter how early it imports
     InstallCaStoreHooks();
 
