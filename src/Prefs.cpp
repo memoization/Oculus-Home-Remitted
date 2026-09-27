@@ -59,7 +59,40 @@ static std::string ReadFileUtf8(const std::wstring& path)
     return ss.str();
 }
 
-std::string Prefs::GetPrefString(std::string pField)
+template<typename T>
+void Prefs::SetPref(std::string pField, std::string atCategory, const T& newValue)
+{
+    std::string text = ReadFileUtf8(PrefsPath());
+    std::string err;
+    json11::Json existing = text.empty() ? json11::Json() : json11::Json::parse(text, err);
+
+    json11::Json::object root = existing.is_object() ? existing.object_items() : json11::Json::object();
+
+    if (!atCategory.empty())
+    {
+        json11::Json::object inner = root[atCategory].is_object() ? root[atCategory].object_items() : json11::Json::object();
+        inner[pField] = newValue;
+        root[atCategory] = inner;
+    }
+    else
+    {
+        root[pField] = newValue;
+    }
+
+    std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
+    if (f)
+    {
+        f << json11::Json(root).dump();
+        prefs.g_saveTick.fetch_add(1, std::memory_order_relaxed);
+    }
+}
+template void Prefs::SetPref<int>(std::string, std::string, const int&);
+template void Prefs::SetPref<bool>(std::string, std::string, const bool&);
+template void Prefs::SetPref<float>(std::string, std::string, const float&);
+template void Prefs::SetPref<double>(std::string, std::string, const double&);
+template void Prefs::SetPref<std::string>(std::string, std::string, const std::string&);
+
+std::string Prefs::GetPrefString(std::string pField, std::string indexedCategory)
 {
     std::string text = ReadFileUtf8(PrefsPath());
     if (text.empty()) return std::string();
@@ -68,7 +101,36 @@ std::string Prefs::GetPrefString(std::string pField)
     json11::Json j = json11::Json::parse(text, err);
     if (!err.empty()) return std::string();
 
-    return j["wrapper"][pField].string_value();
+    json11::Json v = indexedCategory.empty() ? j[pField] : j[indexedCategory][pField];
+    if (v.is_null()) return "";
+    return v.string_value();
+}
+
+bool Prefs::GetPrefBool(std::string pField, std::string indexedCategory, bool bDefault)
+{
+    std::string text = ReadFileUtf8(PrefsPath());
+    if (text.empty()) return bDefault;
+    std::string err;
+    json11::Json j = json11::Json::parse(text, err);
+    if (!err.empty()) return bDefault;
+
+    json11::Json v = indexedCategory.empty() ? j[pField] : j[indexedCategory][pField];
+    if (v.is_null()) return bDefault;
+    return v.bool_value();
+}
+
+float Prefs::GetPrefFloat(std::string pField, std::string indexedCategory, float fDefault)
+{
+    std::string text = ReadFileUtf8(PrefsPath());
+    if (text.empty()) return fDefault;
+
+    std::string err;
+    json11::Json j = json11::Json::parse(text, err);
+    if (!err.empty()) return fDefault;
+
+    json11::Json v = indexedCategory.empty() ? j[pField] : j[indexedCategory][pField];
+    if (v.is_null()) return fDefault;
+    return v.number_value();
 }
 
 void Prefs::SetExePath(std::string pathField, const std::string& path)
@@ -266,37 +328,6 @@ Prefs::SetCaptureFlags Prefs::GetCaptureFlags()
     return flags;
 }
 
-void Prefs::SetPrefBool(std::string flagType, bool newB)
-{
-    std::string text = ReadFileUtf8(PrefsPath());
-    std::string err;
-    json11::Json existing = text.empty() ? json11::Json() : json11::Json::parse(text, err);
-
-    json11::Json::object root = existing.is_object() ? existing.object_items() : json11::Json::object();
-    json11::Json::object wrapper = root["wrapper"].is_object() ? root["wrapper"].object_items() : json11::Json::object();
-
-    wrapper[flagType] = newB;
-    root["wrapper"] = wrapper;
-
-    std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
-    if (f)
-    {
-        f << json11::Json(root).dump();
-        prefs.g_saveTick.fetch_add(1, std::memory_order_relaxed);
-    }
-}
-
-bool Prefs::GetPrefBool(std::string pField, bool fallback)
-{
-    std::string text = ReadFileUtf8(PrefsPath());
-    if (text.empty()) return fallback;
-    std::string err;
-    json11::Json j = json11::Json::parse(text, err);
-    if (!err.empty()) return fallback;
-
-    return j["wrapper"][pField].bool_value();
-}
-
 void Prefs::SeedDefaultsIfMissing()
 {
     // Do not clobber an existing file (preserves user edits and the backend's userOptions writes)
@@ -314,6 +345,7 @@ void Prefs::SeedDefaultsIfMissing()
     wrapper["flagGraphqlCapture"] = false;
     wrapper["launchWithRevive"] = false;
     wrapper["autoLaunchEnabled"] = false;
+    wrapper["autoLaunchGracePeriodS"] = 10.0f;
 
     json11::Json::object identity;
     identity["userId"] = std::string("111111111111111");
@@ -348,8 +380,8 @@ void Prefs::SeedDefaultsIfMissing()
     root["wrapper"] = wrapper;
     root["identity"] = identity;
     root["userOptions"] = userOptions;
-    // The default-world pointer (worlds::SeedDefaultIfEmpty fills it right after this)
     root["defaultWorldId"] = std::string();
+    root["loadRandomHome"] = false;
 
     std::ofstream f(PrefsPath(), std::ios::binary | std::ios::trunc);
     if (f) f << json11::Json(root).dump();

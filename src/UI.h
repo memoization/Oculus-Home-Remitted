@@ -129,6 +129,7 @@ struct Env
 
 struct SettingsToggle
 {
+    std::string id;
     std::string name;
     std::string desc;
     std::function<bool()> get;
@@ -191,10 +192,12 @@ struct UI
     Prefs::SetCaptureFlags setCaptureFlags;// dev tools capture flags
     std::string reviveInjectorPath;// path to Revive executable
     bool launchWithRevive = false;
+    bool loadRandomHome = false;
     bool autoLaunchEnabled = false;
+    float autoLaunchGracePeriodS = 10.0f;
     const char* appVersion = "0.0.0";
 
-    std::vector<SettingsToggle> behaviorSettings;
+    std::vector<SettingsToggle> launchBehaviorSettings;
     std::vector<SettingsToggle> devSettings;
 
     // "Changes have been saved!" toast above Launch Home. Flashes up when preferences.json is written to

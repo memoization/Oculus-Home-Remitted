@@ -21,16 +21,18 @@ public:
 
     // Directory of the running exe
     std::wstring AppDir();
-
-    std::string GetPrefString(std::string pField);
     void SetExePath(std::string pathField, const std::string& path);
+
+    template<typename T>
+    void SetPref(std::string pField, std::string atCategory, const T& newValue);
+    std::string GetPrefString(std::string pField, std::string indexedCategory);
+    float GetPrefFloat(std::string pField, std::string indexedCategory, float fDefault);
+    bool GetPrefBool(std::string pField, std::string indexedCategory, bool bDefault);
 
     std::string GetDisplayName();
     void SetDisplayName(const std::string& name);
     std::string GetProfileImagePath();
     void SetProfileImagePath(const std::string& path);
-    bool GetPrefBool(std::string pField, bool fallback);
-    void SetPrefBool(std::string flagType, bool newB);
 
     std::string GetDefaultWorldId();
     void SetDefaultWorldId(const std::string& id);

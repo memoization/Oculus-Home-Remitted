@@ -327,13 +327,13 @@ ImVec2 UI::UpdateScale()
 void UI::LoadPreferences()
 {
     // Exe paths
-    home2ExePath = prefs.GetPrefString("home2ExePath");
+    home2ExePath = prefs.GetPrefString("home2ExePath", "wrapper");
     if (!home2ExePath.empty())
     {
         prefs.configuredHomeProcessW = std::filesystem::path(home2ExePath).filename().wstring();
     }
 
-    reviveInjectorPath = prefs.GetPrefString("reviveInjectorPath");
+    reviveInjectorPath = prefs.GetPrefString("reviveInjectorPath", "wrapper");
 
     // The profile identity and sidebar image (backend reads the same file)
     profileName = prefs.GetDisplayName();
@@ -346,8 +346,11 @@ void UI::LoadPreferences()
     // Capture flags
     setCaptureFlags = prefs.GetCaptureFlags();
 
-    autoLaunchEnabled = prefs.GetPrefBool("autoLaunchEnabled", false);
-    launchWithRevive = prefs.GetPrefBool("launchWithRevive", false);
+    autoLaunchEnabled = prefs.GetPrefBool("autoLaunchEnabled", "wrapper", false);
+    launchWithRevive = prefs.GetPrefBool("launchWithRevive", "wrapper", false);
+    loadRandomHome = prefs.GetPrefBool("loadRandomHome", "", false);
+
+    autoLaunchGracePeriodS = prefs.GetPrefFloat("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
 }
 
 void UI::Create()
@@ -1164,18 +1167,18 @@ void UI::DoSettings()
     ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 200), true);
+    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 285), true);
 
-    for (int t = 0; t < behaviorSettings.size(); t++)
+    for (int t = 0; t < launchBehaviorSettings.size(); t++)
     {
-        auto toggle = behaviorSettings[t];
+        auto toggle = launchBehaviorSettings[t];
 
         bool val = toggle.get();
         ImGui::PushID(toggle.name.c_str());
         ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
 
         pushedStyles = PushCheckboxStyle();
-        ImGui::Checkbox(("##" + toggle.name).c_str(), &val);
+        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
         ImGui::PopStyleColor(pushedStyles);
 
         ImGui::SetWindowFontScale(1);
@@ -1196,6 +1199,31 @@ void UI::DoSettings()
         if (toggle.get() != val)
         {
             toggle.set(val);
+        }
+
+        if (val && toggle.id == "autoLaunchEnabled")
+        {
+            pushedStyles = PushButtonStyleLiteGrey();
+            if (ImGui::Button("-", iScale.Vec2(30, 30)) && autoLaunchGracePeriodS > 0)
+            {
+                autoLaunchGracePeriodS -= 0.5f;
+                prefs.SetPref("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
+            }
+            ImGui::PopStyleColor(pushedStyles);
+            ImGui::SameLine();
+            ImGui::Text("%.1fs", autoLaunchGracePeriodS);
+
+            ImGui::SameLine();
+            pushedStyles = PushButtonStyleLiteGrey();
+            if (ImGui::Button("+", iScale.Vec2(30, 30)))
+            {
+                autoLaunchGracePeriodS += 0.5f;
+                prefs.SetPref("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
+            }
+            ImGui::PopStyleColor(pushedStyles);
+
+            ImGui::SameLine();
+            ImGui::Text("Auto Launch Delay");
         }
         ImGui::Dummy(iScale.Vec2(0, 10));
     }
@@ -1246,7 +1274,7 @@ void UI::DoSettings()
         ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
 
         pushedStyles = PushCheckboxStyle();
-        ImGui::Checkbox(("##" + toggle.name).c_str(), &val);
+        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
         ImGui::PopStyleColor(pushedStyles);
 
         ImGui::SetWindowFontScale(1);
@@ -2416,25 +2444,38 @@ void UI::Run()
     homeLogger.write() << "New window scale: " << env.lastWinScale.x << " x " << env.lastWinScale.y << std::endl;
 
     // Define settings
-    behaviorSettings =
+    launchBehaviorSettings =
     {
         {
+            "autoLaunchEnabled",
             "Auto-launch Home",
             "Attempt to automatically start Oculus Home from detecting dashboard presence.",
             [&]() { return autoLaunchEnabled; },
             [&](bool v)
             {
-                prefs.SetPrefBool("autoLaunchEnabled", v);
+                prefs.SetPref("autoLaunchEnabled", "wrapper", v);
                 autoLaunchEnabled = v;
             }
         },
         {
+            "loadRandomHome",
+            "Load into Random Home",
+            "Start into a randomly picked home.",
+            [&]() { return loadRandomHome; },
+            [&](bool v)
+            {
+                prefs.SetPref("loadRandomHome", "", v);
+                loadRandomHome = v;
+            }
+        },
+        {
+            "launchWithRevive",
             "Launch with Revive",
             "Launch Oculus Home via the tool using the Revive SteamVR layer.",
             [&]() { return launchWithRevive; },
             [&](bool v)
             {
-                prefs.SetPrefBool("launchWithRevive", v);
+                prefs.SetPref("launchWithRevive", "wrapper", v);
                 launchWithRevive = v;
             }
         }
@@ -2443,32 +2484,35 @@ void UI::Run()
     devSettings =
     {
         {
+            "flagGraphqlCapture",
             "Enable Graphql Capture",
             "Record Graphql traffic from the Oculus Home process.",
             [&]() { return setCaptureFlags.flagGraphqlCapture; },
             [&](bool v)
             {
-                prefs.SetPrefBool("flagGraphqlCapture", v);
+                prefs.SetPref("flagGraphqlCapture", "wrapper", v);
                 setCaptureFlags.flagGraphqlCapture = v;
             }
         },
         {
+            "flagVertsCapture",
             "Enable Verts Client Capture",
             "Record verts multiplayer traffic in a online session.",
             [&]() { return setCaptureFlags.flagVertsCapture; },
             [&](bool v)
             {
-                prefs.SetPrefBool("flagVertsCapture", v);
+                prefs.SetPref("flagVertsCapture", "wrapper", v);
                 setCaptureFlags.flagVertsCapture = v;
             }
         },
         {
+            "flagOafCapture",
             "Enable Oaf Traffic Capture",
             "Record Home <> OVRServer messaging over the pipe.",
             [&]() { return setCaptureFlags.flagOafCapture; },
             [&](bool v)
             {
-                prefs.SetPrefBool("flagOafCapture", v);
+                prefs.SetPref("flagOafCapture", "wrapper", v);
                 setCaptureFlags.flagOafCapture = v;
             }
         }
