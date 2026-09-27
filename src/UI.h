@@ -235,6 +235,7 @@ struct UI
     bool fetchRunning = false;
     bool homesFallbackToFields = false;
     bool achievementFallbackToFields = false;
+    bool avatarFallbackToFields = false;
     fetchworlds::Progress fetchProgress;// written by the worker, read by the UI
     std::future<fetchworlds::Result> fetchFuture;
 

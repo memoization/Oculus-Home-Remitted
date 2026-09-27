@@ -20,11 +20,15 @@ namespace fetchworlds
         bool ok = false;
         int worldsSaved = 0;
         int achievementsSaved = 0;
+        int avatarPartsSaved = 0; // equipped avatar parts successfuly written (i.e., body, hair, clothing, and beard/eyewear when worn)
         std::string error; // human-readable err, shown in the modal on failure
     };
 
     // token is the FRL access token, userId is the user's numeric Oculus id
     Result FetchMyWorlds(std::string token, std::string userId, Progress* progress);
+
+    // Fetch an equipped avatar spec from graph.oculus.com and write to store\avatar-appearance.json in the offline format
+    Result FetchMyAvatarSpec(std::string token, std::string userId, Progress* progress);
 
     // One achievement entry in store\achievements\app-achievements.json. The plaque shows title, the app square thumbnail, and the achievement icon.
     struct AchievementInfo
@@ -39,6 +43,23 @@ namespace fetchworlds
         std::string appCanonical;
         std::string appSquarePath;
     };
+
+    // Define the avatar v2 field schema, i.e., what Home2 requests of the user node at login (GET /<userId>?fields=avatar_v2{...}).
+    static const char* kAvatarV2Fields =
+        "avatar_v2{id,"
+        "expressive_body_editor_option{mesh{id},material{id}},"
+        "hair{mesh{id},material{id}},"
+        "expressive_eyewear_editor_option{mesh{id},material{id}},"
+        "expressive_beard_editor_option{mesh{id},material{id}},"
+        "clothing{mesh{id},material{id}},"
+        "face_parameters{brow_base_material{id},iris_base_material{id},lash_base_material{id},lip_material{id}}}";
+
+    // Fallbacks as known-good defaults for face materials.
+    // Only used if the account's avatar_v2 does not have a face material
+    static const char* kDefaultIrisMaterial = "1154020364765444";
+    static const char* kDefaultBrowMaterial = "1458336217615631";
+    static const char* kDefaultLashMaterial = "1458336217615631";
+    static const char* kDefaultLipMaterial = "405251680018234";
 
     // Fetch achievements for every app in store\apps-library.json via worlds_apps_and_achievements then download the icons and app thumbnails into store\achievements\icons, and write store\achievements\app-achievements.json.
     Result FetchMyAchievements(std::string token, Progress* progress);
@@ -62,4 +83,7 @@ namespace fetchworlds
 
     // POST a persisted graph.oculus.com query
     json11::Json GraphQL(const std::string& token, const std::string& docId, const std::string& variablesJson, std::string& err);
+
+    // GET to a graph.oculus.com query
+    json11::Json GraphGet(const std::string& nodeId, const std::string& token, const std::string& fields, std::string& err);
 }
