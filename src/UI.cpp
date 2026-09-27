@@ -771,7 +771,7 @@ void UI::DoWorlds()
         ImGui::PopStyleColor(pushedStyles);
 
         pushedStyles = PushSubTextStyle();
-        CenteredText("To create a new home, go to \"Homes\" > \"Templates\" in the Oculus Home menu.");
+        CenteredText("To create a new home, go to \"Places\" > \"Templates\" in the Oculus Home menu.");
         ImGui::PopStyleColor(pushedStyles);
     }
     ImGui::EndChild();
