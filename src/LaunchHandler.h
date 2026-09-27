@@ -27,7 +27,6 @@ private:
     std::atomic<bool> running_{ false };
     std::atomic<bool> launchPending_{ false };
     std::atomic<bool> closePending_{ false };
-    std::atomic<int> cooldownMs_{ 10000 }; // Grace period while in the void before home launches
     std::string focusedApp;
 
     const int kPollMs = 2000; // freq of the void check and the event drain

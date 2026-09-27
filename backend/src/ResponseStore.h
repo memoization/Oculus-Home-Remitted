@@ -176,6 +176,8 @@ namespace home2hook {
         // preferences.defaultWorldId, live-mutable so an in-VR set_default_world is reflected by a same-session default-world read (in-VR overrides the wrapper-set default
         mutable std::string defaultWorldId;
         mutable std::mutex defaultWorldMutex;
+
+        bool loadRandomHome = false; // when enabled, "resolveDefaultWorldId" picks a random world at login instead of the configured default
         mutable std::mutex prefsFileMutex;// serializes all preferences.json load-modify-write
 
         // Double-create collapse: the game issues world_create twice per in-VR create, roughly 2s apart for some reason...

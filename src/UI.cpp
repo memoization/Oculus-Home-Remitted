@@ -327,13 +327,13 @@ ImVec2 UI::UpdateScale()
 void UI::LoadPreferences()
 {
     // Exe paths
-    home2ExePath = prefs.GetPrefString("home2ExePath");
+    home2ExePath = prefs.GetPrefString("home2ExePath", "wrapper");
     if (!home2ExePath.empty())
     {
         prefs.configuredHomeProcessW = std::filesystem::path(home2ExePath).filename().wstring();
     }
 
-    reviveInjectorPath = prefs.GetPrefString("reviveInjectorPath");
+    reviveInjectorPath = prefs.GetPrefString("reviveInjectorPath", "wrapper");
 
     // The profile identity and sidebar image (backend reads the same file)
     profileName = prefs.GetDisplayName();
@@ -346,8 +346,11 @@ void UI::LoadPreferences()
     // Capture flags
     setCaptureFlags = prefs.GetCaptureFlags();
 
-    autoLaunchEnabled = prefs.GetPrefBool("autoLaunchEnabled", false);
-    launchWithRevive = prefs.GetPrefBool("launchWithRevive", false);
+    autoLaunchEnabled = prefs.GetPrefBool("autoLaunchEnabled", "wrapper", false);
+    launchWithRevive = prefs.GetPrefBool("launchWithRevive", "wrapper", false);
+    loadRandomHome = prefs.GetPrefBool("loadRandomHome", "", false);
+
+    autoLaunchGracePeriodS = prefs.GetPrefFloat("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
 }
 
 void UI::Create()
@@ -532,9 +535,22 @@ void UI::DoProfile()
         iconPakStatus = "";
     }
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(55));
+    ImGui::SetCursorPosY(avail.y - iScale.F(75));
+    float btnH = iScale.F(40);
+    float btnW = iScale.F(220);
+    ImGui::SetCursorPosX(((avail.x - btnW) / 2) - UIConsts.PageContentPadding);
+
+    pushedStyles = PushButtonStyleGrey();
+    if (ImGui::Button("Fetch Avatar Appearance", ImVec2(btnW, btnH)))
+    {
+        fetchResultMsg.clear();
+        fetchResultOk = false;
+        env.nextPopup = "Fetch Avatar";
+    }
+    ImGui::PopStyleColor(pushedStyles);
+
     pushedStyles = PushSubTextStyle();
-    CenteredText("Profile changes will show in Home after it restarts.", true);
+    CenteredText("Any profile changes will show in Home after it restarts.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
@@ -752,6 +768,10 @@ void UI::DoWorlds()
         }
         if (!hasWorlds) ImGui::EndDisabled();
             
+        ImGui::PopStyleColor(pushedStyles);
+
+        pushedStyles = PushSubTextStyle();
+        CenteredText("To create a new home, go to \"Places\" > \"Templates\" in the Oculus Home menu.");
         ImGui::PopStyleColor(pushedStyles);
     }
     ImGui::EndChild();
@@ -1164,18 +1184,18 @@ void UI::DoSettings()
     ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 200), true);
+    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
 
-    for (int t = 0; t < behaviorSettings.size(); t++)
+    for (int t = 0; t < launchBehaviorSettings.size(); t++)
     {
-        auto toggle = behaviorSettings[t];
+        auto toggle = launchBehaviorSettings[t];
 
         bool val = toggle.get();
         ImGui::PushID(toggle.name.c_str());
         ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
 
         pushedStyles = PushCheckboxStyle();
-        ImGui::Checkbox(("##" + toggle.name).c_str(), &val);
+        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
         ImGui::PopStyleColor(pushedStyles);
 
         ImGui::SetWindowFontScale(1);
@@ -1196,6 +1216,31 @@ void UI::DoSettings()
         if (toggle.get() != val)
         {
             toggle.set(val);
+        }
+
+        if (val && toggle.id == "autoLaunchEnabled")
+        {
+            pushedStyles = PushButtonStyleLiteGrey();
+            if (ImGui::Button("-", iScale.Vec2(30, 30)) && autoLaunchGracePeriodS > 0)
+            {
+                autoLaunchGracePeriodS -= 0.5f;
+                prefs.SetPref("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
+            }
+            ImGui::PopStyleColor(pushedStyles);
+            ImGui::SameLine();
+            ImGui::Text("%.1fs", autoLaunchGracePeriodS);
+
+            ImGui::SameLine();
+            pushedStyles = PushButtonStyleLiteGrey();
+            if (ImGui::Button("+", iScale.Vec2(30, 30)))
+            {
+                autoLaunchGracePeriodS += 0.5f;
+                prefs.SetPref("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
+            }
+            ImGui::PopStyleColor(pushedStyles);
+
+            ImGui::SameLine();
+            ImGui::Text("Auto Launch Delay");
         }
         ImGui::Dummy(iScale.Vec2(0, 10));
     }
@@ -1235,7 +1280,7 @@ void UI::DoSettings()
     ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneRight", iScale.Vec2(400, 260), true);
+    ImGui::BeginChild("##paneRight", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
 
     for (int t = 0; t < devSettings.size(); t++)
     {
@@ -1246,7 +1291,7 @@ void UI::DoSettings()
         ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
 
         pushedStyles = PushCheckboxStyle();
-        ImGui::Checkbox(("##" + toggle.name).c_str(), &val);
+        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
         ImGui::PopStyleColor(pushedStyles);
 
         ImGui::SetWindowFontScale(1);
@@ -1899,10 +1944,12 @@ void UI::DoPopups(Env& env)
         // X close (top-right)
         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - iScale.F(38), headerTop));
         pushedStyles = PushButtonStyleGrey();
+        ImGui::BeginDisabled(fetchRunning);
         if (ImGui::Button("X", iScale.Vec2(26, 26)))
         {
             ImGui::CloseCurrentPopup();
         }
+        ImGui::EndDisabled();
         ImGui::PopStyleColor(pushedStyles);
 
         // Centered title on the same header row
@@ -2083,10 +2130,12 @@ void UI::DoPopups(Env& env)
         // X close (top-right)
         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - iScale.F(38), headerTop));
         pushedStyles = PushButtonStyleGrey();
+        ImGui::BeginDisabled(fetchRunning);
         if (ImGui::Button("X", iScale.Vec2(26, 26)))
         {
             ImGui::CloseCurrentPopup();
         }
+        ImGui::EndDisabled();
         ImGui::PopStyleColor(pushedStyles);
 
         // Centered title on the same header row
@@ -2234,6 +2283,181 @@ void UI::DoPopups(Env& env)
             CenteredText(fetchResultMsg.c_str());
             ImGui::PopStyleColor();
             ImGui::PopTextWrapPos();
+        }
+
+        ImGui::EndChild();
+        ImGui::PopStyleVar();
+
+        ImGui::SameLine();
+        ImGui::EndPopup();
+    }
+
+    // Fetch Avatar: download appearance spec from a graphql request
+    ImGui::SetNextWindowPos(center, ImGuiCond_Always, pivot);
+    ImGui::SetNextWindowSize(iScale.Vec2(850, (avatarFallbackToFields ? 610 : 245)), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Fetch Avatar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+    {
+        ImGui::Dummy(iScale.Vec2(0, 10));
+        float headerTop = ImGui::GetCursorPosY();
+
+        // X close (top-right)
+        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - iScale.F(38), headerTop));
+        pushedStyles = PushButtonStyleGrey();
+        ImGui::BeginDisabled(fetchRunning);
+        if (ImGui::Button("X", iScale.Vec2(26, 26)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndDisabled();
+        ImGui::PopStyleColor(pushedStyles);
+
+        // Centered title on the same header row
+        ImGui::SetCursorPos(ImVec2(0.0f, headerTop));
+        ImGui::PushFont(fontHeader);
+        CenteredText("Fetch Avatar Appearance");
+        ImGui::PopFont();
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        // Poll the background worker for completion (runs every frame while the popup is open)
+        // Close is disabled mid-fetch so the modal stays up until retrieves the result
+        if (fetchRunning && fetchFuture.valid() && fetchFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+        {
+            fetchworlds::Result r = fetchFuture.get();
+            fetchRunning = false;
+            fetchResultOk = r.ok && r.avatarPartsSaved > 0;
+            if (fetchResultOk)
+            {
+                fetchResultMsg = "Got your avatar appearance (" + std::to_string(r.avatarPartsSaved) + " equipped part(s)).";
+            }
+            else
+            {
+                fetchResultMsg = r.error.empty() ? std::string("No avatar was found.") : r.error;
+            }
+        }
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(10, 10));
+
+        ImGui::BeginChild("AccountFields", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
+        {
+            ImGui::TextWrapped("Fetch your avatar appearance from your Meta (Oculus) account. Your avatar spec will be stored locally. A couple credentials about your Meta (Oculus) account will be used.");
+            ImGui::Spacing();
+
+            if (avatarFallbackToFields)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.ErrorText);
+                ImGui::TextWrapped("Unable to fetch your avatar automatically! Manually provide your account details using the steps below:");
+                ImGui::PopStyleColor();
+
+                ImGui::PushTextWrapPos(iScale.F(780));
+                ImGui::TextColored(UIConsts.SubText, "1. Open your Meta Horizon Link app."
+                    "\n2. Press \"CTRL + SHIFT + I\" to show dev tools."
+                    "\n3. Go under \"Network\" tab."
+                    "\n4. In the link app, click on your profile page."
+                    "\n5. In the captured network list, look for requests titled with \"graphql\"."
+                    "\n6. Observe these requests and look for the fields \"access_token\" and \"userId\" in the \"Payload\" tab of each request."
+                    "\n7. Copy these values and paste into the respective fields below and click \"Submit\".");
+                ImGui::Spacing();
+                ImGui::TextColored(UIConsts.SubText, "Do not share your FRL token with anyone!");
+                ImGui::PopTextWrapPos();
+
+                ImGui::Spacing();
+
+                ImGui::BeginDisabled(fetchRunning);
+
+                ImGui::TextUnformatted("FRL Token");
+                ImGui::SetNextItemWidth(iScale.F(430));
+                pushedStyles = PushTextInputStyle();
+                ImGui::InputText("##fetchToken", &fetchToken, ImGuiInputTextFlags_Password);
+                ImGui::PopStyleColor(pushedStyles);
+
+                ImGui::TextUnformatted("User ID");
+                ImGui::SetNextItemWidth(iScale.F(430));
+                pushedStyles = PushTextInputStyle();
+                ImGui::InputText("##fetchUserId", &fetchUserId);
+                ImGui::PopStyleColor(pushedStyles);
+
+                ImGui::EndDisabled();
+            }
+        }
+
+        ImGui::Spacing();
+
+        float windowHeight = ImGui::GetWindowSize().y;
+        // A status line always shows below the button (progress, result, or the overwrite warning), so reserve room for it.
+        float footerOffset = windowHeight - iScale.F(58 + 25);
+
+        ImGui::SetCursorPosY(footerOffset);
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (avatarFallbackToFields)
+        {
+            ImGui::BeginDisabled(fetchRunning || fetchToken.empty() || fetchUserId.empty());
+            pushedStyles = PushButtonStyleGrey();
+
+            if (CenteredButton("Submit", iScale.Vec2(140, 34)))
+            {
+                fetchProgress.total.store(0);
+                fetchProgress.done.store(0);
+                fetchResultMsg.clear();
+                fetchResultOk = false;
+                fetchRunning = true;
+
+                fetchFuture = std::async(std::launch::async,
+                    [token = fetchToken, userId = fetchUserId, this]()
+                    { return fetchworlds::FetchMyAvatarSpec(token, userId, &fetchProgress); });
+            }
+        }
+        else
+        {
+            ImGui::BeginDisabled(fetchRunning);
+            pushedStyles = PushButtonStyleGrey();
+
+            if (CenteredButton("Download Avatar Spec", iScale.Vec2(220, 34)))
+            {
+                fetchworlds::LocalCreds userCreds = fetchworlds::LoadLocalCreds();
+
+                if (userCreds.userId.empty() || userCreds.token.empty() || !userCreds.token.starts_with("FRL"))
+                {
+                    avatarFallbackToFields = true;
+                }
+
+                fetchProgress.total.store(0);
+                fetchProgress.done.store(0);
+                fetchResultMsg.clear();
+                fetchResultOk = false;
+                fetchRunning = true;
+
+                fetchFuture = std::async(std::launch::async,
+                    [token = userCreds.token, userId = userCreds.userId, this]()
+                    { return fetchworlds::FetchMyAvatarSpec(token, userId, &fetchProgress); });
+            }
+        }
+        ImGui::PopStyleColor(pushedStyles);
+        ImGui::EndDisabled();
+
+        if (fetchRunning)
+        {
+            CenteredText("Fetching your avatar spec...");
+        }
+        else if (!fetchResultMsg.empty())
+        {
+            ImGui::PushTextWrapPos(iScale.F(780));
+            ImGui::PushStyleColor(ImGuiCol_Text, fetchResultOk ? UIConsts.SuccessText : UIConsts.ErrorText);
+            CenteredText(fetchResultMsg.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopTextWrapPos();
+        }
+        else
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.WarnText);
+            CenteredTextWrapped("Fetching will overwrite your currently saved avatar appearance!");
+            ImGui::PopStyleColor();
         }
 
         ImGui::EndChild();
@@ -2416,25 +2640,38 @@ void UI::Run()
     homeLogger.write() << "New window scale: " << env.lastWinScale.x << " x " << env.lastWinScale.y << std::endl;
 
     // Define settings
-    behaviorSettings =
+    launchBehaviorSettings =
     {
         {
+            "autoLaunchEnabled",
             "Auto-launch Home",
             "Attempt to automatically start Oculus Home from detecting dashboard presence.",
             [&]() { return autoLaunchEnabled; },
             [&](bool v)
             {
-                prefs.SetPrefBool("autoLaunchEnabled", v);
+                prefs.SetPref("autoLaunchEnabled", "wrapper", v);
                 autoLaunchEnabled = v;
             }
         },
         {
+            "loadRandomHome",
+            "Load into Random Home",
+            "Start into a randomly picked home.",
+            [&]() { return loadRandomHome; },
+            [&](bool v)
+            {
+                prefs.SetPref("loadRandomHome", "", v);
+                loadRandomHome = v;
+            }
+        },
+        {
+            "launchWithRevive",
             "Launch with Revive",
             "Launch Oculus Home via the tool using the Revive SteamVR layer.",
             [&]() { return launchWithRevive; },
             [&](bool v)
             {
-                prefs.SetPrefBool("launchWithRevive", v);
+                prefs.SetPref("launchWithRevive", "wrapper", v);
                 launchWithRevive = v;
             }
         }
@@ -2443,32 +2680,35 @@ void UI::Run()
     devSettings =
     {
         {
+            "flagGraphqlCapture",
             "Enable Graphql Capture",
             "Record Graphql traffic from the Oculus Home process.",
             [&]() { return setCaptureFlags.flagGraphqlCapture; },
             [&](bool v)
             {
-                prefs.SetPrefBool("flagGraphqlCapture", v);
+                prefs.SetPref("flagGraphqlCapture", "wrapper", v);
                 setCaptureFlags.flagGraphqlCapture = v;
             }
         },
         {
+            "flagVertsCapture",
             "Enable Verts Client Capture",
             "Record verts multiplayer traffic in a online session.",
             [&]() { return setCaptureFlags.flagVertsCapture; },
             [&](bool v)
             {
-                prefs.SetPrefBool("flagVertsCapture", v);
+                prefs.SetPref("flagVertsCapture", "wrapper", v);
                 setCaptureFlags.flagVertsCapture = v;
             }
         },
         {
+            "flagOafCapture",
             "Enable Oaf Traffic Capture",
             "Record Home <> OVRServer messaging over the pipe.",
             [&]() { return setCaptureFlags.flagOafCapture; },
             [&](bool v)
             {
-                prefs.SetPrefBool("flagOafCapture", v);
+                prefs.SetPref("flagOafCapture", "wrapper", v);
                 setCaptureFlags.flagOafCapture = v;
             }
         }

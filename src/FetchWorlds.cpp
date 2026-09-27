@@ -110,6 +110,41 @@ namespace fetchworlds
         return j;
     }
 
+    // GET request to a graph.oculus.com node with a fields selector. cpr url-encodes the params.
+    // Returns the parsed top-level json and sets err in case of any failure.
+    static json11::Json GraphGet(const std::string& nodeId, const std::string& token, const std::string& fields, std::string& err)
+    {
+        cpr::Response r = cpr::Get(
+            cpr::Url{ "https://graph.oculus.com/" + nodeId },
+            cpr::Parameters{ { "access_token", token }, { "fields", fields } },
+            cpr::Timeout{ 30000 });
+
+        if (r.error)
+        {
+            err = "network error: " + r.error.message;
+            return json11::Json();
+        }
+        if (r.status_code != 200)
+        {
+            err = "HTTP " + std::to_string(r.status_code);
+            return json11::Json();
+        }
+
+        std::string perr;
+        json11::Json j = json11::Json::parse(r.text, perr);
+        if (!perr.empty())
+        {
+            err = "could not parse the response";
+            return json11::Json();
+        }
+        if (j["errors"].is_array() && !j["errors"].array_items().empty())
+        {
+            err = "backend: " + j["errors"][0]["message"].string_value();
+            return json11::Json();
+        }
+        return j;
+    }
+
     // ---- Local Oculus credential cache ----
     // The valid user's tokens and id are cached by the Oculus client in %APPDATA%\Oculus\sessions\_oaf\data.sqlite.
     // A string-scalar field in the blob is <u32 nameLen><name>\x01\x01<u64 valLen><value>. Return the value for `name`, or "" when it is not present as a string scalar.
@@ -677,6 +712,95 @@ namespace fetchworlds
         res.achievementsSaved = (int)index.size();
         if (res.achievementsSaved == 0) res.error = "No achievements found from your apps.";
         homeLogger.write() << "FetchAchievements: saved " << res.achievementsSaved << " achievement(s) from " << apps.size() << " app(s)." << std::endl;
+        return res;
+    }
+
+    Result FetchMyAvatarSpec(std::string token, std::string userId, Progress* progress)
+    {
+        Result res;
+        if (token.empty() || userId.empty())
+        {
+            res.error = "Both the FRL token and the User ID are required.";
+            return res;
+        }
+
+        if (progress) progress->total.store(1);
+
+        std::string err;
+        json11::Json resp = GraphGet(userId, token, kAvatarV2Fields, err);
+        if (!err.empty())
+        {
+            res.error = "Fetching your avatar failed: " + err;
+            return res;
+        }
+
+        const json11::Json& av = resp["avatar_v2"];
+        if (!av.is_object())
+        {
+            res.error = "No avatar was found on this account.";
+            return res;
+        }
+
+        // One part is a mesh or material id. Using "0" id the part is absent (could mean none worn, example being no beard or eyewear).
+        auto partId = [&](const char* part, const char* leaf) -> std::string
+        {
+            std::string id = av[part][leaf]["id"].string_value();
+            return id.empty() ? std::string("0") : id;
+        };
+
+        // A face color material id, or a neutral default when the account does not have it, so the offline face can keep valid colors.
+        const json11::Json& fp = av["face_parameters"];
+        auto faceId = [&](const char* mat, const char* fallback) -> std::string
+        {
+            std::string id = fp[mat]["id"].string_value();
+            return id.empty() ? std::string(fallback) : id;
+        };
+
+        std::string bodyMesh = partId("expressive_body_editor_option", "mesh");
+        if (bodyMesh == "0")
+        {
+            res.error = "The fetched avatar has no body, it may be empty or a new-style avatar.";
+            return res;
+        }
+
+        // same 14 keys the game writes on save and the backend reads at login.
+        json11::Json::object appearance{
+            { "bodyMesh", bodyMesh },
+            { "bodyMaterial", partId("expressive_body_editor_option", "material") },
+            { "hairMesh", partId("hair", "mesh") },
+            { "hairMaterial", partId("hair", "material") },
+            { "eyewearMesh", partId("expressive_eyewear_editor_option", "mesh") },
+            { "eyewearMaterial", partId("expressive_eyewear_editor_option", "material") },
+            { "beardMesh", partId("expressive_beard_editor_option", "mesh") },
+            { "beardMaterial", partId("expressive_beard_editor_option", "material") },
+            { "clothingMesh", partId("clothing", "mesh") },
+            { "clothingMaterial", partId("clothing", "material") },
+            { "eyeColorMaterial", faceId("iris_base_material", kDefaultIrisMaterial) },
+            { "eyebrowMaterial", faceId("brow_base_material", kDefaultBrowMaterial) },
+            { "eyelashMaterial", faceId("lash_base_material", kDefaultLashMaterial) },
+            { "lipMaterial", faceId("lip_material", kDefaultLipMaterial) }
+        };
+
+        fs::path storeDir = fs::path(prefs.AppDir()) / "store";
+        std::error_code ec;
+        fs::create_directories(storeDir, ec);
+        if (!WriteFileAtomic(storeDir / "avatar-appearance.json", json11::Json(appearance).dump()))
+        {
+            res.error = "Could not write avatar-appearance.json.";
+            return res;
+        }
+
+        // Count the equipped parts (each one has a real mesh) so the UI can report how much was saved.
+        int parts = 0;
+        for (const char* meshKey : { "bodyMesh", "hairMesh", "clothingMesh", "beardMesh", "eyewearMesh" })
+        {
+            if (appearance[meshKey].string_value() != "0") ++parts;
+        }
+
+        res.ok = true;
+        res.avatarPartsSaved = parts;
+        if (progress) progress->done.store(1);
+        homeLogger.write() << "FetchAvatar: saved appearance for user " << userId.c_str() << " (" << parts << " equipped part(s))." << std::endl;
         return res;
     }
 

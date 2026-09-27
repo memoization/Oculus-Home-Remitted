@@ -466,7 +466,7 @@ void LaunchHandler::Loop()
             {
                 eligibleSinceTick_ = now;
             }
-            else if (now - eligibleSinceTick_ >= (unsigned long long)cooldownMs_.load())
+            else if (now - eligibleSinceTick_ >= (unsigned long long)(ui.autoLaunchGracePeriodS * 1000))
             {
                 autoLaunchedHome = true;
                 eligibleSinceTick_ = now; // restart the wait so a stalled launch retries only after another cooldown

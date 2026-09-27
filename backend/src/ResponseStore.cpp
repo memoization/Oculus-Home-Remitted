@@ -408,6 +408,8 @@ namespace home2hook {
                     userOptionsJson = pj["userOptions"].dump();
                 if (pj["defaultWorldId"].is_string())
                     defaultWorldId = pj["defaultWorldId"].string_value();
+                if (pj["loadRandomHome"].is_bool())
+                    loadRandomHome = pj["loadRandomHome"].bool_value();
             }
         }
 
@@ -1493,6 +1495,31 @@ namespace home2hook {
         if (worlds.empty()) return std::string();
 
         std::error_code ec;
+
+        // random home preference: ignore the configured default and instead start in a random world.
+        // Only worlds whose folder still exists on disk are candidates to be picked from.
+        if (loadRandomHome)
+        {
+            std::vector<const WorldEntry*> candidates;
+            for (const auto& e : worlds)
+            {
+                if (fs::exists(fs::path(e.folder) / "config.json", ec))
+                {
+                    candidates.push_back(&e);
+                }
+            }
+            if (!candidates.empty())
+            {
+                std::random_device rd;
+                std::mt19937 rng(rd());
+                std::uniform_int_distribution<size_t> pick(0, candidates.size() - 1);
+                const WorldEntry* chosen = candidates[pick(rng)];
+                LogLine("store: serving random world " + chosen->worldId + " of " + std::to_string(candidates.size()));
+
+                return chosen->worldId;
+            }
+        }
+
         if (!requested.empty())
         {
             const WorldEntry* e = findWorldLocked(requested);
