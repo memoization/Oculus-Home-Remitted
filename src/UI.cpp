@@ -769,6 +769,10 @@ void UI::DoWorlds()
         if (!hasWorlds) ImGui::EndDisabled();
             
         ImGui::PopStyleColor(pushedStyles);
+
+        pushedStyles = PushSubTextStyle();
+        CenteredText("To create a new home, go to \"Homes\" > \"Templates\" in the Oculus Home menu.");
+        ImGui::PopStyleColor(pushedStyles);
     }
     ImGui::EndChild();
 
