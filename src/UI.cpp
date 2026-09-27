@@ -1180,7 +1180,7 @@ void UI::DoSettings()
     ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 285), true);
+    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
 
     for (int t = 0; t < launchBehaviorSettings.size(); t++)
     {
@@ -1276,7 +1276,7 @@ void UI::DoSettings()
     ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneRight", iScale.Vec2(400, 260), true);
+    ImGui::BeginChild("##paneRight", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
 
     for (int t = 0; t < devSettings.size(); t++)
     {
