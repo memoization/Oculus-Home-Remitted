@@ -2,6 +2,7 @@
 #include "ResponseDefinitions.h"
 #include "BackendLogger.h"
 #include "HttpParse.h" // home2hook::UrlDecode (update_name_world name = b64 of urlencoded)
+#include "ZstdUtil.h" // wrap an uploaded glb in a zstd container for the UGC cache
 
 #include <atomic>
 #include <cstdlib>
@@ -611,7 +612,7 @@ namespace home2hook {
         }
 
         std::string masterText;
-        if (ReadFileText(root / "item-definitions.master.json", masterText))
+        if (ReadFileText(root / "item-definitions-master.json", masterText))
         {
             std::string err;
             masterDb = json11::Json::parse(masterText, err);
@@ -691,7 +692,7 @@ namespace home2hook {
         // Load the user's uploaded-UGC catalog once. Seeded into ugcDefs each loadWorlds so item-defs resolve every UGC def even if a world's own manifest is incomplete.
         // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldObjects" and not from this catalog.
         std::string gtext;
-        if (ReadFileText(root.parent_path() / "ugc-hashes-global.json", gtext))
+        if (ReadFileText(root / "uploaded-ugc" / "import-hashes-global.json", gtext))
         {
             std::string gerr;
             json11::Json gj = json11::Json::parse(gtext, gerr);
@@ -705,9 +706,10 @@ namespace home2hook {
 
         // Make each world's placed objects owned in the offline inventory.
         // Without it the object is not found in inventory error causes a readonly state for some objects where edits do not persist.
-        // First repoint catalogued objects at the catalog's existing owned entry so they are editable without duplicating in the tray, then own any remaining (uncatalogued/UGC) objects by their real inventory_item.id.Then rebuild the entry-id to def-id reverse map.
+        // Repoint catalogued objects at the catalog's existing owned entry so they are editable without duplicating, then own every world's placed objects (including placed UGC) by their real inventory_item.id.
         normalizePlacedObjectEntryIds();
         augmentInventoryFromWorldObjects();
+        augmentInventoryFromGlobalUgc();
         rebuildInventoryReverseMap();
 
         LogLine("store: world_login=" + std::string(worldLoginLoaded ? "yes" : "no") +
@@ -717,6 +719,22 @@ namespace home2hook {
                 " worlds=" + (worldsLoaded ? std::to_string(worlds.size()) : std::string("0 (static fallback)")));
         
         return worldLoginLoaded;
+    }
+
+
+    // "file:///" then the forward-slashed absolute path for an existing media file, or "" if it is absent.
+    // Composed at serve time so a scrubbed seed carries no machine path.
+    static std::string FileUriIfExists(const std::filesystem::path& file)
+    {
+        namespace fs = std::filesystem;
+        std::error_code ec;
+        if (!fs::exists(file, ec))
+            return std::string();
+        std::string abs = NarrowUtf8(fs::absolute(file, ec).wstring());
+        for (auto& c : abs)
+            if (c == '\\')
+                c = '/';
+        return "file:///" + abs;
     }
 
     // Scan store\worlds\world_<id>\config.json into the WorldEntry vector. worldsLoaded stays false on an empty/missing dir so the static worlds-list/content/default templates answer
@@ -736,8 +754,16 @@ namespace home2hook {
         {
             for (const auto& kv : globalUgcManifest.object_items())
             {
-                if (!kv.first.empty() && kv.second.is_object())
-                    ugcDefs[kv.first] = kv.second;
+                if (kv.first.empty() || !kv.second.is_object()) continue;
+                ugcDefs[kv.first] = kv.second;
+
+                // A def whose blob was uploaded lives in store\uploaded-ugc. Resolve it to a file:// uri so item-defs serve it even before it is placed in a world.
+                std::string hash = kv.second["hash_from_client"].string_value();
+                if (!hash.empty() && ugcZstUri.find(hash) == ugcZstUri.end())
+                {
+                    std::string uri = FileUriIfExists(fs::path(storeRootDir) / "uploaded-ugc" / (hash + ".zst"));
+                    if (!uri.empty()) ugcZstUri[hash] = uri;
+                }
             }
 
         }
@@ -771,6 +797,31 @@ namespace home2hook {
             {
                 LogLine("store: worlds: folder " + folderName + " config.json invalid, skipping");
                 continue;
+            }
+
+            // Resolve any placed UGC object still in the local form (customization points at an imported .glb on disk) to the empty customization a real uploaded or fetched UGC object does.
+            json11::Json::object cfgObj = cfg.object_items();
+            std::vector<json11::Json> objs = cfgObj["objects"].array_items();
+            bool changed = false;
+            for (auto& node : objs)
+            {
+                std::string cust = node["customization"].string_value();
+                if (cust.empty() || cust.find("filenameonly") == std::string::npos) continue;
+
+                std::string defId = node["item_definition"]["id"].string_value();
+                if (defId.empty() || !globalUgcManifest[defId].is_object()) continue; // def not resolvable
+
+                json11::Json::object n = node.object_items();
+                n["customization"] = std::string("");
+                node = json11::Json(n);
+                changed = true;
+            }
+            if (changed)
+            {
+                cfgObj["objects"] = json11::Json(objs);
+                cfg = json11::Json(cfgObj);
+                writeFileAtomic((entry.path() / "config.json").wstring(), cfg.dump());
+                LogLine("store: worlds: folder " + folderName + " cleared local-import UGC customization(s)");
             }
 
             WorldEntry e;
@@ -1324,21 +1375,6 @@ namespace home2hook {
         return ok;
     }
 
-    // "file:///" then the forward-slashed absolute path for an existing media file, or "" if it is absent.
-    // Composed at serve time so a scrubbed seed carries no machine path.
-    static std::string FileUriIfExists(const std::filesystem::path& file)
-    {
-        namespace fs = std::filesystem;
-        std::error_code ec;
-        if (!fs::exists(file, ec))
-            return std::string();
-        std::string abs = NarrowUtf8(fs::absolute(file, ec).wstring());
-        for (auto& c : abs)
-            if (c == '\\')
-                c = '/';
-        return "file:///" + abs;
-    }
-
     // Stable non-zero numeric cubemap_id derived from the world id (FNV-1a 64-bit).
     // Deterministic, never "0", and identical across serves for a given world. No persistence needed.
     static std::string DeriveCubemapId(const std::string& worldId)
@@ -1834,6 +1870,10 @@ namespace home2hook {
         std::wstring cfgPath;
         json11::Json newCfg;
         bool found = false;
+
+        // UGC objects placed into this world get a shareable copy of their blob after the config write.
+        std::wstring shareFolder;
+        std::vector<std::pair<std::string, json11::Json>> pendingShares;
         {
             std::lock_guard<std::mutex> lock(worldsMutex);
             for (auto& e : worlds) // findWorldLocked is const, so mutation handlers iterate directly.
@@ -1872,9 +1912,20 @@ namespace home2hook {
                             std::string decoded = Base64Decode(u["customization"].string_value());
                             std::string cerr;
                             json11::Json parsed = json11::Json::parse(decoded, cerr);
-                            
+
                             if (cerr.empty() && parsed.is_object())
-                                n["customization"] = decoded;
+                            {
+                                // A local UGC import places the object with a provisional customization pointing at the imported glb on disk,
+                                // example {"id":"<path>/Name.glb","filenameonly":"Name.glb"}. A successfully uploaded or fetched UGC object carries an empty customization so just make it empty.
+                                if (parsed["filenameonly"].is_string() || parsed["id"].string_value().find(".glb") != std::string::npos)
+                                {
+                                    n["customization"] = std::string("");
+                                }
+                                else
+                                {
+                                    n["customization"] = decoded;
+                                } 
+                            }
                             else
                                 LogLine("store: world_batch_update_objects: object " + oid + " customization decode failed, kept existing");
                         }
@@ -1915,13 +1966,27 @@ namespace home2hook {
                         defId = invId;
                     }
 
+                    // A UGC def carries its own typename and needs a copy in this world so the folder can be shareable.
+                    std::string typeName = "WorldsItemDefinition";
+                    json11::Json ugcShareNode;
+                    {
+                        std::lock_guard<std::mutex> ugcLk(ugcMutex);
+                        auto uit = ugcDefs.find(defId);
+                        if (uit != ugcDefs.end())
+                        {
+                            std::string t = uit->second["__typename"].string_value();
+                            if (!t.empty()) typeName = t;
+                            ugcShareNode = uit->second;
+                        }
+                    }
+
                     json11::Json::object node{
                         {"animation_offset", MapAnimationOffset(c["animation_offset"].string_value())},
                         {"customization", std::string("")},
                         {"id", oid},
                         {"inventory_item", json11::Json::object{ {"id", invId} }},
                         {"item_definition", json11::Json::object{
-                            {"__typename", std::string("WorldsItemDefinition")}, {"id", defId} }},
+                            {"__typename", typeName}, {"id", defId} }},
                         {"position", c["position"]},
                         {"rotation", c["rotation"]},
                         {"scale", c["scale"]},
@@ -1931,6 +1996,10 @@ namespace home2hook {
 
                     objs.push_back(json11::Json(node));
                     created.push_back(oid);
+                    if (ugcShareNode.is_object())
+                    {
+                        pendingShares.push_back({ defId, ugcShareNode });
+                    }
                     LogLine("store: world_batch_update_objects: create inventory_item_id=" + invId + " item_definition_id=" + defId + " minted object_id=" + oid);
                 }
 
@@ -1983,6 +2052,7 @@ namespace home2hook {
                 e.config = json11::Json(cfg);
                 newCfg = e.config;
                 cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
+                shareFolder = e.folder;
                 break;
             }
         }
@@ -1990,12 +2060,22 @@ namespace home2hook {
         if (found)
         {
             if (writeFileAtomic(cfgPath, newCfg.dump()))
+            {
                 LogLine("store: world_batch_update_objects: persisted world " + worldId +
-                        " created=" + std::to_string(created.size()) +
-                        " updated=" + std::to_string(updated.size()) +
-                        " deleted=" + std::to_string(deleted.size()));
+                    " created=" + std::to_string(created.size()) +
+                    " updated=" + std::to_string(updated.size()) +
+                    " deleted=" + std::to_string(deleted.size()));
+            }
             else
+            {
                 LogLine("store: world_batch_update_objects: config.json write failed for " + worldId);
+            }
+
+            // Copy any placed UGC blobs into the world's ugc folder so a shared world stays independant.
+            for (const auto& sh : pendingShares)
+            {
+                shareUgcToWorld(shareFolder, sh.first, sh.second);
+            }
         }
         else
         {
@@ -2648,9 +2728,9 @@ namespace home2hook {
         if (fixed) LogLine("store: normalized " + std::to_string(fixed) + " placed object entry id(s) to the owned catalog");
     }
 
-    // Add an owned_items entry per placed object across all loaded worlds.
+    // Add an owned_items entry per placed object across all loaded worlds, so placed items (fetched and uploaded UGC objects, and a home's base map) are owned and stay editable.
     // Downloaded worlds can carry the real backend inventory_item.ids, which are not any offline derived '7...' entry ids, so without this the serializer reports "Could not find object in inventory" and edits do not persist.
-    // Objects placed offline already own their entry id and are skipped by the de-dup. UGC objects are included the same way (their editor also needs the entry owned).
+    // The base map is owned here too because the UGC-map customization editor (lighting) only sends its update when the placed map's inventory_item.id is an owned node. Removing an uploaded template stays gone because salvage purges the placed map from every world, so nothing owns it again at launch.
     // These are de-duped by entry id.
     void ResponseStore::augmentInventoryFromWorldObjects()
     {
@@ -2688,9 +2768,53 @@ namespace home2hook {
         }
     }
 
+    // Own each uploaded UGC def that is not already owned by a placed world object, so a freshly uploaded item or map stays owned even before it is placed.
+    // Only defs whose blob is present in store\uploaded-ugc are owned here.
+    void ResponseStore::augmentInventoryFromGlobalUgc()
+    {
+        if (!globalUgcManifest.is_object()) return;
+
+        namespace fs = std::filesystem;
+
+        std::unordered_set<std::string> haveEntry;
+        for (const auto& item : ownedItems.array_items())
+        {
+            std::string defId = item["item_def_id"].string_value();
+            if (defId.empty()) continue;
+            haveEntry.insert(item["entry_id"].is_string() && !item["entry_id"].string_value().empty() ? item["entry_id"].string_value() : DeriveInventoryEntryId(defId));
+        }
+
+        std::vector<json11::Json> owned = ownedItems.array_items();
+        size_t added = 0;
+        for (const auto& kv : globalUgcManifest.object_items())
+        {
+            const std::string& defId = kv.first;
+            if (defId.empty() || !kv.second.is_object()) continue;
+
+            std::string hash = kv.second["hash_from_client"].string_value();
+            if (hash.empty()) continue;
+
+            if (FileUriIfExists(fs::path(storeRootDir) / "uploaded-ugc" / (hash + ".zst")).empty()) continue; // not an uploaded blob, skip
+
+            std::string entryId = kv.second["owned_entry_id"].string_value();
+            if (entryId.empty()) continue; // no persisted real id, cannot own as an uploaded item
+            if (!haveEntry.insert(entryId).second) continue; // already owned (for example a placed instance)
+
+            owned.push_back(json11::Json::object{ {"item_def_id", defId}, {"entry_id", entryId} });
+            ++added;
+        }
+
+        if (added)
+        {
+            ownedItems = json11::Json(owned);
+            ownedLoaded = true;
+            LogLine("store: owned " + std::to_string(added) + " uploaded UGC def(s) from the global catalog");
+        }
+    }
+
     // Rebuild the entry-id to def-id reverse map from the final ownedItems after any UGC augmentation, honoring explicit entry_ids.
     // It lets the create path recover item_definition.id from a wire inventory_item_id, including placed UGC objects.
-    void ResponseStore::rebuildInventoryReverseMap()
+    void ResponseStore::rebuildInventoryReverseMap() const
     {
         inventoryEntryToDefId.clear();
         for (const auto& item : ownedItems.array_items())
@@ -2708,6 +2832,8 @@ namespace home2hook {
 
     std::string ResponseStore::buildInventory() const
     {
+        std::lock_guard<std::mutex> lk(ugcMutex); // a live UGC upload can append an owned entry concurrently
+
         std::string nodes;
         bool first = true;
         for (const auto& item : ownedItems.array_items())
@@ -2728,11 +2854,23 @@ namespace home2hook {
             std::string entryId = item["entry_id"].is_string() && !item["entry_id"].string_value().empty() ? item["entry_id"].string_value() : DeriveInventoryEntryId(defId);
             std::string escEntryId = JsonEscape(entryId);
             std::string escDefId = JsonEscape(defId);
+
+            // An uploaded UGC def carries its upload time in the global manifest, so provide that as "time_first_received" and the inventory Newest/Oldest sort orders uploads by age
+            long long timeFirstReceived = kTimeFirstReceived;
+            if (globalUgcManifest.is_object())
+            {
+                const json11::Json& g = globalUgcManifest[defId];
+                if (g.is_object() && g["created_time"].is_number())
+                {
+                    timeFirstReceived = (long long)g["created_time"].number_value();
+                }
+            }
+
             nodes += "{\"id\":\"" + escEntryId + "\",\"is_new\":false,"
                      "\"item_definition_id\":\"" + escDefId + "\",\"owned_count\":" +
                      std::to_string(kOwnedCount) +
                      ",\"used_count\":0,\"time_first_received\":" +
-                     std::to_string(kTimeFirstReceived) +
+                     std::to_string(timeFirstReceived) +
                      ",\"time_owned_count_updated\":" + std::to_string(kTimeOwnedUpdated) +
                      ",\"achievements\":{\"edges\":[]},\"applications\":[]}";
         }
@@ -2746,6 +2884,7 @@ namespace home2hook {
     // It is built at Load from ownedItems and lets the create path fill item_definition.id from the wire inventory_item_id.
     std::string ResponseStore::defIdForInventoryEntry(const std::string& entryId) const
     {
+        std::lock_guard<std::mutex> lk(ugcMutex); // the reverse map can be rebuilt by a live UGC upload
         auto it = inventoryEntryToDefId.find(entryId);
         return it != inventoryEntryToDefId.end() ? it->second : std::string();
     }
@@ -2789,8 +2928,616 @@ namespace home2hook {
         }
     }
 
+    static bool IsIdentChar(char c)
+    {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+    }
+
+    // Return the args region, the text between the first '(' after the mutation field and its matching ')'.
+    static std::string UgcArgsRegion(const std::string& q, const std::string& field)
+    {
+        size_t f = q.find(field);
+        if (f == std::string::npos) return std::string();
+        size_t open = q.find('(', f);
+        if (open == std::string::npos) return std::string();
+
+        int depth = 0;
+        for (size_t i = open; i < q.size(); ++i)
+        {
+            if (q[i] == '(')
+            {
+                ++depth;
+            }
+            else if (q[i] == ')')
+            {
+                --depth;
+                if (depth == 0)
+                {
+                    return q.substr(open + 1, i - open - 1);
+                }
+            }
+        }
+        return std::string();
+    }
+
+    // Read a scalar argument value for "key:" in the args region
+    // The return selection after the args separates fields with , and { and never with ':' so it is not matched here.
+    static std::string UgcArg(const std::string& args, const std::string& key)
+    {
+        size_t p = 0;
+        while ((p = args.find(key, p)) != std::string::npos)
+        {
+            bool boundary = (p == 0) || !IsIdentChar(args[p - 1]);
+            size_t c = p + key.size();
+            while (c < args.size() && (args[c] == ' ' || args[c] == '\t')) ++c;
+
+            if (boundary && c < args.size() && args[c] == ':')
+            {
+                size_t v = c + 1;
+                while (v < args.size() && (args[v] == ' ' || args[v] == '\t')) ++v;
+
+                size_t e = v;
+                int depth = 0;
+                while (e < args.size())
+                {
+                    char ch = args[e];
+                    if (ch == '{') ++depth;
+                    else if (ch == '}') { if (depth == 0) break; --depth; }
+                    else if ((ch == ',' || ch == ')') && depth == 0) break;
+                    ++e;
+                }
+
+                std::string val = args.substr(v, e - v);
+                while (!val.empty() && (val.back() == ' ' || val.back() == '\t')) val.pop_back();
+                return val;
+            }
+            p = c;
+        }
+        return std::string();
+    }
+
+    // Read a {x: .., y: .., z: ..} bounds argument into a json object of three hex strings
+    static json11::Json UgcBounds(const std::string& args, const std::string& key)
+    {
+        size_t p = 0;
+        while ((p = args.find(key, p)) != std::string::npos)
+        {
+            bool boundary = (p == 0) || !IsIdentChar(args[p - 1]);
+            size_t c = p + key.size();
+            while (c < args.size() && (args[c] == ' ' || args[c] == '\t')) ++c;
+
+            if (boundary && c < args.size() && args[c] == ':')
+            {
+                size_t open = args.find('{', c);
+                if (open == std::string::npos) return json11::Json();
+
+                int depth = 0;
+                size_t close = std::string::npos;
+                for (size_t i = open; i < args.size(); ++i)
+                {
+                    if (args[i] == '{') ++depth;
+                    else if (args[i] == '}') { --depth; if (depth == 0) { close = i; break; } }
+                }
+                if (close == std::string::npos) return json11::Json();
+
+                std::string inner = args.substr(open + 1, close - open - 1);
+                std::string x = UgcArg(inner, "x"), y = UgcArg(inner, "y"), z = UgcArg(inner, "z");
+                if (x.empty() || y.empty() || z.empty()) return json11::Json();
+
+                return json11::Json(json11::Json::object{ {"x", x}, {"y", y}, {"z", z} });
+            }
+            p = c;
+        }
+        return json11::Json();
+    }
+
+    std::string ResponseStore::BuildUgcUpload(bool isPlace, const std::string& requestLine, const std::string& glbBytes) const
+    {
+        if (storeRootDir.empty()) { LogLine("store: ugc upload rejected, store root unset"); return std::string(); }
+
+        // The mutation and its args are in the url-encoded q= of the request line, up to the trailing " HTTP/".
+        // Match the query parameter delimiter and not a bare "q=" that could occur inside the access_token value.
+        size_t qp = requestLine.find("&q=");
+        if (qp == std::string::npos)
+        {
+            qp = requestLine.find("?q=");
+        }
+        if (qp == std::string::npos)
+        { 
+            LogLine("store: ugc upload rejected, no q= in the request line");
+            return std::string();
+        }
+
+        qp += 3; // past "&q=" or "?q="
+        size_t qEnd = requestLine.find(" HTTP/", qp);
+        std::string qEnc = requestLine.substr(qp, (qEnd == std::string::npos ? requestLine.size() : qEnd) - qp);
+        std::string q = UrlDecode(qEnc);
+
+        const char* field   = isPlace ? "world_create_ugc_place_def"  : "world_create_ugc_item_def";
+        const char* defKey  = isPlace ? "ugc_place_definition"        : "ugc_item_definition";
+        const char* typeName = isPlace ? "WorldsUGCPlaceDefinition"   : "WorldsUGCItemDefinition";
+
+        std::string args = UgcArgsRegion(q, field);
+        if (args.empty()) { LogLine(std::string("store: ugc upload rejected, could not find the ") + field + " args region"); return std::string(); }
+
+        std::string hash = UgcArg(args, "hash_from_client");
+        std::string name = UgcArg(args, "name");
+        std::string cmid = UgcArg(args, "client_mutation_id");
+        json11::Json originB = UgcBounds(args, "local_bounds_origin");
+        json11::Json extentB = UgcBounds(args, "local_bounds_extent");
+
+        if (hash.empty() || hash.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos)
+        {
+            LogLine("store: ugc upload rejected, missing or malformed hash_from_client");
+            return std::string();
+        }
+        if (glbBytes.empty())
+        {
+            LogLine("store: ugc upload rejected, empty glbfile for hash " + hash);
+            return std::string();
+        }
+
+        json11::Json zero = json11::Json(json11::Json::object{ {"x", std::string("00000000")}, {"y", std::string("00000000")}, {"z", std::string("00000000")} });
+        if (originB.is_null()) originB = zero;
+        if (extentB.is_null()) extentB = zero;
+
+        namespace fs = std::filesystem;
+        std::error_code ec;
+
+        std::lock_guard<std::mutex> lk(ugcMutex);
+
+        // No duplicating. If a def already carries this hash, reuse it so a repeat upload is merged.
+        std::string defId;
+        json11::Json existingNode;
+        if (globalUgcManifest.is_object())
+        {
+            for (const auto& kv : globalUgcManifest.object_items())
+            {
+                if (kv.second.is_object() && kv.second["hash_from_client"].string_value() == hash)
+                {
+                    defId = kv.first;
+                    existingNode = kv.second;
+                    break;
+                }
+            }
+        }
+
+        bool isNew = defId.empty();
+        if (isNew) defId = mintNumericId();
+
+        // Copy the blob into store\uploaded-ugc\<hash>.zst. The game names its cache by hash_from_client and the hash is of the uncompressed .glb
+        std::string zst = IsZstdFrame(glbBytes) ? glbBytes : ZstdWrapRaw(glbBytes);
+        fs::path uploadedDir = fs::path(storeRootDir) / "uploaded-ugc";
+        fs::create_directories(uploadedDir, ec);
+        fs::path zstPath = uploadedDir / (hash + ".zst");
+        if (!fs::exists(zstPath, ec))
+        {
+            writeFileAtomic(zstPath.wstring(), zst);
+        }
+
+        // Publish into the game's WorldsCache so it can load it in this session with no relaunch
+        wchar_t lad[MAX_PATH] = { 0 };
+        DWORD n = GetEnvironmentVariableW(L"LOCALAPPDATA", lad, MAX_PATH);
+        if (n > 0 && n < MAX_PATH)
+        {
+            fs::path cacheDir = fs::path(lad) / L"Home2" / L"WorldsCache";
+            fs::create_directories(cacheDir, ec);
+            fs::path dst = cacheDir / (hash + ".zst");
+            if (!fs::exists(dst, ec))
+            {
+                writeFileAtomic(dst.wstring(), zst);
+            }
+        }
+
+        // Build the def node in the same schema then stored in import-hashes-global.json.
+        json11::Json::object node = existingNode.is_object() ? existingNode.object_items() : json11::Json::object{};
+        node["__typename"] = std::string(typeName);
+        node["id"] = defId;
+        node["name"] = name;
+        node["item_description"] = std::string("");
+        node["asset_key"] = std::string("UGC_1"); // Hardcode the "UGC_1" key so that the app can add to inventory.
+        node["hash_from_client"] = hash;
+        node["is_scalable"] = !isPlace;
+        node["is_unlimited"] = true;
+        node["salvage_value"] = 0;
+        node["world_placement_cap"] = 0;
+        node["stackable"] = true;
+        node["rarity"] = std::string("COMMON");
+        if (node.find("tags") == node.end())
+        {
+            node["tags"] = json11::Json(json11::Json::array{});
+        }
+
+        node["local_bounds_origin"] = originB;
+        node["local_bounds_extent"] = extentB;
+        node.erase("glb_uri");
+        node.erase("compressed_glb_uri");
+        node.erase("compressed_zstd_uri");
+
+        // UGC must be owned by a real inventory_item.id or the game does not count it as uploaded.
+        std::string ownedEntryId = node["owned_entry_id"].string_value();
+        if (ownedEntryId.empty()) ownedEntryId = mintNumericId();
+        node["owned_entry_id"] = ownedEntryId;
+
+        // Add the upload time so the inventory Newest/Oldest sorts order them
+        node["created_time"] = (double)NowUnix();
+
+        json11::Json defNode(node);
+        std::string uri = FileUriIfExists(zstPath);
+        std::string entryId = ownedEntryId;
+
+        // Record or refresh the def in the global catalog and save. A newly minted owned_entry_id survives a relaunch even on a dedup of a pre-existing entry.
+        json11::Json::object global = globalUgcManifest.is_object() ? globalUgcManifest.object_items() : json11::Json::object{};
+        global[defId] = defNode;
+        globalUgcManifest = json11::Json(global);
+        writeFileAtomic((fs::path(storeRootDir) / "uploaded-ugc" / "import-hashes-global.json").wstring(), globalUgcManifest.dump());
+
+        // Write in the memory serving state so the item resolves and is owned with no relaunch needed.
+        ugcDefs[defId] = defNode;
+        if (!uri.empty())
+        {
+            ugcZstUri[hash] = uri;
+        }
+
+        bool have = false;
+        for (const auto& it : ownedItems.array_items())
+        {
+            if (it["entry_id"].string_value() == entryId)
+            {
+                have = true;
+                break;
+            }
+        }
+        if (!have)
+        {
+            std::vector<json11::Json> owned = ownedItems.array_items();
+            owned.push_back(json11::Json(json11::Json::object{ {"item_def_id", defId}, {"entry_id", entryId} }));
+            ownedItems = json11::Json(owned);
+            ownedLoaded = true;
+        }
+        rebuildInventoryReverseMap();
+
+        LogLine(std::string("store: ugc upload ") + (isNew ? "stored" : "deduped") + " " + typeName + " def " + defId + " hash " + hash + " name '" + name + "' bytes " + std::to_string(glbBytes.size()));
+
+        // Build the success response. Exact types it reads for this mutation:
+        // salvage_value, world_placement_cap, owned_count, used_count are strings here, time_first_received is a number.
+        long long now = NowUnix();
+        json11::Json::object servedDef = defNode.object_items();
+        servedDef.erase("owned_entry_id"); // forwarded not a graph field
+        servedDef.erase("created_time"); // forwarded and fed to the inventory sort, not a graph field
+        servedDef["glb_uri"] = std::string("");
+        servedDef["compressed_glb_uri"] = std::string("");
+        servedDef["compressed_zstd_uri"] = uri; // file:// to the local blob
+        servedDef["salvage_value"] = std::to_string(defNode["salvage_value"].int_value());
+        servedDef["world_placement_cap"] = std::to_string(defNode["world_placement_cap"].int_value());
+
+        json11::Json::object ownedItem
+        {
+            {"id", entryId},
+            {"item_definition_id", defId},
+            {"owned_count", std::to_string(kOwnedCount)},
+            {"used_count", std::string("0")},
+            {"time_first_received", static_cast<double>(now)}
+        };
+
+        // client_mutation_id is a String in the schema and every other mutation here echoes it in quotes so returns as a string even though the request wrote it as a bare number.
+        json11::Json::object inner
+        {
+            {"user_owned_item", json11::Json(ownedItem)},
+            {defKey, json11::Json(servedDef)},
+            {"client_mutation_id", json11::Json(cmid)}
+        };
+
+        // The ?q= REST-style mutations return the payload at the root with no "data". The game looks for world_create_ugc_(item|place)_def at the top level.
+        std::string body = json11::Json(json11::Json::object{ { field, json11::Json(inner) } }).dump();
+        LogLine("store: ugc upload response: " + body);
+        return body;
+    }
+
+    void ResponseStore::shareUgcToWorld(const std::wstring& worldFolder, const std::string& defId, const json11::Json& defNode) const
+    {
+        namespace fs = std::filesystem;
+        std::string hash = defNode["hash_from_client"].string_value();
+        if (hash.empty()) return;
+
+        std::error_code ec;
+        fs::path ugcDir = fs::path(worldFolder) / "ugc";
+        fs::create_directories(ugcDir, ec);
+
+        // Copy the blob from the uploaded store into the world folder so the folder carries its own assets.
+        fs::path dst = ugcDir / (hash + ".zst");
+        if (!fs::exists(dst, ec))
+        {
+            fs::path src = fs::path(storeRootDir) / "uploaded-ugc" / (hash + ".zst");
+            if (fs::exists(src, ec))
+            {
+                CopyFileW(src.wstring().c_str(), dst.wstring().c_str(), TRUE);
+            }
+        }
+
+        // Merge the def into the world's ugc-hashes.json
+        fs::path manifestPath = ugcDir / "ugc-hashes.json";
+        json11::Json::object manifest;
+        std::string mt;
+        if (ReadFileText(manifestPath, mt))
+        {
+            std::string e;
+            json11::Json j = json11::Json::parse(mt, e);
+            if (e.empty() && j.is_object())
+            {
+                manifest = j.object_items();
+            }
+        }
+
+        if (manifest.find(defId) == manifest.end())
+        {
+            json11::Json::object clean = defNode.object_items();
+            clean.erase("glb_uri");
+            clean.erase("compressed_glb_uri");
+            clean.erase("compressed_zstd_uri");
+            clean.erase("owned_entry_id"); // added to keep the shared world portable
+            clean.erase("created_time");// added to keep portable
+            manifest[defId] = json11::Json(clean);
+            writeFileAtomic(manifestPath.wstring(), json11::Json(manifest).dump());
+            LogLine("store: ugc shared def " + defId + " into world " + fs::path(worldFolder).filename().string() + "\\ugc");
+        }
+    }
+
+    std::string ResponseStore::buildTemplatesList() const
+    {
+        std::lock_guard<std::mutex> lk(ugcMutex);
+        std::string nodes;
+        size_t count = 0;
+        if (globalUgcManifest.is_object())
+        {
+            for (const auto& kv : globalUgcManifest.object_items())
+            {
+                if (!kv.second.is_object()) continue;
+                if (kv.second["__typename"].string_value() != "WorldsUGCPlaceDefinition") continue;
+                if (kv.second["owned_entry_id"].string_value().empty()) continue; // only the user's own uploads are templates
+
+                std::string hash = kv.second["hash_from_client"].string_value();
+                if (hash.empty()) continue;
+
+                auto uriIt = ugcZstUri.find(hash);
+                if (uriIt == ugcZstUri.end()) continue; // only advertise a place whose blob is present
+
+                json11::Json::object o = kv.second.object_items();
+                // Remove forwarded fields
+                o.erase("owned_entry_id");
+                o.erase("created_time");
+
+                o["compressed_zstd_uri"] = uriIt->second;
+                o["glb_uri"] = std::string("");
+                o["compressed_glb_uri"] = std::string("");
+
+                if (count != 0) nodes += ",";
+                nodes += json11::Json(o).dump();
+                ++count;
+            }
+        }
+
+        if (count == 0) return std::string(); // nothing uploaded, now the empty list answers
+
+        LogLine("store: served " + std::to_string(count) + " uploaded UGC template(s) in the create-from-template list");
+        return "{\"data\":{\"templates\":[" + nodes + "]}}";
+    }
+
+    std::string ResponseStore::buildSalvageOwnedItem(const std::string& variablesJson) const
+    {
+        namespace fs = std::filesystem;
+
+        std::string cmid, itemId;
+        {
+            std::string err;
+            json11::Json v = json11::Json::parse(variablesJson, err);
+            if (err.empty() && v.is_object())
+            {
+                cmid = v["client_mutation_id"].string_value();
+                itemId = v["item_id"].string_value();
+            }
+        }
+
+        // The game's salvage result selects owned_items and reward_definitions. Empty arrays mean the item is gone and nothing was granted back.
+        auto ack = [&]() {
+            return std::string("{\"data\":{\"salvage_owned_item\":{\"owned_items\":[],\"reward_definitions\":[],\"client_mutation_id\":\"") + JsonEscape(cmid) + "\"}}}";
+        };
+
+        // worldsMutex before ugcMutex is the fixed lock order. Removing a map rewrites the worlds that placed it.
+        std::lock_guard<std::mutex> wlk(worldsMutex);
+        std::lock_guard<std::mutex> lk(ugcMutex);
+
+        std::error_code ec;
+
+        // Resolves the salvaged item_id to the def being removed.
+        std::string defId;
+        if (globalUgcManifest.is_object())
+        {
+            for (const auto& kv : globalUgcManifest.object_items())
+            {
+                if (kv.second.is_object() && kv.second["owned_entry_id"].string_value() == itemId)
+                {
+                    defId = kv.first;
+                    break;
+                }
+            }
+        }
+
+        if (defId.empty())
+        {
+            auto rit = inventoryEntryToDefId.find(itemId);
+            if (rit != inventoryEntryToDefId.end())
+            {
+                defId = rit->second;
+            }
+        }
+
+        if (defId.empty())
+        {
+            LogLine("store: salvage item_id " + itemId + " did not resolve to a def. responded as ack only");
+            return ack();
+        }
+
+        // Read the def hash and type from the global catalog
+        std::string hash, typeName;
+        if (globalUgcManifest.is_object() && globalUgcManifest[defId].is_object())
+        {
+            hash = globalUgcManifest[defId]["hash_from_client"].string_value();
+            typeName = globalUgcManifest[defId]["__typename"].string_value();
+        }
+        else
+        {
+            auto dit = ugcDefs.find(defId);
+            if (dit != ugcDefs.end())
+            {
+                hash = dit->second["hash_from_client"].string_value();
+                typeName = dit->second["__typename"].string_value();
+            }
+        }
+
+        // Both uploaded and fetched UGC are removable, the game offers remove for any owned UGC object
+        if (typeName != "WorldsUGCItemDefinition" && typeName != "WorldsUGCPlaceDefinition")
+        {
+            LogLine("store: salvage def " + defId + " is not UGC (type '" + typeName + "'), ack only");
+            return ack();
+        }
+
+        // Remove this UGC everywhere. An object just loses its placed instances. A map also loses the UGCBase customization, so the home reverts to a normal world schema with the rest of its data intact.
+        // Every per-world copy and cache copy is deleted so no world keeps it alive
+        bool isPlace = (typeName == "WorldsUGCPlaceDefinition");
+        const std::string kEntryPointDefId = "1746732968957267"; // The entry point is a placed WorldsItemDefinition whose position is the player spawn.
+        size_t worldsPurged = 0;
+        for (auto& e : worlds)
+        {
+            json11::Json::object cfg = e.config.object_items();
+            bool touched = false;
+
+            // this world uses the map if it has a placed instance of it or references it as the UGCBase customization. Only then is the entry point reset.
+            auto custIt = cfg.find("customizations");
+            bool ugcBaseMatch = isPlace && custIt != cfg.end() && custIt->second.is_object() && custIt->second["UGCBase"].string_value() == defId;
+            bool hasMapObject = false;
+            for (const auto& obj : cfg["objects"].array_items())
+            {
+                if (obj["item_definition"]["id"].string_value() == defId)
+                {
+                    hasMapObject = true;
+                    break;
+                }
+            }
+                
+            bool revertMap = isPlace && (ugcBaseMatch || hasMapObject);
+
+            std::vector<json11::Json> kept;
+            for (const auto& obj : cfg["objects"].array_items())
+            {
+                std::string oid = obj["item_definition"]["id"].string_value();
+                if (oid == defId) // drop the placed map or object instance
+                {
+                    touched = true;
+                    continue;
+                }
+
+                if (revertMap && oid == kEntryPointDefId) // reset the spawn with the map so the player does not fall through the default room
+                {
+                    touched = true;
+                    continue;
+                } 
+                kept.push_back(obj);
+            }
+            if (touched) cfg["objects"] = json11::Json(kept);
+
+            // a map base reverts the world to a default room, clear only a UGCBase that points at this def and keep every other customization.
+            if (ugcBaseMatch)
+            {
+                json11::Json::object cust = custIt->second.object_items();
+                cust.erase("UGCBase");
+                cfg["customizations"] = json11::Json(cust);
+                touched = true;
+            }
+
+            if (touched)
+            {
+                e.config = json11::Json(cfg);
+                writeFileAtomic((fs::path(e.folder) / "config.json").wstring(), e.config.dump());
+            }
+
+            // drop the def from the world's own ugc manifest and delete its blob so a later cache populate cannot union it back into the global catalog.
+            fs::path ugcDir = fs::path(e.folder) / "ugc";
+            fs::path manifestPath = ugcDir / "ugc-hashes.json";
+            std::string mt;
+            if (ReadFileText(manifestPath, mt))
+            {
+                std::string pe;
+                json11::Json mj = json11::Json::parse(mt, pe);
+                if (pe.empty() && mj.is_object())
+                {
+                    json11::Json::object m = mj.object_items();
+                    if (m.erase(defId) != 0)
+                    {
+                        writeFileAtomic(manifestPath.wstring(), json11::Json(m).dump());
+                        touched = true;
+                    }
+                }
+            }
+
+            if (!hash.empty()) fs::remove(ugcDir / (hash + ".zst"), ec); // remove the each world's blob copy
+
+            if (touched)
+            {
+                ++worldsPurged;
+                LogLine("store: salvage purged def " + defId + " from world " + e.worldId + (isPlace ? " (reverted to a normal world)" : ""));
+            }
+        }
+
+        // delete the blob from WorldsCache and the uploaded store too so a manual relaunch does not bring it back.
+        if (!hash.empty())
+        {
+            wchar_t lad[MAX_PATH] = { 0 };
+            DWORD n = GetEnvironmentVariableW(L"LOCALAPPDATA", lad, MAX_PATH);
+            if (n > 0 && n < MAX_PATH)
+            {
+                fs::remove(fs::path(lad) / L"Home2" / L"WorldsCache" / (hash + ".zst"), ec);
+            }
+                
+            fs::remove(fs::path(storeRootDir) / "uploaded-ugc" / (hash + ".zst"), ec);
+            ugcZstUri.erase(hash);
+        }
+
+        ugcDefs.erase(defId);
+
+        // Remove the def from the global catalog and save so it is not owned or advertised again on relaunch.
+        json11::Json::object g = globalUgcManifest.object_items();
+        g.erase(defId);
+        globalUgcManifest = json11::Json(g);
+        writeFileAtomic((fs::path(storeRootDir) / "uploaded-ugc" / "import-hashes-global.json").wstring(), globalUgcManifest.dump());
+
+        // Un-own every inventory entry of this def, the owned_entry_id entry and any placed entry that shared the def id.
+        std::vector<json11::Json> owned;
+        for (const auto& it : ownedItems.array_items())
+        {
+            if (it["entry_id"].string_value() == itemId) continue;
+            if (it["item_def_id"].string_value() == defId) continue;
+            owned.push_back(it);
+        }
+        ownedItems = json11::Json(owned);
+
+        rebuildInventoryReverseMap();
+
+        LogLine("store: salvaged uploaded " + std::string(isPlace ? "map" : "object") + " def " + defId + " hash " + hash + " (item_id " + itemId + "), purged from " + std::to_string(worldsPurged) + " world(s) plus WorldsCache and uploaded-ugc, all removed from the global catalog");
+
+        // Echo the salvaged node with owned_count 0 so the game sees it as zero and clears it from the tray.
+        std::string salvagedNode =
+            "{\"id\":\"" + JsonEscape(itemId) + "\",\"is_new\":false,\"item_definition_id\":\"" + JsonEscape(defId) +
+            "\",\"owned_count\":0,\"used_count\":0,\"time_first_received\":" + std::to_string(kTimeFirstReceived) +
+            ",\"time_owned_count_updated\":" + std::to_string(kTimeOwnedUpdated) +
+            ",\"achievements\":{\"edges\":[]},\"applications\":[]}";
+        return std::string("{\"data\":{\"salvage_owned_item\":{\"owned_items\":[") + salvagedNode +
+               "],\"reward_definitions\":[],\"client_mutation_id\":\"" + JsonEscape(cmid) + "\"}}}";
+    }
+
     std::string ResponseStore::buildItemDefs(const std::vector<std::string>& itemDefIds) const
     {
+        std::lock_guard<std::mutex> lk(ugcMutex);
         std::string nodes;
         for (size_t i = 0; i < itemDefIds.size(); ++i)
         {
@@ -2803,9 +3550,13 @@ namespace home2hook {
             auto ugcIt = ugcDefs.find(id);
             if (ugcIt != ugcDefs.end())
             {
-                // Serve the stored UGC def node with real bounds and flags from ugc-hashes.json plus a file:// asset uri so the game maps the def to its cached blob.
+                // Serve the stored UGC def node with real bounds and flags from ugc-hashes.json plus a file:// asset uri so the game maps the def to its cached file.
                 // The frontend copies world_<id>\ugc\<hash>.zst into WorldsCache before launch.
                 json11::Json::object o = ugcIt->second.object_items();
+                // Remove forwarded fields
+                o.erase("owned_entry_id");
+                o.erase("created_time");
+
                 std::string hash = ugcIt->second["hash_from_client"].string_value();
                 auto uriIt = ugcZstUri.find(hash);
                 o["compressed_zstd_uri"] = uriIt != ugcZstUri.end() ? uriIt->second : std::string("");
@@ -3368,6 +4119,15 @@ namespace home2hook {
 
     std::string ResponseStore::BuildResponse(ResponseAction action, const std::string& docId, const std::string& variablesJson) const
     {
+        // The "remove uploaded UGC" action. Remove the item by its inventory_item.id and ack.
+        // Hold the response for a slight delay so the file deletions and un-own settle before the client proceeds
+        if (docId == "2536669109756669")
+        {
+            std::string salvageBody = buildSalvageOwnedItem(variablesJson);
+            Sleep(2000);
+            return FrameHttp(salvageBody);
+        }
+
         std::string clientMutationId = "0";
         std::string worldNodeId;
         std::vector<std::string> worldNodeIds;
@@ -3517,7 +4277,16 @@ namespace home2hook {
             body = buildWorldsGuestApps(variablesJson);
             break;
         case ResponseAction::Canned:
-            body = buildCanned(docId, clientMutationId, worldNodeId);
+            // The two world-template doc_ids feed the create-from-template request. Serve uploaded UGC places there or else the empty canned list.
+            if (docId == "2470834406377364" || docId == "2617284248330218")
+            {
+                body = buildTemplatesList();
+                if (body.empty()) body = buildCanned(docId, clientMutationId, worldNodeId);
+            }
+            else
+            {
+                body = buildCanned(docId, clientMutationId, worldNodeId);
+            }
             break;
         case ResponseAction::SetUserOptions:
             // buildSetUserOptions already frames its own HTTP response

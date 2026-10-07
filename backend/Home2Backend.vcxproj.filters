@@ -72,6 +72,7 @@
     <ClCompile Include="src\AvatarVerifyPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\backend\src\ZstdUtil.cpp" />
     <ClCompile Include="src\AvatarCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,6 +97,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ResponseStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ZstdUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

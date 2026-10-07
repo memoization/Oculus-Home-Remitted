@@ -175,6 +175,39 @@ namespace home2backend {
         // Detect on the request line, write the raw bytes into the world folder and 200 with an empty body.
         // The body carries image bytes, so log id and byte count only.
         std::string line = FirstLine(request.data(), static_cast<int>(request.size()));
+
+        // UGC upload as a multipart: POST /graphql?...&q=Mutation WorldCreateUGC(Item|Place)Def with a glbfile part.
+        // ParseGraphqlRequest returned false, so this is where the upload lands.
+        bool isUgcItem = line.find("world_create_ugc_item_def") != std::string::npos;
+        bool isUgcPlace = line.find("world_create_ugc_place_def") != std::string::npos;
+        if (isUgcItem || isUgcPlace)
+        {
+            // The whole request line is needed, not the 200 char FirstLine cap. That is because the q= mutation args sit past the access_token.
+            size_t lineEnd = request.find("\r\n");
+            std::string fullLine = request.substr(0, lineEnd == std::string::npos ? request.size() : lineEnd);
+            const char* kind = isUgcPlace ? "place" : "item";
+
+            std::string glb;
+            if (!home2hook::ParseMultipartNamedPart(request, "glbfile", glb))
+            {
+                LogLine(std::string("tls: ugc upload (") + kind + ") glbfile part not found, answering empty");
+                GRequestOverTls = true;
+                return FrameBenign("{\"data\":{}}");
+            }
+
+            std::string resp = home2hook::GStore.BuildUgcUpload(isUgcPlace, fullLine, glb);
+            if (resp.empty())
+            {
+                LogLine(std::string("tls: ugc upload (") + kind + ") build failed (glbfile " + std::to_string(glb.size()) + "B), answering empty");
+                GRequestOverTls = true;
+                return FrameBenign("{\"data\":{}}");
+            }
+
+            GRequestOverTls = true;
+            Sleep(2000); // Delay the upload reply before answering to avoid menu timing problems
+            return FrameBenign(resp);
+        }
+
         bool isScreenshot = line.find("/world_upload_screenshot") != std::string::npos;
         bool isCubemap = line.find("/world_upload_cubemap") != std::string::npos;
         if (isScreenshot || isCubemap)

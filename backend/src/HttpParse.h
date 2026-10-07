@@ -16,4 +16,8 @@ std::string UrlDecode(const std::string& text);
 // Returns true only when both a world_id and file part were found. The file bytes are binary and must not be logged.
 bool ParseMultipartUpload(const std::string& request, std::string& worldIdOut, std::string& fileBytesOut, std::string& extOut);
 
+// Read the raw bytes of one named part out of a multipart/form-data body. Primarily used for the UGC upload "glbfile".
+// Returns false if the boundary or the named part is absent.
+bool ParseMultipartNamedPart(const std::string& request, const std::string& partName, std::string& bytesOut);
+
 }

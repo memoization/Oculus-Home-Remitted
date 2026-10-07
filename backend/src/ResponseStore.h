@@ -43,7 +43,7 @@ namespace home2hook {
     // DLL-owned Response Store: loaded from the store directory next to the DLL. Holds the world_login template, the canned template set, the Master Item DB, and the Owned set
     class ResponseStore {
     public:
-        // storeDir contains: templates\ (world_login.json, default_world.json, doc-id-named canned responses), item-definitions.master.json, inventory-owned.json.
+        // storeDir contains: templates\ (world_login.json, default_world.json, doc-id-named canned responses), item-definitions-master.json, inventory-owned.json.
         // Returns true if it loaded enough to be useful w/ a world_login template present.
         bool Load(const std::wstring& storeDir);
 
@@ -87,6 +87,11 @@ namespace home2hook {
         // Each part gets its mesh (file:// under avatar-assets) plus the catalog material's level_of_detail_five, hands take the body-to-hand skin material, and face_parameters have the color materials' base_color.
         std::string BuildAvatarSpec(const std::string& userId) const;
 
+        // Intercept an in-VR UGC upload POST /graphql?...&q=Mutation WorldCreateUGC(Item|Place)Def.
+        // "isPlace" uses the place (map template) variant, requestLine is the raw first line that has the url-encoded args and glbBytes is the uploaded glbfile part.
+        // This saves the asset under store\uploaded-ugc and mints, records the def then returns the json body of a synthesized success, or "" if the request cannot be parsed.
+        std::string BuildUgcUpload(bool isPlace, const std::string& requestLine, const std::string& glbBytes) const;
+
     private:
         // per-world folder model: one entry per store\worlds\world_<id> folder.
         struct WorldEntry
@@ -121,8 +126,9 @@ namespace home2hook {
 
         json11::Json masterDb;   // item_def_id to WorldsItemDefinition node
         bool masterLoaded = false;
-        json11::Json ownedItems; // array of { item_def_id, asset_key, owned_count }
-        bool ownedLoaded = false;
+        // ownedItems is mutable because a live UGC upload appends an owned entry at runtime. ugcMutex guards it along with the UGC maps below.
+        mutable json11::Json ownedItems; // array of { item_def_id, asset_key, owned_count }
+        mutable bool ownedLoaded = false;
 
         // The user's local Oculus app library, used to reconstruct app/achievement tile metadata for GameBox/cartridge/achievement objects (worlds_apps_and_achievements response)
         //When absent the handlers still serve a valid empty string so the tiles render blank instead of the game crashing on a Null-as-String field.
@@ -135,7 +141,8 @@ namespace home2hook {
         std::unordered_map<std::string, std::vector<json11::Json>> appAchievements;
 
         // served inventory-entry id (node "id", DeriveInventoryEntryId(def id)) maps to def id. Built at Load from ownedItems, and lets the create path recover item_definition.id from the wire inventory_item_id, which is now the entry id, not the def id.
-        std::unordered_map<std::string, std::string> inventoryEntryToDefId;
+        // mutable so a live UGC upload can refresh it after appending an owned entry.
+        mutable std::unordered_map<std::string, std::string> inventoryEntryToDefId;
 
         // Identity (from preferences.json.identity, de-identified fallbacks in Load).
         // These fill __OWNER_ID__/__DISPLAY_NAME__/__OCULUS_ID__ across canned templates and the generated worlds-poll node, so owner_id matches string(kUserId) by construction.
@@ -165,13 +172,15 @@ namespace home2hook {
 
         // UGC (user-uploaded item/place) defs loaded from each world's ugc\ugc-hashes.json at Load.
         // buildItemDefs serves these (hash_from_client with file:// asset uris) for their def ids so the game maps the UGC def to its cached blob. Empty when no world has UGC.
-        std::unordered_map<std::string, json11::Json> ugcDefs;// def_id to stored item-def node
-        std::unordered_map<std::string, std::string> ugcZstUri;//hash_from_client to file:// .zst uri
+        // mutable so a live UGC upload can add a def without a relaunch. ugcMutex serializes all runtime reads and writes of these UGC and inventory members.
+        mutable std::unordered_map<std::string, json11::Json> ugcDefs;// def_id to stored item-def node
+        mutable std::unordered_map<std::string, std::string> ugcZstUri;//hash_from_client to file:// .zst uri
+        mutable std::mutex ugcMutex;
 
-        // The user's full uploaded-UGC inventory (single source, portable-root ugc-hashes-global.json, maintained by the wrapper).
-        // Loaded once at Load. Its def ids are advertised in the offline inventory, driving the game "Uploaded above 0" UGC-creator state that unlocks the UGC-place lighting editor, and seeded into ugcDefs each loadWorlds so item-defs resolve them.
-        json11::Json globalUgcManifest;
-        mutable bool worldsLoaded = false; // by world_create (first from-empty create)
+        // The user's full uploaded-UGC inventory (single source, store\uploaded-ugc\import-hashes-global.json, maintained by the frontend and by a live upload).
+        // Its def ids are advertised in the offline inventory, driving the game "Uploaded above 0" UGC-creator state that unlocks the UGC-place lighting editor, and added into ugcDefs from each loadWorlds so item-defs resolve them.
+        mutable json11::Json globalUgcManifest;
+        mutable bool worldsLoaded = false; // by world_create
 
         // preferences.defaultWorldId, live-mutable so an in-VR set_default_world is reflected by a same-session default-world read (in-VR overrides the wrapper-set default
         mutable std::string defaultWorldId;
@@ -223,7 +232,11 @@ namespace home2hook {
         void loadWorldUgc(const std::wstring& folder); // merge a world's ugc\ugc-hashes.json into ugcDefs
         void normalizePlacedObjectEntryIds(); // point catalogued objects at the owned catalog's derived entry id so they are editable without duplicating
         void augmentInventoryFromWorldObjects(); // own each world's placed objects by inventory_item.id so the game can find and edit them
-        void rebuildInventoryReverseMap(); // entry-id to def-id from final ownedItems (honors entry_id)
+        void augmentInventoryFromGlobalUgc(); // own each uploaded UGC def (blob file present in store\uploaded-ugc) so a freshly uploaded item is marked placeable
+        void rebuildInventoryReverseMap() const; // entry-id to def-id from final ownedItems (honors entry_id)
+        void shareUgcToWorld(const std::wstring& worldFolder, const std::string& defId, const json11::Json& defNode) const; // copy an uploaded UGC blob into a world's ugc folder and record it in that world's ugc-hashes.json so the world stays shareable
+        std::string buildTemplatesList() const; // the create-from-template picker list, built from uploaded UGC place defs
+        std::string buildSalvageOwnedItem(const std::string& variablesJson) const; // remove an uploaded UGC item by its inventory_item.id and def + .zst from worlds, WorldsCache, uploaded-ugc, and global manifest
         const WorldEntry* findWorldLocked(const std::string& worldId) const; // caller holds worldsMutex
         std::string screenshotFileUri(const WorldEntry& entry) const;
         std::string cubemapUriBase64(const WorldEntry& entry) const;// "" if no cubemap.dds
