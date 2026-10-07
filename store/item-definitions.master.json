@@ -3323,7 +3323,7 @@
   "1457233761038931": {
     "__typename": "WorldsItemDefinition",
     "id": "1457233761038931",
-    "name": "Surroundings Coastal Mediterranean",
+    "name": "Surroundings Coastal Mediterranean Town",
     "item_description": "",
     "is_scalable": false,
     "is_unlimited": true,
