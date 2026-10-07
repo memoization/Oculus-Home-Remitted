@@ -4,11 +4,13 @@
 #endif
 
 #include <shlwapi.h>
+#include <shellapi.h>
 #include "resource.h"
 #include "UI.h"
 #include <filesystem>
 #include <regex>
 #include <cstdio>
+#include <ctime>
 #include "HomeLogger.h"
 #include <CommCtrl.h>
 #include <commdlg.h>
@@ -147,10 +149,10 @@ bool CenteredButton(const std::string& text, ImVec2 size = iScale.Vec2(0, 0))
 
 void ShowTooltip(const char* msg)
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(10, 10));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, iScale.F(5));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(12, 12));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, iScale.F(6));
 
-    float maxWidth = ImGui::GetWindowSize().x - iScale.F(150);
+    float maxWidth = ImGui::GetWindowSize().x - iScale.F(20);
 
     ImGui::BeginTooltip();
 
@@ -415,6 +417,7 @@ void UI::Create()
     texLoader.LoadPng("images/achievement.png");
     texLoader.LoadPng("images/settings.png");
     texLoader.LoadPng("images/edit.png");
+    texLoader.LoadPng("images/ugc.png");
     texLoader.LoadPng("images/world-default.png");
 
     // Profile-picture presets for the selector modal (images/profiles/1.png .. 32.png)
@@ -706,13 +709,13 @@ void UI::DoWorlds()
 
             if (uw.ugcBase)
             {
-                ImGui::TextWrapped("This home uses a custom (UGC) map. The UGC assets must be present in the home's \"ugc\" folder or the app will stall while loading.");
+                ImGui::TextWrapped("This home uses a custom imported map. The UGC imports must be present in the home's \"ugc\" folder or the app may stall while loading.");
             }
 
             if (uw.ugcObjectCount > 0)
             {
                 ImGui::TextWrapped(
-                    "This home includes %d custom (UGC) item%s.",
+                    "This home includes %d imported object%s.",
                     uw.ugcObjectCount,
                     uw.ugcObjectCount == 1 ? "" : "s"
                 );
@@ -1098,7 +1101,7 @@ void UI::DoAchievements()
         for (const auto& a : achievementList)
         {
             std::string app = a.appTitle.empty() ? a.appCanonical : a.appTitle;
-            achievementRowLabels.push_back(app + "   |   " + a.title);
+            achievementRowLabels.push_back(app + " | " + a.title);
         }
         reloadAchievementsOnOpen = false;
     }
@@ -1155,6 +1158,165 @@ void UI::DoAchievements()
 
     pushedStyles = PushSubTextStyle();
     CenteredText("To load any new achievement(s) earned from an app, you will need to fetch your achievements again.", true);
+    ImGui::PopStyleColor(pushedStyles);
+}
+ 
+static std::string FormatBytes(unsigned long long bytes)
+{
+    char buf[32];
+    if (bytes >= 1024ull * 1024ull)
+        _snprintf_s(buf, sizeof(buf), _TRUNCATE, "%.1f MB", bytes / (1024.0 * 1024.0));
+    else if (bytes >= 1024ull)
+        _snprintf_s(buf, sizeof(buf), _TRUNCATE, "%.0f KB", bytes / 1024.0);
+    else
+        _snprintf_s(buf, sizeof(buf), _TRUNCATE, "%llu B", bytes);
+    return std::string(buf);
+}
+
+// An import's created_time (unix seconds) as local "MM/DD HH:MM" in 24 hour time
+static std::string FormatCreatedTime(unsigned long long unixSeconds)
+{
+    if (unixSeconds == 0) return std::string();
+
+    time_t t = (time_t)unixSeconds;
+    struct tm lt;
+    if (localtime_s(&lt, &t) != 0) return std::string();
+
+    char buf[16];
+    strftime(buf, sizeof(buf), "%m/%d %H:%M", &lt);
+    return std::string(buf);
+}
+
+// Open the Custom Imports guide in the default browser
+static void OpenImportsGuide()
+{
+    std::error_code ec;
+    std::filesystem::path guide = std::filesystem::path(prefs.AppDir()) / "guides" / "ugc-guide.pdf";
+    if (std::filesystem::exists(guide, ec))
+    {
+        ShellExecuteW(nullptr, L"open", guide.wstring().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+    }
+}
+
+void UI::DoImports()
+{
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+
+    // Imports uses two selection columns
+    const int kImportObjectsKind = 3;
+    const int kImportPlacesKind = 4;
+
+    // On page open, scan the imported UGC and split by type
+    if (reloadImportsOnOpen)
+    {
+        importObjects.clear();
+        importPlaces.clear();
+        importObjectLabels.clear();
+        importPlaceLabels.clear();
+
+        for (auto& imp : worlds::ScanImports())
+        {
+            if (imp.typeName == "WorldsUGCPlaceDefinition")
+            {
+                importPlaces.push_back(std::move(imp));
+            }
+            else
+            {
+                importObjects.push_back(std::move(imp));
+            }
+        }
+
+        auto makeLabel = [](const worlds::ImportInfo& i) {
+            std::string name = i.name.empty() ? std::string("Untitled") : i.name;
+            std::string label = name + " | " + FormatBytes(i.zstBytes);
+            std::string created = FormatCreatedTime(i.createdTime); // empty if the entry has no "created_time" field
+            if (!created.empty()) label += " | " + created;
+            return label;
+        };
+        for (const auto& i : importObjects)
+        {
+            importObjectLabels.push_back(makeLabel(i));
+        }
+        for (const auto& i : importPlaces)
+        {
+            importPlaceLabels.push_back(makeLabel(i));
+        }
+
+        env.selectedSourceId = 0;
+        reloadImportsOnOpen = false;
+    }
+
+    ImGui::Dummy(iScale.Vec2(0, 25));
+
+    ImGui::PushFont(fontTitle);
+    ImGui::TextUnformatted("Custom Imports");
+    ImGui::PopFont();
+
+    ImGui::Dummy(iScale.Vec2(0, 25));
+
+    // Build the rows. Ids are 1-based indices within each column and the kind tells the two columns apart.
+    std::vector<SourceRowVM> objectRows, placeRows;
+    objectRows.reserve(importObjectLabels.size());
+    for (size_t i = 0; i < importObjectLabels.size(); ++i)
+    {
+        objectRows.push_back({ (uint64_t)(i + 1), importObjectLabels[i].c_str() });
+    }
+    placeRows.reserve(importPlaceLabels.size());
+    for (size_t i = 0; i < importPlaceLabels.size(); ++i)
+    {
+        placeRows.push_back({ (uint64_t)(i + 1), importPlaceLabels[i].c_str() });
+    }
+
+    float colGap = iScale.F(24);
+    float colW = (iScale.F(420) - colGap);
+    float listH = iScale.F(300);
+    SourceColumn("Objects", kImportObjectsKind, objectRows, ImVec2(colW, listH), iScale.F(360));
+    ImGui::SameLine(0.0f, colGap);
+    SourceColumn("Place Templates", kImportPlacesKind, placeRows, ImVec2(colW, listH), iScale.F(360));
+
+    // Which import is selected if any
+    bool objSelected = env.sourceKind == kImportObjectsKind && env.selectedSourceId >= 1 && env.selectedSourceId <= importObjects.size();
+    bool placeSelected = env.sourceKind == kImportPlacesKind && env.selectedSourceId >= 1 && env.selectedSourceId <= importPlaces.size();
+    bool hasSelection = objSelected || placeSelected;
+
+    bool homeRunning = g_homeWatcher.HomeRunning();
+
+    // Footer buttons
+    float btnH = iScale.F(40);
+    float btnW = iScale.F(180);
+    float gap = iScale.F(14);
+    ImGui::SetCursorPosX((avail.x - (btnW * 2 + gap * 2)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosY(avail.y - iScale.F(75));
+
+    // Delete is disabled while Home is running
+    ImGui::BeginDisabled(homeRunning || !hasSelection);
+    pushedStyles = PushButtonStyleGrey();
+    if (ImGui::Button("Remove Import", ImVec2(btnW, btnH)))
+    {
+        const worlds::ImportInfo& sel = objSelected ? importObjects[(size_t)(env.selectedSourceId - 1)] : importPlaces[(size_t)(env.selectedSourceId - 1)];
+        worlds::DeleteImport(sel.defId);
+        env.selectedSourceId = 0;
+        reloadImportsOnOpen = true;
+    }
+    ImGui::PopStyleColor(pushedStyles);
+    ImGui::EndDisabled();
+
+    if (homeRunning && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+    {
+        ShowTooltip("Close Home before removing an import.");
+    }
+
+    ImGui::SameLine(0, gap);
+
+    pushedStyles = PushButtonStyleGrey();
+    if (ImGui::Button("View Guide", ImVec2(btnW, btnH)))
+    {
+        OpenImportsGuide();
+    }
+    ImGui::PopStyleColor(pushedStyles);
+
+    pushedStyles = PushSubTextStyle();
+    CenteredText("Removing an import here or from VR will delete any traces of it in all of your homes.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
@@ -1387,8 +1549,7 @@ bool UI::BrowseForFolder(std::string& outPath)
     return ok;
 }
 
-// A Screen-Sources column ("Monitors" / "Apps"): a titled, scrollable list panel driven by the enumerated sources. Selection is keyed on the source's handle id not a list index,
-// so it survives list refreshes, and a click publishes the pick into the shared broadcast channel.
+// Generic list column for screens, apps, objects. Use as a scrollable list panel driven by the enumerated sources
 void UI::SourceColumn(const char* title, int kind, const std::vector<SourceRowVM>& items, ImVec2 size, int entryTextWidth)
 {
     ImGui::BeginGroup();
@@ -1454,7 +1615,6 @@ static std::string TruncateToWidth(const char* text, float maxWidth)
     return in.substr(0, cut) + ellipsis;
 }
 
-// One selectable source row with a checkmark on the single active source.
 bool UI::SourceRow(const char* label, bool selected, int textWidth)
 {
     float rowH = iScale.F(36);
@@ -1478,7 +1638,7 @@ bool UI::SourceRow(const char* label, bool selected, int textWidth)
     dl->AddText(ImVec2(p0.x + leftPad, p0.y + (rowH - th) * 0.5f), IM_COL32_WHITE, shown.c_str());
     if (shown != label && ImGui::IsItemHovered())
     {
-        ImGui::SetTooltip("%s", label); // full text on hover when shortened
+        ShowTooltip(label);
     }
 
     return clicked;
@@ -1525,6 +1685,12 @@ bool UI::NavItem(const char* label, const std::string& iconPath, PageType page)
         if (page == PageType::AppAchievements && env.currentPage != PageType::AppAchievements)
         {
             reloadAchievementsOnOpen = true;
+        }
+
+        // Re-read the imported UGC manifest on switch-to
+        if (page == PageType::UserContent && env.currentPage != PageType::UserContent)
+        {
+            reloadImportsOnOpen = true;
         }
 
         env.currentPage = page;
@@ -1596,6 +1762,7 @@ void UI::DrawSidebar()
     NavItem("Screen Sources", "images/desktop.png", PageType::ScreenSources);
     NavItem("Apps Library", "images/library.png", PageType::AppsLibrary);
     NavItem("App Achievements", "images/achievement.png", PageType::AppAchievements);
+    NavItem("Custom Imports", "images/ugc.png", PageType::UserContent);
     NavItem("Settings", "images/settings.png", PageType::Settings);
 
     // Pinned bottom of nav: Launch Home (blue) and Set Executable
@@ -1824,6 +1991,7 @@ void UI::DrawContent()
     case PageType::ScreenSources: DoScreens(); break;
     case PageType::AppsLibrary:   DoApps(); break;
     case PageType::AppAchievements:   DoAchievements(); break;
+    case PageType::UserContent:   DoImports(); break;
     case PageType::Settings:   DoSettings(); break;
     }
 
@@ -1855,7 +2023,15 @@ void UI::DoSetExecutable(const wchar_t* defaultDir)
 
     if (GetOpenFileNameW(&ofn))
     {
-        home2ExePath = prefs.Narrow(file);
+        std::filesystem::path selectedFile(file);
+
+        // Home2.exe is the launcher and it should not be the target.
+        if (_wcsicmp(selectedFile.filename().c_str(), L"Home2.exe") == 0 && selectedFile.wstring().find(L"Binaries\\\Win64") == std::wstring::npos)
+        {
+            selectedFile = selectedFile.parent_path() / L"Home2\\\Binaries\\\Win64\\\Home2-Win64-Shipping.exe";
+        }
+
+        home2ExePath = selectedFile.string();
         prefs.SetExePath("home2ExePath", home2ExePath);
         prefs.configuredHomeProcessW = std::filesystem::path(home2ExePath).filename().wstring();
         homeLogger.write() << "Set Home2 executable." << std::endl;
@@ -1986,7 +2162,7 @@ void UI::DoPopups(Env& env)
         {
             ImGui::TextWrapped("Download your homes from the Oculus backend while they still exist. Any found homes are saved locally and can load offline afterward. A couple credentials about your Meta (Oculus) account will be used.");
             ImGui::Spacing();
-            ImGui::TextWrapped("Any fetched homes that contain UGC assets will have them downloaded into your world folder.");
+            ImGui::TextWrapped("Any fetched homes that contain UGC imports will have them downloaded into your world folder.");
                 
             if (homesFallbackToFields)
             {

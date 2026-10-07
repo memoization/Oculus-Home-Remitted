@@ -323,9 +323,11 @@ namespace worlds
             }
         }
 
-        // App-root global UGC manifest is the single source for mapping the user's UGC inventory.
-        // The app grows it by unioning each world's local ugc-hashes.json, which also absorbs a dropped-in shared world folder. The local files stay per-world for that drop-in sharability.
-        fs::path globalPath = appDir / "ugc-hashes-global.json";
+        // The global import manifest is the single source for mapping imported UGC inventory. It is located in store\uploaded-ugc alongside the imported blobs.
+        // The app adds to it by unioning any world's local ugc-hashes.json, which also absorbs a dropped-in shared world folder. The local files stay per-world for sharability.
+        fs::path uploadedDir = appDir / "store" / "uploaded-ugc";
+        fs::create_directories(uploadedDir, ec);
+        fs::path globalPath = uploadedDir / "import-hashes-global.json";
         json11::Json::object global;
         {
             std::string t = ReadFileUtf8(globalPath.wstring());
@@ -349,24 +351,28 @@ namespace worlds
 
             if (!fs::is_directory(ugc, ec)) continue;
 
-            // 1. Copy this world's UGC blobs into WorldsCache
-            if (!cacheDir.empty())
+            // Copy this world's UGC blobs into WorldsCache so the game loads them and into store\uploaded-ugc
+            for (const auto& f : fs::directory_iterator(ugc, ec))
             {
-                for (const auto& f : fs::directory_iterator(ugc, ec))
+                if (!f.is_regular_file() || f.path().extension() != L".zst") continue;
+
+                if (!cacheDir.empty())
                 {
-                    if (!f.is_regular_file() || f.path().extension() != L".zst") continue;
                     fs::path dst = cacheDir / f.path().filename();
-                    
-                    if (fs::exists(dst, ec)) continue; // skip existing
-                    
-                    if (CopyFileW(f.path().wstring().c_str(), dst.wstring().c_str(), TRUE))
+                    if (!fs::exists(dst, ec) && CopyFileW(f.path().wstring().c_str(), dst.wstring().c_str(), TRUE))
                     {
                         ++copied;
                     }
                 }
+
+                fs::path up = uploadedDir / f.path().filename();
+                if (!fs::exists(up, ec))
+                {
+                    CopyFileW(f.path().wstring().c_str(), up.wstring().c_str(), TRUE);
+                }
             }
 
-            // 2. Union this world's local ugc-hashes.json into the global for unique def ids only
+            // Union this world's local ugc-hashes.json into the global for unique def ids only
             std::string mt = ReadFileUtf8((ugc / "ugc-hashes.json").wstring());
             if (!mt.empty())
             {
@@ -394,7 +400,192 @@ namespace worlds
         if (copied > 0)
         {
             homeLogger.write() << "Worlds: copied " << copied << " UGC asset(s) into WorldsCache." << std::endl;
-        } 
+        }
+    }
+
+    static fs::path ImportManifestPath()
+    {
+        return fs::path(prefs.AppDir()) / "store" / "uploaded-ugc" / "import-hashes-global.json";
+    }
+
+    std::vector<ImportInfo> ScanImports()
+    {
+        std::vector<ImportInfo> out;
+        std::error_code ec;
+        fs::path manifestPath = ImportManifestPath();
+        std::string t = ReadFileUtf8(manifestPath.wstring());
+        if (t.empty()) return out;
+
+        std::string err;
+        json11::Json j = json11::Json::parse(t, err);
+        if (!err.empty() || !j.is_object()) return out;
+
+        fs::path uploadedDir = manifestPath.parent_path();
+        for (const auto& kv : j.object_items())
+        {
+            if (!kv.second.is_object()) continue;
+
+            ImportInfo info;
+            info.defId = kv.first;
+            info.typeName = kv.second["__typename"].string_value();
+            info.name = kv.second["name"].string_value();
+            info.hash = kv.second["hash_from_client"].string_value();
+            if (kv.second["created_time"].is_number())
+            {
+                info.createdTime = (unsigned long long)kv.second["created_time"].number_value();
+            }
+                
+            if (!info.hash.empty())
+            {
+                std::uintmax_t sz = fs::file_size(uploadedDir / (info.hash + ".zst"), ec);
+                if (!ec) info.zstBytes = (unsigned long long)sz;
+            }
+            out.push_back(std::move(info));
+        }
+        return out;
+    }
+
+    bool DeleteImport(const std::string& defId)
+    {
+        if (defId.empty()) return false;
+
+        std::error_code ec;
+        fs::path appDir = fs::path(prefs.AppDir());
+        fs::path manifestPath = ImportManifestPath();
+        fs::path uploadedDir = manifestPath.parent_path();
+
+        // Resolve the def to its hash and type from the global hashes json catalog.
+        json11::Json::object global;
+        {
+            std::string t = ReadFileUtf8(manifestPath.wstring());
+            std::string err;
+            json11::Json j = json11::Json::parse(t, err);
+            if (err.empty() && j.is_object()) global = j.object_items();
+        }
+        std::string hash, typeName;
+        auto git = global.find(defId);
+        if (git != global.end() && git->second.is_object())
+        {
+            hash = git->second["hash_from_client"].string_value();
+            typeName = git->second["__typename"].string_value();
+        }
+
+        bool isPlace = (typeName == "WorldsUGCPlaceDefinition");
+
+        // The entry point is a placed WorldsItemDefinition whose position is the player spawn.
+        // When a map is removed the world reverts to the default room, so remove the entry point, else the spawn point set from the UGC template can drop the player out of bounds.
+        const std::string kEntryPointDefId = "1746732968957267";
+
+        // Purge the def from every world, same as the backend salvage.
+        fs::path worldsRoot = appDir / "store" / "worlds";
+        if (fs::is_directory(worldsRoot, ec))
+        {
+            for (const auto& w : fs::directory_iterator(worldsRoot, ec))
+            {
+                if (!w.is_directory()) continue;
+
+                fs::path cfgPath = w.path() / "config.json";
+                std::string ctext = ReadFileUtf8(cfgPath.wstring());
+                if (!ctext.empty())
+                {
+                    std::string cerr;
+                    json11::Json cj = json11::Json::parse(ctext, cerr);
+                    if (cerr.empty() && cj.is_object())
+                    {
+                        json11::Json::object cfg = cj.object_items();
+                        bool touched = false;
+
+                        // this world uses the map if it places it or references it as the UGCBase customization. Only then is the entry point reset.
+                        auto custIt = cfg.find("customizations");
+                        bool ugcBaseMatch = isPlace && custIt != cfg.end() && custIt->second.is_object() && custIt->second["UGCBase"].string_value() == defId;
+                        bool hasMapObject = false;
+                        for (const auto& obj : cfg["objects"].array_items())
+                        {
+                            if (obj["item_definition"]["id"].string_value() == defId) 
+                            {
+                                hasMapObject = true;
+                                break;
+                            }
+                        }
+                            
+                        bool revertMap = isPlace && (ugcBaseMatch || hasMapObject);
+
+                        std::vector<json11::Json> kept;
+                        for (const auto& obj : cfg["objects"].array_items())
+                        {
+                            std::string oid = obj["item_definition"]["id"].string_value();
+                            if (oid == defId)// drop the placed instance
+                            {
+                                touched = true;
+                                continue;
+                            }
+
+                            if (revertMap && oid == kEntryPointDefId) // reset the spawn with the map
+                            {
+                                touched = true;
+                                continue;
+                            }
+                            kept.push_back(obj);
+                        }
+                        if (touched) cfg["objects"] = json11::Json(kept);
+
+                        if (ugcBaseMatch)
+                        {
+                            json11::Json::object cust = custIt->second.object_items();
+                            cust.erase("UGCBase");
+                            cfg["customizations"] = json11::Json(cust);
+                            touched = true;
+                        }
+
+                        if (touched)
+                        {
+                            WriteFileAtomic(cfgPath.wstring(), json11::Json(cfg).dump());
+                        } 
+                    }
+                }
+
+                // drop the def from the world's own ugc hashes json and delete its blob copy.
+                fs::path ugcDir = w.path() / "ugc";
+                fs::path pm = ugcDir / "ugc-hashes.json";
+                std::string mt = ReadFileUtf8(pm.wstring());
+                if (!mt.empty())
+                {
+                    std::string merr;
+                    json11::Json mj = json11::Json::parse(mt, merr);
+                    if (merr.empty() && mj.is_object())
+                    {
+                        json11::Json::object m = mj.object_items();
+                        if (m.erase(defId) != 0)
+                        {
+                            WriteFileAtomic(pm.wstring(), json11::Json(m).dump());
+                        }
+                    }
+                }
+                if (!hash.empty()) fs::remove(ugcDir / (hash + ".zst"), ec);
+            }
+        }
+
+        // delete the blob from WorldsCache and the uploaded store too.
+        if (!hash.empty())
+        {
+            wchar_t lad[MAX_PATH];
+            DWORD n = GetEnvironmentVariableW(L"LOCALAPPDATA", lad, MAX_PATH);
+            if (n > 0 && n < MAX_PATH)
+            {
+                fs::remove(fs::path(lad) / "Home2" / "WorldsCache" / (hash + ".zst"), ec);
+            }
+                
+            fs::remove(uploadedDir / (hash + ".zst"), ec);
+        }
+
+        // drop the def from the global import manifest.
+        if (global.erase(defId) != 0)
+        {
+            WriteFileAtomic(manifestPath.wstring(), json11::Json(global).dump());
+        }
+
+        homeLogger.write() << "Worlds: deleted import " << defId.c_str() << " (" << (isPlace ? "map" : "object") << ")." << std::endl;
+        return true;
     }
 
 }
