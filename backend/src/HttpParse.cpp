@@ -209,6 +209,75 @@ namespace home2hook {
         return !worldIdOut.empty() && !fileBytesOut.empty();
     }
 
+    bool ParseMultipartNamedPart(const std::string& request, const std::string& partName, std::string& bytesOut)
+    {
+        bytesOut.clear();
+
+        size_t headerEnd = request.find("\r\n\r\n");
+        if (headerEnd == std::string::npos) return false;
+
+        std::string headers = request.substr(0, headerEnd);
+        std::string headersLower = headers;
+        for (auto& c : headersLower)
+        {
+            c = static_cast<char>(::tolower(static_cast<unsigned char>(c)));
+        }
+
+        // UE sends `boundary =-----...` with a space before '=', and ExtractHeaderAttr tolerates it.
+        std::string boundary = ExtractHeaderAttr(headers, headersLower, "boundary");
+        if (boundary.empty()) return false;
+
+        std::string body = request.substr(headerEnd + 4);
+        std::string delim = "--" + boundary;
+
+        size_t pos = body.find(delim);
+        if (pos == std::string::npos) return false;
+
+        pos += delim.size();
+
+        while (pos < body.size())
+        {
+            if (body.compare(pos, 2, "--") == 0) break; // closing delimiter
+
+            if (body.compare(pos, 2, "\r\n") == 0)
+            {
+                pos += 2;
+            }
+
+            size_t partHeaderEnd = body.find("\r\n\r\n", pos);
+            if (partHeaderEnd == std::string::npos) break;
+
+            std::string partHeaders = body.substr(pos, partHeaderEnd - pos);
+            size_t contentStart = partHeaderEnd + 4;
+
+            size_t nextDelim = body.find(delim, contentStart);
+            if (nextDelim == std::string::npos) break;
+
+            size_t contentEnd = nextDelim;
+            if (contentEnd >= 2 && body.compare(contentEnd - 2, 2, "\r\n") == 0)
+            {
+                contentEnd -= 2; // strip the CRLF preceding the boundary
+            }
+
+            std::string partLower = partHeaders;
+            for (auto& c : partLower)
+            {
+                c = static_cast<char>(::tolower(static_cast<unsigned char>(c)));
+            }
+
+            std::string name = ExtractHeaderAttr(partHeaders, partLower, "name");
+            if (name == partName)
+            {
+                bytesOut = body.substr(contentStart, contentEnd - contentStart);
+                return true;
+            }
+
+            pos = nextDelim + delim.size();
+        }
+
+        return false;
+    }
+
     bool ParseGraphqlRequest(const std::string& request, std::string& docId, std::string& variablesJson)
     {
         size_t lineEnd = request.find("\r\n");

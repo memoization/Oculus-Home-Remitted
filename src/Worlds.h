@@ -37,4 +37,24 @@ namespace worlds
     // copy every world's downloaded UGC assets (store\worlds\world_*\ugc\*.zst) into %LOCALAPPDATA%\Home2\WorldsCache (skips any already present) so the game loads them locally instead of trying to re-download.
     // Mainly called at app startup & whenever Home launches.
     void PopulateUgcCache();
+
+    // An imported UGC definition from store\uploaded-ugc\import-hashes-global.json
+    struct ImportInfo
+    {
+        std::string defId; // the UGC def id
+        std::string typeName; // "WorldsUGCItemDefinition" (object) or "WorldsUGCPlaceDefinition" (place template)
+        std::string name; // display name
+        std::string hash;// hash_from_client, which gets tied to the .zst in uploaded-ugc
+        unsigned long long zstBytes = 0; // size of store\uploaded-ugc\<hash>.zst, 0 if missing
+        unsigned long long createdTime = 0; // json created_time (unix seconds), 0 if the entry has none
+    };
+
+    // Read the import hashes json and return every imported def
+    std::vector<ImportInfo> ScanImports();
+
+    // Remove an imported UGC def by id everywhere, same as the backend salvage. Only safe while Home is not running, since clashes can happen w/ the backend
+    // Drops placed instances from every world config, for a place template, it also clears customizations.UGCBase and the entry-point object so the world reverts to the default room.
+    // 
+    // Removes the def from each world's ugc-hashes.json and deletes the per-world blob, deletes the blob from WorldsCache and uploaded-ugc, and drops the def from the global import hashes json.
+    bool DeleteImport(const std::string& defId);
 }

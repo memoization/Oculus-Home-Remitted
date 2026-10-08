@@ -50,6 +50,7 @@ enum class PageType
     ScreenSources,
     AppsLibrary,
     AppAchievements,
+    UserContent,
     Settings
 };
 
@@ -169,6 +170,7 @@ struct UI
     void DoScreens();
     void DoApps();
     void DoAchievements();
+    void DoImports();
     void DoSettings();
     void RefreshSources();
     void SourceColumn(const char* title, int kind, const std::vector<SourceRowVM>& items, ImVec2 size, int entryTextWidth);
@@ -226,6 +228,13 @@ struct UI
     std::vector<fetchworlds::AchievementInfo> achievementList;
     std::vector<std::string> achievementRowLabels; // "App name  |  Achievement title" per entry
     bool reloadAchievementsOnOpen = true;
+
+    // the catalog of imported UGC from store\uploaded-ugc\import-hashes-global.json
+    std::vector<worlds::ImportInfo> importObjects; // found by WorldsUGCItemDefinition
+    std::vector<worlds::ImportInfo> importPlaces; // found by WorldsUGCPlaceDefinition
+    std::vector<std::string> importObjectLabels;
+    std::vector<std::string> importPlaceLabels;
+    bool reloadImportsOnOpen = true;
 
     // Fetch details for the user's remote worlds/achivements from graph.oculus.com.
     std::string fetchToken;
