@@ -30,8 +30,6 @@
 
 namespace home2backend
 {
-    static const unsigned long long kStockBytes = 15728640ull; // fallback if template read fails
-
     // glTF validator with the two hardcoded byte limits.
     static const BYTE kExpect1[10] =
     {
@@ -53,20 +51,20 @@ namespace home2backend
         std::wstring path = selfDir + L"\\store\\templates\\world_login.json";
 
         std::ifstream f(path, std::ios::binary);
-        if (!f) return kStockBytes;
+        if (!f) return 0;
 
         std::ostringstream ss;
         ss << f.rdbuf();
         std::string text = ss.str();
 
         size_t key = text.find("\"max_ugc_file_size\"");
-        if (key == std::string::npos) return kStockBytes;
+        if (key == std::string::npos) return 0;
 
         size_t colon = text.find(':', key);
-        if (colon == std::string::npos) return kStockBytes;
+        if (colon == std::string::npos) return 0;
 
         unsigned long long value = strtoull(text.c_str() + colon + 1, nullptr, 10);
-        if (value == 0) return kStockBytes;
+        if (value == 0) return 0;
 
         return value;
     }
@@ -167,6 +165,13 @@ namespace home2backend
 
         // The game compares are signed against a 32 bit file size so clamp to a positive signed 32 bit.
         unsigned long long maxBytes = readMaxUgcFileSize(selfDir);
+
+        if (maxBytes == 0)
+        {
+            LogLine("ugcsize: failed to read new file size limit in bytes, skipping");
+            return false;
+        }
+
         if (maxBytes > 0x7FFFFFFFull) maxBytes = 0x7FFFFFFFull;
 
         LogLine("ugcsize: template max_ugc_file_size is " + std::to_string(maxBytes) + " bytes: " + std::to_string(maxBytes / (1024 * 1024)) + " MB");
