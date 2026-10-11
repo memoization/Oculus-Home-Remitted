@@ -2806,34 +2806,6 @@
     "asset_key": "MODERN_MISC_07",
     "asset_pack": null
   },
-  "137606828999671162": {
-    "__typename": "WorldsItemDefinition",
-    "id": "137606828999671162",
-    "name": "Woman Statue Three",
-    "item_description": "",
-    "is_scalable": true,
-    "is_unlimited": true,
-    "salvage_value": 5,
-    "world_placement_cap": 0,
-    "stackable": true,
-    "tags": [
-      "Decorations",
-      "Starter"
-    ],
-    "rarity": "COMMON",
-    "local_bounds_origin": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
-    },
-    "local_bounds_extent": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
-    },
-    "asset_key": "MODERN_STATUE_06",
-    "asset_pack": null
-  },
   "1377916668983924": {
     "__typename": "WorldsItemDefinition",
     "id": "1377916668983924",
@@ -4516,10 +4488,10 @@
     "asset_key": "RECORDING_00",
     "asset_pack": null
   },
-  "153636467814708159": {
+  "154184921482460432": {
     "__typename": "WorldsItemDefinition",
-    "id": "153636467814708159",
-    "name": "T0B1 Statue v1",
+    "id": "154184921482460432",
+    "name": "REX Bot",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -4527,10 +4499,9 @@
     "world_placement_cap": 0,
     "stackable": true,
     "tags": [
-      "Decorations",
-      "Starter"
+      "Decorations"
     ],
-    "rarity": "COMMON",
+    "rarity": "RARE",
     "local_bounds_origin": {
       "x": "00000000",
       "y": "00000000",
@@ -4541,7 +4512,7 @@
       "y": "00000000",
       "z": "00000000"
     },
-    "asset_key": "REX_FC_01",
+    "asset_key": "REX_FC_10",
     "asset_pack": null
   },
   "154142178903508757": {
@@ -6662,33 +6633,6 @@
     "asset_key": "EVENT_POSTER_00",
     "asset_pack": null
   },
-  "178170336629064043": {
-    "__typename": "WorldsItemDefinition",
-    "id": "178170336629064043",
-    "name": "REX Bot",
-    "item_description": "",
-    "is_scalable": true,
-    "is_unlimited": true,
-    "salvage_value": 0,
-    "world_placement_cap": -1,
-    "stackable": true,
-    "tags": [
-      "Starter"
-    ],
-    "rarity": "COMMON",
-    "local_bounds_origin": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
-    },
-    "local_bounds_extent": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
-    },
-    "asset_key": "OCULUS_STATUE_01",
-    "asset_pack": null
-  },
   "1789344384707026": {
     "__typename": "WorldsItemDefinition",
     "id": "1789344384707026",
@@ -7420,33 +7364,6 @@
       "z": ""
     },
     "asset_key": "PIRATES_SWORD_01",
-    "asset_pack": null
-  },
-  "183812681579947213": {
-    "__typename": "WorldsItemDefinition",
-    "id": "183812681579947213",
-    "name": "Warrior Goddess",
-    "item_description": "",
-    "is_scalable": true,
-    "is_unlimited": true,
-    "salvage_value": 5,
-    "world_placement_cap": 0,
-    "stackable": true,
-    "tags": [
-      "Decorations"
-    ],
-    "rarity": "COMMON",
-    "local_bounds_origin": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
-    },
-    "local_bounds_extent": {
-      "x": "00000000",
-      "y": "00000000",
-      "z": "00000000"
-    },
-    "asset_key": "FANTASY_02",
     "asset_pack": null
   },
   "1838915232855042": {

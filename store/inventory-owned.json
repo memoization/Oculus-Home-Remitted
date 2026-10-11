@@ -711,11 +711,6 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "183812681579947213",
-      "asset_key": "FANTASY_02",
-      "owned_count": 1
-    },
-    {
       "item_def_id": "148752369035383",
       "asset_key": "FANTASY_03",
       "owned_count": 1
@@ -1746,11 +1741,6 @@
       "owned_count": 1
     },
     {
-      "item_def_id": "137606828999671162",
-      "asset_key": "MODERN_STATUE_06",
-      "owned_count": 1
-    },
-    {
       "item_def_id": "125319194339574498",
       "asset_key": "MODERN_STATUE_07",
       "owned_count": 1
@@ -2473,6 +2463,11 @@
     {
       "item_def_id": "108904646475314",
       "asset_key": "REX_FC_09",
+      "owned_count": 1
+    },
+    {
+      "item_def_id": "154184921482460432",
+      "asset_key": "REX_FC_10",
       "owned_count": 1
     },
     {

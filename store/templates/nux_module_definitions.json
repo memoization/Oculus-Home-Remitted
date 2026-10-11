@@ -28,7 +28,7 @@
           "possible_item_defs": [
             {
               "id": "2309388889112717",
-              "name": "REX Bot",
+              "name": "T0B1 Statue v1",
               "item_description": "",
               "asset_key": "OCULUS_STATUE_01",
               "is_scalable": true,
@@ -112,7 +112,7 @@
           "possible_item_defs": [
             {
               "id": "1577492172288345",
-              "name": "T0B1 Statue v1",
+              "name": "T0B1 Statue v2",
               "item_description": "",
               "asset_key": "REX_FC_01",
               "is_scalable": true,

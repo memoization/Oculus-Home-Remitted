@@ -6,7 +6,7 @@
       "user_options": "__USER_OPTIONS__",
       "events": [
         "{\"Type\":\"RewardNotifications\",\"Param\":\"[]\"}",
-        "{\"Type\":\"CurrentAppCatalog\",\"Param\":\"{}",
+        "{\"Type\":\"CurrentAppCatalog\",\"Param\":\"{}\"}",
         "{\"Type\":\"WorldsDeletedByAdminAlert\",\"Param\":\"[]\"}",
         "{\"Type\":\"UnlinkedOwnerWorldsMadePrivate\",\"Param\":\"[]\"}"
       ],
