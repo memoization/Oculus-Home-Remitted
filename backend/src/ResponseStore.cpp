@@ -1871,190 +1871,178 @@ namespace home2hook {
         json11::Json newCfg;
         bool found = false;
 
-        // UGC objects placed into this world get a shareable copy of their blob after the config write.
-        std::wstring shareFolder;
-        std::vector<std::pair<std::string, json11::Json>> pendingShares;
+        std::lock_guard<std::mutex> lock(worldsMutex);
+        for (auto& e : worlds) // findWorldLocked is const, so mutation handlers iterate directly.
         {
-            std::lock_guard<std::mutex> lock(worldsMutex);
-            for (auto& e : worlds) // findWorldLocked is const, so mutation handlers iterate directly.
+            if (e.worldId != worldId) continue;
+            found = true;
+
+            json11::Json::object cfg = e.config.object_items();
+            std::vector<json11::Json> objs = cfg["objects"].array_items();
+
+            // update[]: overwrite transforms/anim/physics/updated_time, keep identity fields.
+            for (const auto& u : updateArr.array_items())
             {
-                if (e.worldId != worldId) continue;
-                found = true;
-
-                json11::Json::object cfg = e.config.object_items();
-                std::vector<json11::Json> objs = cfg["objects"].array_items();
-
-                // update[]: overwrite transforms/anim/physics/updated_time, keep identity fields.
-                for (const auto& u : updateArr.array_items())
+                std::string oid = u["object_id"].string_value();
+                bool matched = false;
+                for (auto& node : objs)
                 {
-                    std::string oid = u["object_id"].string_value();
-                    bool matched = false;
-                    for (auto& node : objs)
+                    if (node["id"].string_value() != oid) continue;
+
+                    json11::Json::object n = node.object_items();
+                    n["position"] = u["position"];
+                    n["rotation"] = u["rotation"];
+                    n["scale"]    = u["scale"];
+                    n["animation_offset"] = MapAnimationOffset(u["animation_offset"].string_value());
+                    n["simulate_physics"] = MapSimulatePhysics(u["simulate_physics"].string_value());
+
+                    // Persist a per-object customization when the update carries one. Confirmed
+                    // from a live capture: a UGC place's lighting edit rides here as base64(JSON)
+                    // (same wire form as world_customizations), e.g. {"InteriorLightColor":
+                    // "X=.. Y=.. Z=..","DirectionaLightColor":".."}. Store it decoded as a raw
+                    // JSON string to match config.json's objects[].customization form. Standard
+                    // furniture updates omit the field, so keeping the existing value is the no-op
+                    // default with no regression. A value that isn't valid base64(JSON) is ignored.
+                    if (u["customization"].is_string() && !u["customization"].string_value().empty())
                     {
-                        if (node["id"].string_value() != oid) continue;
+                        std::string decoded = Base64Decode(u["customization"].string_value());
+                        std::string cerr;
+                        json11::Json parsed = json11::Json::parse(decoded, cerr);
 
-                        json11::Json::object n = node.object_items();
-                        n["position"] = u["position"];
-                        n["rotation"] = u["rotation"];
-                        n["scale"]    = u["scale"];
-                        n["animation_offset"] = MapAnimationOffset(u["animation_offset"].string_value());
-                        n["simulate_physics"] = MapSimulatePhysics(u["simulate_physics"].string_value());
-
-                        // Persist a per-object customization when the update carries one. Confirmed
-                        // from a live capture: a UGC place's lighting edit rides here as base64(JSON)
-                        // (same wire form as world_customizations), e.g. {"InteriorLightColor":
-                        // "X=.. Y=.. Z=..","DirectionaLightColor":".."}. Store it decoded as a raw
-                        // JSON string to match config.json's objects[].customization form. Standard
-                        // furniture updates omit the field, so keeping the existing value is the no-op
-                        // default with no regression. A value that isn't valid base64(JSON) is ignored.
-                        if (u["customization"].is_string() && !u["customization"].string_value().empty())
+                        if (cerr.empty() && parsed.is_object())
                         {
-                            std::string decoded = Base64Decode(u["customization"].string_value());
-                            std::string cerr;
-                            json11::Json parsed = json11::Json::parse(decoded, cerr);
-
-                            if (cerr.empty() && parsed.is_object())
+                            // A local UGC import places the object with a provisional customization pointing at the imported glb on disk,
+                            // example {"id":"<path>/Name.glb","filenameonly":"Name.glb"}. A successfully uploaded or fetched UGC object carries an empty customization so just make it empty.
+                            if (parsed["filenameonly"].is_string() || parsed["id"].string_value().find(".glb") != std::string::npos)
                             {
-                                // A local UGC import places the object with a provisional customization pointing at the imported glb on disk,
-                                // example {"id":"<path>/Name.glb","filenameonly":"Name.glb"}. A successfully uploaded or fetched UGC object carries an empty customization so just make it empty.
-                                if (parsed["filenameonly"].is_string() || parsed["id"].string_value().find(".glb") != std::string::npos)
-                                {
-                                    n["customization"] = std::string("");
-                                }
-                                else
-                                {
-                                    n["customization"] = decoded;
-                                } 
+                                n["customization"] = std::string("");
                             }
                             else
-                                LogLine("store: world_batch_update_objects: object " + oid + " customization decode failed, kept existing");
+                            {
+                                n["customization"] = decoded;
+                            } 
                         }
+                        else
+                            LogLine("store: world_batch_update_objects: object " + oid + " customization decode failed, kept existing");
+                    }
                         
-                        n["updated_time"] = static_cast<int>(NowUnix());
-                        node = json11::Json(n);
-                        matched = true;
+                    n["updated_time"] = static_cast<int>(NowUnix());
+                    node = json11::Json(n);
+                    matched = true;
+                    break;
+                }
+
+                updated.push_back(oid); // echo regardless (game does optimistic UI).
+                if (!matched) LogLine("store: world_batch_update_objects: update object " + oid + " not found in world " + worldId + " (echoed anyway)");
+            }
+
+            // create[]: mint id per entry in request order, build a full node.
+            for (const auto& c : createArr.array_items())
+            {
+                std::string oid = mintNumericId();
+
+                // single re-mint on the astronomically-unlikely collision.
+                for (const auto& node : objs)
+                {
+                    if (node["id"].string_value() == oid)
+                    {
+                        oid = mintNumericId();
                         break;
                     }
-
-                    updated.push_back(oid); // echo regardless (game does optimistic UI).
-                    if (!matched) LogLine("store: world_batch_update_objects: update object " + oid + " not found in world " + worldId + " (echoed anyway)");
                 }
 
-                // create[]: mint id per entry in request order, build a full node.
-                for (const auto& c : createArr.array_items())
+                // invId is the wire inventory-entry id from the inventory node "id".
+                // The catalog def id is distinct now, so recover it for item_definition.id
+                // Fallback to invId, the old behavior, only for an unknown entry id, which shouldn't happen offline since the game can only place from the user's own inventory.
+                std::string invId = c["inventory_item_id"].string_value();
+                std::string defId = defIdForInventoryEntry(invId);
+                if (defId.empty())
                 {
-                    std::string oid = mintNumericId();
-
-                    // single re-mint on the astronomically-unlikely collision.
-                    for (const auto& node : objs)
-                    {
-                        if (node["id"].string_value() == oid)
-                        {
-                            oid = mintNumericId();
-                            break;
-                        }
-                    }
-
-                    // invId is the wire inventory-entry id from the inventory node "id".
-                    // The catalog def id is distinct now, so recover it for item_definition.id
-                    // Fallback to invId, the old behavior, only for an unknown entry id, which shouldn't happen offline since the game can only place from the user's own inventory.
-                    std::string invId = c["inventory_item_id"].string_value();
-                    std::string defId = defIdForInventoryEntry(invId);
-                    if (defId.empty())
-                    {
-                        LogLine("store: world_batch_update_objects: create unknown inventory_item_id " + invId + ", item_definition.id falls back to it");
-                        defId = invId;
-                    }
-
-                    // A UGC def carries its own typename and needs a copy in this world so the folder can be shareable.
-                    std::string typeName = "WorldsItemDefinition";
-                    json11::Json ugcShareNode;
-                    {
-                        std::lock_guard<std::mutex> ugcLk(ugcMutex);
-                        auto uit = ugcDefs.find(defId);
-                        if (uit != ugcDefs.end())
-                        {
-                            std::string t = uit->second["__typename"].string_value();
-                            if (!t.empty()) typeName = t;
-                            ugcShareNode = uit->second;
-                        }
-                    }
-
-                    json11::Json::object node{
-                        {"animation_offset", MapAnimationOffset(c["animation_offset"].string_value())},
-                        {"customization", std::string("")},
-                        {"id", oid},
-                        {"inventory_item", json11::Json::object{ {"id", invId} }},
-                        {"item_definition", json11::Json::object{
-                            {"__typename", typeName}, {"id", defId} }},
-                        {"position", c["position"]},
-                        {"rotation", c["rotation"]},
-                        {"scale", c["scale"]},
-                        {"simulate_physics", MapSimulatePhysics(c["simulate_physics"].string_value())},
-                        {"updated_time", static_cast<int>(NowUnix())}
-                    };
-
-                    objs.push_back(json11::Json(node));
-                    created.push_back(oid);
-                    if (ugcShareNode.is_object())
-                    {
-                        pendingShares.push_back({ defId, ugcShareNode });
-                    }
-                    LogLine("store: world_batch_update_objects: create inventory_item_id=" + invId + " item_definition_id=" + defId + " minted object_id=" + oid);
+                    LogLine("store: world_batch_update_objects: create unknown inventory_item_id " + invId + ", item_definition.id falls back to it");
+                    defId = invId;
                 }
 
-                // delete[]: element is {object_id} or a bare string, erase by id, echo regardless.
-                for (const auto& d : deleteArr.array_items())
+                // A UGC def carries its own typename, which the placed object node must record so the world reloads it as UGC.
+                std::string typeName = "WorldsItemDefinition";
                 {
-                    std::string oid = d.is_string() ? d.string_value() : d["object_id"].string_value();
-                    for (auto it = objs.begin(); it != objs.end(); ++it)
+                    std::lock_guard<std::mutex> ugcLk(ugcMutex);
+                    auto uit = ugcDefs.find(defId);
+                    if (uit != ugcDefs.end())
                     {
-                        if ((*it)["id"].string_value() == oid)
-                        {
-                            objs.erase(it);
-                            break;
-                        }
-                    }
-                       
-                    deleted.push_back(oid);
-                }
-
-                // Remove portal records for any deleted objects so the portals map does not keep a stale gate destination.
-                if (!deleted.empty())
-                {
-                    auto pit = cfg.find("portals");
-                    if (pit != cfg.end() && pit->second.is_object())
-                    {
-                        json11::Json::object portals = pit->second.object_items();
-                        bool changed = false;
-                        for (const auto& oid : deleted)
-                        {
-                            if (portals.erase(oid.string_value()) != 0) changed = true;
-                        }
-                        if (changed) cfg["portals"] = json11::Json(portals);
+                        std::string t = uit->second["__typename"].string_value();
+                        if (!t.empty()) typeName = t;
                     }
                 }
 
-                // world_customizations: came as base64(JSON) stored as the decoded object
-                if (!worldCustomizationsB64.empty())
-                {
-                    std::string decoded = Base64Decode(worldCustomizationsB64);
-                    std::string cerr;
-                    json11::Json parsed = json11::Json::parse(decoded, cerr);
+                json11::Json::object node{
+                    {"animation_offset", MapAnimationOffset(c["animation_offset"].string_value())},
+                    {"customization", std::string("")},
+                    {"id", oid},
+                    {"inventory_item", json11::Json::object{ {"id", invId} }},
+                    {"item_definition", json11::Json::object{
+                    {"__typename", typeName}, {"id", defId} }},
+                    {"position", c["position"]},
+                    {"rotation", c["rotation"]},
+                    {"scale", c["scale"]},
+                    {"simulate_physics", MapSimulatePhysics(c["simulate_physics"].string_value())},
+                    {"updated_time", static_cast<int>(NowUnix())}
+                };
 
-                    if (cerr.empty() && parsed.is_object())
-                        cfg["customizations"] = parsed;
-                    else
-                        LogLine("store: world_batch_update_objects: customizations decode failed, kept existing");
-                }
-
-                cfg["objects"] = json11::Json(objs);
-                e.config = json11::Json(cfg);
-                newCfg = e.config;
-                cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
-                shareFolder = e.folder;
-                break;
+                objs.push_back(json11::Json(node));
+                created.push_back(oid);
+                LogLine("store: world_batch_update_objects: create inventory_item_id=" + invId + " item_definition_id=" + defId + " minted object_id=" + oid);
             }
+
+            // delete[]: element is {object_id} or a bare string, erase by id, echo regardless.
+            for (const auto& d : deleteArr.array_items())
+            {
+                std::string oid = d.is_string() ? d.string_value() : d["object_id"].string_value();
+                for (auto it = objs.begin(); it != objs.end(); ++it)
+                {
+                    if ((*it)["id"].string_value() == oid)
+                    {
+                        objs.erase(it);
+                        break;
+                    }
+                }
+                       
+                deleted.push_back(oid);
+            }
+
+            // Remove portal records for any deleted objects so the portals map does not keep a stale gate destination.
+            if (!deleted.empty())
+            {
+                auto pit = cfg.find("portals");
+                if (pit != cfg.end() && pit->second.is_object())
+                {
+                    json11::Json::object portals = pit->second.object_items();
+                    bool changed = false;
+                    for (const auto& oid : deleted)
+                    {
+                        if (portals.erase(oid.string_value()) != 0) changed = true;
+                    }
+                    if (changed) cfg["portals"] = json11::Json(portals);
+                }
+            }
+
+            // world_customizations: came as base64(JSON) stored as the decoded object
+            if (!worldCustomizationsB64.empty())
+            {
+                std::string decoded = Base64Decode(worldCustomizationsB64);
+                std::string cerr;
+                json11::Json parsed = json11::Json::parse(decoded, cerr);
+
+                if (cerr.empty() && parsed.is_object())
+                    cfg["customizations"] = parsed;
+                else
+                    LogLine("store: world_batch_update_objects: customizations decode failed, kept existing");
+            }
+
+            cfg["objects"] = json11::Json(objs);
+            e.config = json11::Json(cfg);
+            newCfg = e.config;
+            cfgPath = (std::filesystem::path(e.folder) / "config.json").wstring();
+            break;
         }
 
         if (found)
@@ -2069,12 +2057,6 @@ namespace home2hook {
             else
             {
                 LogLine("store: world_batch_update_objects: config.json write failed for " + worldId);
-            }
-
-            // Copy any placed UGC blobs into the world's ugc folder so a shared world stays independant.
-            for (const auto& sh : pendingShares)
-            {
-                shareUgcToWorld(shareFolder, sh.first, sh.second);
             }
         }
         else
@@ -3232,55 +3214,6 @@ namespace home2hook {
         std::string body = json11::Json(json11::Json::object{ { field, json11::Json(inner) } }).dump();
         LogLine("store: ugc upload response: " + body);
         return body;
-    }
-
-    void ResponseStore::shareUgcToWorld(const std::wstring& worldFolder, const std::string& defId, const json11::Json& defNode) const
-    {
-        namespace fs = std::filesystem;
-        std::string hash = defNode["hash_from_client"].string_value();
-        if (hash.empty()) return;
-
-        std::error_code ec;
-        fs::path ugcDir = fs::path(worldFolder) / "ugc";
-        fs::create_directories(ugcDir, ec);
-
-        // Copy the blob from the uploaded store into the world folder so the folder carries its own assets.
-        fs::path dst = ugcDir / (hash + ".zst");
-        if (!fs::exists(dst, ec))
-        {
-            fs::path src = fs::path(storeRootDir) / "uploaded-ugc" / (hash + ".zst");
-            if (fs::exists(src, ec))
-            {
-                CopyFileW(src.wstring().c_str(), dst.wstring().c_str(), TRUE);
-            }
-        }
-
-        // Merge the def into the world's ugc-hashes.json
-        fs::path manifestPath = ugcDir / "ugc-hashes.json";
-        json11::Json::object manifest;
-        std::string mt;
-        if (ReadFileText(manifestPath, mt))
-        {
-            std::string e;
-            json11::Json j = json11::Json::parse(mt, e);
-            if (e.empty() && j.is_object())
-            {
-                manifest = j.object_items();
-            }
-        }
-
-        if (manifest.find(defId) == manifest.end())
-        {
-            json11::Json::object clean = defNode.object_items();
-            clean.erase("glb_uri");
-            clean.erase("compressed_glb_uri");
-            clean.erase("compressed_zstd_uri");
-            clean.erase("owned_entry_id"); // added to keep the shared world portable
-            clean.erase("created_time");// added to keep portable
-            manifest[defId] = json11::Json(clean);
-            writeFileAtomic(manifestPath.wstring(), json11::Json(manifest).dump());
-            LogLine("store: ugc shared def " + defId + " into world " + fs::path(worldFolder).filename().string() + "\\ugc");
-        }
     }
 
     std::string ResponseStore::buildTemplatesList() const

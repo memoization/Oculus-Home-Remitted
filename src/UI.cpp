@@ -111,14 +111,14 @@ void CenteredText(const std::string& text, bool adjustToPadding = false)
 {
     auto windowWidth = ImGui::GetWindowSize().x;
     auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
-    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f - (adjustToPadding ? UIConsts.PageContentPadding : 0));
+    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f - iScale.F(adjustToPadding ? UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2) : 0));
     ImGui::Text(text.c_str());
 }
 
 void CenteredTextWrapped(const std::string& text, bool adjustToPadding = false)
 {
     const float windowWidth = ImGui::GetWindowSize().x;
-    const float padding = adjustToPadding ? UIConsts.PageContentPadding : 0.0f;
+    const float padding = adjustToPadding ? iScale.F(UIConsts.PageContentPadding) : 0.0f;
     const float availableWidth = windowWidth - padding * 2.0f;
 
     const float textWidth = ImGui::CalcTextSize(text.c_str()).x;
@@ -541,7 +541,7 @@ void UI::DoProfile()
     ImGui::SetCursorPosY(avail.y - iScale.F(75));
     float btnH = iScale.F(40);
     float btnW = iScale.F(220);
-    ImGui::SetCursorPosX(((avail.x - btnW) / 2) - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosX(((avail.x - btnW) / 2) - iScale.F(UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2)));
 
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Fetch Avatar Appearance", ImVec2(btnW, btnH)))
@@ -730,14 +730,52 @@ void UI::DoWorlds()
             ImGui::PopStyleColor();
         }
 
-        // Footer: Fetch Homes (left) and Set Default (right), centered as a pair
-        ImGui::SetCursorPosY(avail.y - iScale.F(75));
+        // Upper footer row
         float btnH = iScale.F(40);
-        float fetchW = iScale.F(180);
-        float setW = iScale.F(160);
+        float btnW = iScale.F(160);
         float btnGap = iScale.F(12);
+        float rowW = ImGui::GetWindowSize().x;
+        float startX = (rowW - (btnW * 2 + btnGap) - iScale.F(UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2))) * 0.5f;
+        if (startX < 0.0f)
+        {
+            startX = 0.0f;
+        }
+
+        // Return status text from the last import or export
+        if (!homeTransferMsg.empty())
+        {
+            ImGui::SetCursorPosY(avail.y - iScale.F(150));
+            ImGui::PushStyleColor(ImGuiCol_Text, homeTransferOk ? UIConsts.SuccessText : UIConsts.ErrorText);
+            CenteredText(homeTransferMsg, true);
+            ImGui::PopStyleColor();
+        }
+
+        ImGui::SetCursorPosY(avail.y - iScale.F(120));
+        ImGui::SetCursorPosX(startX);
+
+        pushedStyles = PushButtonStyleGrey();
+        if (ImGui::Button("Import Home", ImVec2(btnW, btnH)))
+        {
+            ImportHomeFromFile();
+        }
+        ImGui::PopStyleColor(pushedStyles);
+
+        ImGui::SameLine(0.0f, btnGap);
+
+        if (!hasWorlds) ImGui::BeginDisabled();
+        pushedStyles = PushButtonStyleGrey();
+        if (ImGui::Button("Export Home", ImVec2(btnW, btnH)))
+        {
+            ExportSelectedHome();
+        }
+        ImGui::PopStyleColor(pushedStyles);
+        if (!hasWorlds) ImGui::EndDisabled();
+
+        // Footer second row
+        ImGui::SetCursorPosY(avail.y - iScale.F(75));
+
         float colW = ImGui::GetWindowSize().x;
-        float pairStartX = (colW - (fetchW + btnGap + setW) - UIConsts.PageContentPadding) * 0.5f;
+        float pairStartX = (colW - (btnW + btnGap + btnW) - iScale.F(UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2))) * 0.5f;
         if (pairStartX < 0.0f)
         {
             pairStartX = 0.0f;
@@ -745,8 +783,8 @@ void UI::DoWorlds()
             
         ImGui::SetCursorPosX(pairStartX);
 
-        pushedStyles = PushButtonStyleGrey();
-        if (ImGui::Button("Fetch Homes", ImVec2(fetchW, btnH)))
+        pushedStyles = PushLaunchButtonStyle();
+        if (ImGui::Button("Fetch Homes", ImVec2(btnW, btnH)))
         {
             fetchResultMsg.clear();
             fetchResultOk = false;
@@ -757,8 +795,8 @@ void UI::DoWorlds()
         ImGui::SameLine(0.0f, btnGap);
 
         pushedStyles = PushButtonStyleGrey();
-        if (!hasWorlds) ImGui::BeginDisabled();
-        if (ImGui::Button("Set Default", ImVec2(setW, btnH)))
+        if (!hasWorlds || (hasWorlds && worldList[sel].isDefault)) ImGui::BeginDisabled();
+        if (ImGui::Button("Set Default", ImVec2(btnW, btnH)))
         {
             // Takes effect in-VR on the next Home launch (the probe reads preferences.defaultWorldId at load)
             prefs.SetDefaultWorldId(worldList[sel].worldId);
@@ -769,7 +807,7 @@ void UI::DoWorlds()
 
             homeLogger.write() << "Set default home: " << worldList[sel].worldId.c_str() << "." << std::endl;
         }
-        if (!hasWorlds) ImGui::EndDisabled();
+        if (!hasWorlds || (hasWorlds && worldList[sel].isDefault)) ImGui::EndDisabled();
             
         ImGui::PopStyleColor(pushedStyles);
 
@@ -1019,7 +1057,7 @@ void UI::DoApps()
     float btnH = iScale.F(40);
     float btnW = iScale.F(180);
     float gap = iScale.F(14);
-    ImGui::SetCursorPosX((avail.x - (btnW * 3 + gap * 2)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosX((avail.x - (btnW * 3 + gap * 2)) / 2 - iScale.F(UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2)));
     ImGui::SetCursorPosY(avail.y - iScale.F(75));
 
     ImGui::BeginDisabled(appsScanRunning);
@@ -1135,8 +1173,8 @@ void UI::DoAchievements()
 
     ImGui::SetCursorPosY(avail.y - iScale.F(75));
     float btnH = iScale.F(40);
-    float btnW = iScale.F(180);
-    ImGui::SetCursorPosX(((avail.x - btnW) / 2) - UIConsts.PageContentPadding);
+    float btnW = iScale.F(210);
+    ImGui::SetCursorPosX(((avail.x - btnW) / 2) - iScale.F(UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2)));
 
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Fetch Achievements", ImVec2(btnW, btnH)))
@@ -1285,7 +1323,7 @@ void UI::DoImports()
     float btnH = iScale.F(40);
     float btnW = iScale.F(180);
     float gap = iScale.F(14);
-    ImGui::SetCursorPosX((avail.x - (btnW * 2 + gap * 2)) / 2 - UIConsts.PageContentPadding);
+    ImGui::SetCursorPosX((avail.x - (btnW * 2 + gap * 2)) / 2 - iScale.F(UIConsts.PageContentPadding - (UIConsts.ContentWindowPaddingX / 2)));
     ImGui::SetCursorPosY(avail.y - iScale.F(75));
 
     // Delete is disabled while Home is running
@@ -1671,6 +1709,7 @@ bool UI::NavItem(const char* label, const std::string& iconPath, PageType page)
         // Re-scan the Worlds folder on switch-to (picks up in-VR create/rename/screenshot).
         if (page == PageType::Worlds && env.currentPage != PageType::Worlds)
         {
+            homeTransferMsg = "";
             reloadWorldsOnOpen = true;
         }
 
@@ -1909,8 +1948,6 @@ void UI::DrawSidebar()
 
 void UI::DrawContent()
 {
-    int windowPaddingX = 28;
-
     // Fill exactly the region the sidebar left. Never use the design constants so nothing overhangs the real client (which can differ by a few px from WindowWidth/Height)
     ImVec2 region = ImGui::GetContentRegionAvail();
     float contentWidth = region.x;
@@ -1977,12 +2014,12 @@ void UI::DrawContent()
 
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(windowPaddingX, UIConsts.PageContentPadding));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(UIConsts.ContentWindowPaddingX, UIConsts.PageContentPadding));
 
     float navCursor = ImGui::GetCursorPosX();
-    ImGui::SetCursorPosX(navCursor + iScale.F(windowPaddingX));
+    ImGui::SetCursorPosX(navCursor + iScale.F(UIConsts.ContentWindowPaddingX));
 
-    ImGui::BeginChild("##content", ImVec2(contentWidth - windowPaddingX, fullHeight), false);
+    ImGui::BeginChild("##content", ImVec2(contentWidth - iScale.F(UIConsts.ContentWindowPaddingX), fullHeight), false);
 
     switch (env.currentPage)
     {
@@ -2055,6 +2092,90 @@ void UI::DoSetRevive()
         reviveInjectorPath = prefs.Narrow(file);
         prefs.SetExePath("reviveInjectorPath", reviveInjectorPath);
         homeLogger.write() << "Set Revive executable." << std::endl;
+    }
+}
+
+// Strip the characters Windows forbids in a file name so a home's display label can render in the save dialog.
+static std::wstring SanitizeFileName(const std::wstring& in)
+{
+    std::wstring out;
+    for (wchar_t c : in)
+    {
+        if (c == L'\\' || c == L'/' || c == L':' || c == L'*' || c == L'?' || c == L'"' || c == L'<' || c == L'>' || c == L'|')
+        {
+            continue;
+        }
+        out.push_back(c);
+    }
+
+    while (!out.empty() && (out.back() == L' ' || out.back() == L'.'))
+    {
+        out.pop_back();
+    }
+
+    if (out.empty()) out = L"Home";
+    return out;
+}
+
+void UI::ExportSelectedHome()
+{
+    homeTransferMsg = "";
+
+    if (worldList.empty()) return;
+
+    int sel = env.selectedWorld;
+    if (sel < 0 || sel >= (int)worldList.size())
+    {
+        sel = 0;
+    }
+    const worlds::WorldCardInfo& w = worldList[sel];
+
+    std::wstring defName = SanitizeFileName(prefs.Widen(WorldLabel(w))) + L".ochome";
+
+    wchar_t file[MAX_PATH] = { 0 };
+    wcsncpy_s(file, defName.c_str(), _TRUNCATE);
+
+    OPENFILENAMEW ofn = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = glfwGetWin32Window(window);
+    ofn.lpstrFilter = L"Oculus Home (*.ochome)\0*.ochome\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = file;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrTitle = L"Export Home";
+    ofn.lpstrDefExt = L"ochome";
+    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_EXPLORER | OFN_NOCHANGEDIR;
+
+    if (!GetSaveFileNameW(&ofn)) return; // canceled
+
+    bool result = worlds::ExportHome(w.worldId, file);
+    homeTransferOk = result;
+    homeTransferMsg = result ? "Home exported!" : "Export failed. See the log for details.";
+}
+
+void UI::ImportHomeFromFile()
+{
+    homeTransferMsg = "";
+
+    wchar_t file[MAX_PATH] = { 0 };
+
+    OPENFILENAMEW ofn = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = glfwGetWin32Window(window);
+    ofn.lpstrFilter = L"Oculus Home (*.ochome)\0*.ochome\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = file;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrTitle = L"Import Home";
+    ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER | OFN_NOCHANGEDIR;
+
+    if (!GetOpenFileNameW(&ofn)) return; // the user cancelled
+
+    bool result = worlds::ImportHome(file);
+    homeTransferOk = result;
+    homeTransferMsg = result ? "Home imported!" : "Import failed. See the log for details.";
+
+    if (result)
+    {
+        reloadWorldsOnOpen = true; // flag for rescan so the imported home shows right away
     }
 }
 #pragma endregion

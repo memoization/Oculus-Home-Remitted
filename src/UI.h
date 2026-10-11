@@ -103,6 +103,7 @@ struct UIConst
     const float CheckboxScale = 1.4f;
 
     const int PageContentPadding = 26;
+    const int ContentWindowPaddingX = 28;
 
     const std::string FontPath = "fonts/segoeui.ttf";
 };
@@ -180,6 +181,8 @@ struct UI
 
     void DoSetExecutable(const wchar_t* defaultDir);
     void DoSetRevive();
+    void ExportSelectedHome(); // save-as a .ochome for the selected home
+    void ImportHomeFromFile(); // pick a .ochome and extract it into store\worlds
     void RebuildAppsLibrary(); // re-scan library roots into store\apps-library.json, refreshes appsFoundCount
     bool BrowseForFolder(std::string& outPath); // shell folder picker, true if the user chose a folder
 
@@ -210,6 +213,10 @@ struct UI
     // scanned per-world folders (list, select, Set Default). Re-scanned on page (re)open (one-shot, mirrors reloadProfileOnOpen, no background poll).
     std::vector<worlds::WorldCardInfo> worldList;
     bool reloadWorldsOnOpen = true;
+
+    // Result of the last Homes import or export
+    std::string homeTransferMsg;
+    bool homeTransferOk = false;
 
     // Apps Library: user's Oculus library roots
     std::vector<std::string> libraryPaths;

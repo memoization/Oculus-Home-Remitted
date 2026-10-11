@@ -106,10 +106,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MINIZ_NO_ZLIB_COMPATIBLE_NAMES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)shared;$(SolutionDir)dependencies\cpr;$(SolutionDir)dependencies\json11;$(SolutionDir)dependencies\picopng;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;$(SolutionDir)dependencies\openvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)shared;$(SolutionDir)dependencies\cpr;$(SolutionDir)dependencies\json11;$(SolutionDir)dependencies\picopng;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;$(SolutionDir)dependencies\openvr\include;$(SolutionDir)dependencies\miniz;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,10 +125,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MINIZ_NO_ZLIB_COMPATIBLE_NAMES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)shared;$(SolutionDir)dependencies\cpr;$(SolutionDir)dependencies\json11;$(SolutionDir)dependencies\picopng;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;$(SolutionDir)dependencies\openvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)shared;$(SolutionDir)dependencies\cpr;$(SolutionDir)dependencies\json11;$(SolutionDir)dependencies\picopng;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\imgui;$(SolutionDir)dependencies\openvr\include;$(SolutionDir)dependencies\miniz;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -151,6 +151,7 @@
     <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
     <ClInclude Include="dependencies\picopng\picopng.h" />
+    <ClInclude Include="dependencies\miniz\miniz.h" />
     <ClInclude Include="shared\BroadcastSourceShared.h" />
     <ClInclude Include="src\AppLibraries.h" />
     <ClInclude Include="src\LaunchHandler.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="src\UI.h" />
     <ClInclude Include="src\Watcher.h" />
     <ClInclude Include="src\Worlds.h" />
+    <ClInclude Include="src\Zip.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\imgui\backends\imgui_impl_glfw.cpp" />
@@ -182,6 +184,10 @@
     <ClCompile Include="dependencies\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="dependencies\json11\json11.cpp" />
     <ClCompile Include="dependencies\picopng\picopng.cpp" />
+    <ClCompile Include="dependencies\miniz\miniz.c">
+      <!-- miniz is a vendored C library. Turn off SDLCheck for it so its standard C idioms are not causing build errors. -->
+      <SDLCheck>false</SDLCheck>
+    </ClCompile>
     <ClCompile Include="src\AppLibraries.cpp" />
     <ClCompile Include="src\LaunchHandler.cpp" />
     <ClCompile Include="src\OVRLogWatch.cpp" />
@@ -199,6 +205,7 @@
     <ClCompile Include="src\UI.cpp" />
     <ClCompile Include="src\Watcher.cpp" />
     <ClCompile Include="src\Worlds.cpp" />
+    <ClCompile Include="src\Zip.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="images\icon.ico" />

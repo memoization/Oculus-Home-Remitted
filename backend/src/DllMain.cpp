@@ -266,6 +266,9 @@ static DWORD WINAPI InitThread(LPVOID)
 
     InstallVertsPromptPatch(); // Drop the annoying "multiplayer connection failed" error dialog
 
+    // Link the client UGC upload size limit to max_ugc_file_size from the world_login template
+    InstallUgcSizePatch(selfDir);
+
     LogLine("Backend installed! graph.oculus.com redirected to 127.0.0.1:443 with the leaf signed by the CA.");
     LogLine("A pass shows '*** HANDSHAKE COMPLETED ***' and '*** GAME SENT REQUEST (/graphql) ***'. A fail shows 'HANDSHAKE FAILED / REJECTED' and no request.");
 

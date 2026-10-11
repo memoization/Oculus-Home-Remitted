@@ -66,14 +66,19 @@
     <ClCompile Include="src\ShaCapPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\UgcSizePatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\VertsPromptPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\AvatarVerifyPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\backend\src\ZstdUtil.cpp" />
     <ClCompile Include="src\AvatarCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\backend\src\ZstdUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

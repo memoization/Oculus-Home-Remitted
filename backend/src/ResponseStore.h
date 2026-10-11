@@ -234,7 +234,6 @@ namespace home2hook {
         void augmentInventoryFromWorldObjects(); // own each world's placed objects by inventory_item.id so the game can find and edit them
         void augmentInventoryFromGlobalUgc(); // own each uploaded UGC def (blob file present in store\uploaded-ugc) so a freshly uploaded item is marked placeable
         void rebuildInventoryReverseMap() const; // entry-id to def-id from final ownedItems (honors entry_id)
-        void shareUgcToWorld(const std::wstring& worldFolder, const std::string& defId, const json11::Json& defNode) const; // copy an uploaded UGC blob into a world's ugc folder and record it in that world's ugc-hashes.json so the world stays shareable
         std::string buildTemplatesList() const; // the create-from-template picker list, built from uploaded UGC place defs
         std::string buildSalvageOwnedItem(const std::string& variablesJson) const; // remove an uploaded UGC item by its inventory_item.id and def + .zst from worlds, WorldsCache, uploaded-ugc, and global manifest
         const WorldEntry* findWorldLocked(const std::string& worldId) const; // caller holds worldsMutex

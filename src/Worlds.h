@@ -52,6 +52,13 @@ namespace worlds
     // Read the import hashes json and return every imported def
     std::vector<ImportInfo> ScanImports();
 
+    // Package a home folder into a single portable .ochome file at outPath as a zip renamed extension.
+    // The world's placed UGC objects and any UGC base map are resolved to their blobs from store\uploaded-ugc and collected into the home archive's own ugc folder along with an updated ugc-hashes.json, so the exported home is self contained.
+    bool ExportHome(const std::string& worldId, const std::wstring& outPath);
+
+    // Extract a .ochome file into store\worlds.
+    bool ImportHome(const std::wstring& inPath);
+
     // Remove an imported UGC def by id everywhere, same as the backend salvage. Only safe while Home is not running, since clashes can happen w/ the backend
     // Drops placed instances from every world config, for a place template, it also clears customizations.UGCBase and the entry-point object so the world reverts to the default room.
     // 
