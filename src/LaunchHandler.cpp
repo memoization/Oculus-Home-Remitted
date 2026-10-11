@@ -195,6 +195,17 @@ void LaunchHandler::DoLaunchHome()
         dir = dir.substr(0, slash);
     }
 
+    // Suppress the input warning log on every tick
+    wchar_t localAppData[MAX_PATH] = {};
+    if (GetEnvironmentVariableW(L"LOCALAPPDATA", localAppData, MAX_PATH))
+    {
+        std::wstring cfgDir = std::wstring(localAppData) + L"\\Home2\\Saved\\Config\\WindowsNoEditor";
+        std::error_code ec;
+        std::filesystem::create_directories(cfgDir, ec);
+        std::wstring iniPath = cfgDir + L"\\Engine.ini";
+        WritePrivateProfileStringW(L"Core.Log", L"LogHome2InputManager", L"Error", iniPath.c_str());
+    }
+
     std::wstring cmd = L"\"" + exeW + L"\"" + L" -windowed -HideAllWindows -UNATTENDED";
 
     // Add Revive injector as the main app targeting home shipping
