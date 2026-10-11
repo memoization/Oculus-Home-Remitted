@@ -5,6 +5,7 @@
 #include "Worlds.h"
 #include "Prefs.h"
 #include "HomeLogger.h"
+#include "Zip.h"
 
 #include <algorithm>
 #include <atomic>
@@ -384,10 +385,28 @@ namespace worlds
                     {
                         if (global.find(kv.first) == global.end())
                         {
-                            global[kv.first] = kv.second;
+                            // Record the migration time as its "created_time"
+                            json11::Json::object node = kv.second.is_object() ? kv.second.object_items() : json11::Json::object{};
+                            node["created_time"] = static_cast<double>(std::time(nullptr));
+                            global[kv.first] = json11::Json(node);
                             globalChanged = true;
                         }
                     }
+                }
+            }
+        }
+
+        // Mirror every uploaded blob into WorldsCache so the game can load any placed UGC
+        if (!cacheDir.empty() && fs::is_directory(uploadedDir, ec))
+        {
+            for (const auto& f : fs::directory_iterator(uploadedDir, ec))
+            {
+                if (!f.is_regular_file() || f.path().extension() != L".zst") continue;
+
+                fs::path dst = cacheDir / f.path().filename();
+                if (!fs::exists(dst, ec) && CopyFileW(f.path().wstring().c_str(), dst.wstring().c_str(), TRUE))
+                {
+                    ++copied;
                 }
             }
         }
@@ -585,6 +604,231 @@ namespace worlds
         }
 
         homeLogger.write() << "Worlds: deleted import " << defId.c_str() << " (" << (isPlace ? "map" : "object") << ")." << std::endl;
+        return true;
+    }
+
+    static std::string ToForwardSlash(const fs::path& rel)
+    {
+        std::string s = prefs.Narrow(rel.wstring());
+        for (auto& c : s)
+        {
+            if (c == '\\') c = '/';
+        }
+        return s;
+    }
+
+    bool ExportHome(const std::string& worldId, const std::wstring& outPath)
+    {
+        if (worldId.empty()) return false;
+
+        std::error_code ec;
+        fs::path appDir = fs::path(prefs.AppDir());
+        fs::path worldFolder = appDir / "store" / "worlds" / ("world_" + worldId);
+        if (!fs::is_directory(worldFolder, ec)) return false;
+
+        fs::path cfgPath = worldFolder / "config.json";
+        std::string ctext = ReadFileUtf8(cfgPath.wstring());
+        if (ctext.empty()) return false;
+
+        std::string cerr;
+        json11::Json cfg = json11::Json::parse(ctext, cerr);
+        if (!cerr.empty() || !cfg.is_object()) return false;
+
+        // Collect the UGC def ids this home references including its placed UGC objects and any UGC base map.
+        std::vector<std::string> ugcDefIds;
+        auto addDef = [&](const std::string& id)
+        {
+            if (id.empty() || id == "0") return;
+            if (std::find(ugcDefIds.begin(), ugcDefIds.end(), id) == ugcDefIds.end())
+            {
+                ugcDefIds.push_back(id);
+            }
+        };
+
+        for (const auto& obj : cfg["objects"].array_items())
+        {
+            const std::string& tn = obj["item_definition"]["__typename"].string_value();
+            if (tn == "WorldsUGCItemDefinition" || tn == "WorldsUGCPlaceDefinition")
+            {
+                addDef(obj["item_definition"]["id"].string_value());
+            }
+        }
+        addDef(cfg["customizations"]["UGCBase"].string_value());
+
+        // Load the global import manifest to resolve each def to its hash
+        fs::path manifestPath = ImportManifestPath();
+        fs::path uploadedDir = manifestPath.parent_path();
+        json11::Json::object global;
+        {
+            std::string t = ReadFileUtf8(manifestPath.wstring());
+            std::string err;
+            json11::Json j = json11::Json::parse(t, err);
+
+            if (err.empty() && j.is_object())
+            {
+                global = j.object_items();
+            }
+        }
+
+        std::string folderName = "world_" + worldId;
+        std::vector<zip::FileEntry> entries;
+
+        // Every file in the home folder except its ugc subfolder, which will rebuild from uploaded-ugc so the archive is correct no matter what the ugc folder lacks.
+        for (const auto& f : fs::recursive_directory_iterator(worldFolder, ec))
+        {
+            if (!f.is_regular_file()) continue;
+
+            fs::path rel = fs::relative(f.path(), worldFolder, ec);
+            if (ec || rel.empty()) continue;
+
+            std::wstring relw = rel.wstring();
+            if (relw.rfind(L"ugc\\", 0) == 0 || relw.rfind(L"ugc/", 0) == 0) continue;
+            if (f.path().extension() == L".tmp") continue;
+
+            zip::FileEntry e;
+            e.pathInArchive = folderName + "/" + ToForwardSlash(rel);
+            e.sourcePath = f.path().wstring();
+            entries.push_back(std::move(e));
+        }
+
+        // Stage each referenced UGC blob and a new portable ugc-hashes.json. These are sourced from the store's uploaded-ugc
+        json11::Json::object stagedManifest;
+        for (const auto& defId : ugcDefIds)
+        {
+            auto it = global.find(defId);
+            if (it == global.end() || !it->second.is_object())
+            {
+                homeLogger.write() << "Worlds: export " << worldId.c_str() << " could not resolve UGC def " << defId.c_str() << ", skipped." << std::endl;
+                continue;
+            }
+
+            std::string hash = it->second["hash_from_client"].string_value();
+            if (hash.empty()) continue;
+
+            fs::path blob = uploadedDir / (hash + ".zst");
+            if (fs::exists(blob, ec))
+            {
+                zip::FileEntry e;
+                e.pathInArchive = folderName + "/ugc/" + hash + ".zst";
+                e.sourcePath = blob.wstring();
+                entries.push_back(std::move(e));
+            }
+            else
+            {
+                homeLogger.write() << "Worlds: export " << worldId.c_str() << " missing blob for hash " << hash.c_str() << ", object may not load on import." << std::endl;
+            }
+
+            // Keep a portable def node
+            json11::Json::object clean = it->second.object_items();
+            clean.erase("glb_uri");
+            clean.erase("compressed_glb_uri");
+            clean.erase("compressed_zstd_uri");
+            clean.erase("owned_entry_id");
+            clean.erase("created_time");
+            stagedManifest[defId] = json11::Json(clean);
+        }
+
+        if (!stagedManifest.empty())
+        {
+            zip::FileEntry e;
+            e.pathInArchive = folderName + "/ugc/ugc-hashes.json";
+            e.data = json11::Json(stagedManifest).dump();
+            entries.push_back(std::move(e));
+        }
+
+        if (!zip::CreateArchive(outPath, entries))
+        {
+            homeLogger.write() << "Worlds: export failed to write archive for world " << worldId.c_str() << "." << std::endl;
+            return false;
+        }
+
+        homeLogger.write() << "Worlds: exported home " << worldId.c_str() << " with " << stagedManifest.size() << " UGC asset(s)." << std::endl;
+        return true;
+    }
+
+    bool ImportHome(const std::wstring& inPath)
+    {
+        std::error_code ec;
+        fs::path appDir = fs::path(prefs.AppDir());
+        fs::path worldsRoot = appDir / "store" / "worlds";
+        fs::create_directories(worldsRoot, ec);
+
+        fs::path staging = worldsRoot / (".import_tmp_" + MintWorldId());
+        fs::create_directories(staging, ec);
+
+        if (!zip::ExtractArchive(inPath, staging.wstring()))
+        {
+            fs::remove_all(staging, ec);
+            homeLogger.write() << "Worlds: import failed to extract archive." << std::endl;
+            return false;
+        }
+
+        // The archive holds a single world_<id> folder.
+        fs::path srcWorld;
+        for (const auto& e : fs::directory_iterator(staging, ec))
+        {
+            if (e.is_directory() && e.path().filename().wstring().rfind(L"world_", 0) == 0)
+            {
+                srcWorld = e.path();
+                break;
+            }
+        }
+        if (srcWorld.empty())
+        {
+            fs::remove_all(staging, ec);
+            homeLogger.write() << "Worlds: import archive had no world folder." << std::endl;
+            return false;
+        }
+
+        // Prefer the id written in config.json but fall back to the folder name.
+        fs::path cfgPath = srcWorld / "config.json";
+        std::string worldId;
+        json11::Json::object cfgObj;
+        {
+            std::string t = ReadFileUtf8(cfgPath.wstring());
+            std::string err;
+            json11::Json j = json11::Json::parse(t, err);
+            if (err.empty() && j.is_object())
+            {
+                cfgObj = j.object_items();
+                worldId = j["world_id"].string_value();
+            }
+        }
+        if (worldId.empty())
+        {
+            worldId = prefs.Narrow(srcWorld.filename().wstring().substr(6));
+        }
+
+        // The id is provided in the archive, so re-importing the same home overwrites
+        fs::path dst = worldsRoot / ("world_" + worldId);
+        if (worldId.empty())
+        {
+            worldId = MintWorldId();
+            if (!cfgObj.empty())
+            {
+                cfgObj["world_id"] = worldId;
+                WriteFileAtomic(cfgPath.wstring(), json11::Json(cfgObj).dump());
+            }
+            dst = worldsRoot / ("world_" + worldId);
+        }
+        else if (fs::exists(dst, ec))
+        {
+            fs::remove_all(dst, ec); // replace the existing home that has this id
+        }
+
+        // Copy to the store's world folder
+        std::error_code mec;
+        fs::rename(srcWorld, dst, mec);
+        if (mec)
+        {
+            fs::copy(srcWorld, dst, fs::copy_options::recursive | fs::copy_options::overwrite_existing, ec);
+        }
+        fs::remove_all(staging, ec);
+
+        // Populate the imported UGC blobs and manifest into WorldsCache, uploaded-ugc, and the global manifest.
+        PopulateUgcCache();
+
+        homeLogger.write() << "Worlds: imported home world " << worldId.c_str() << "." << std::endl;
         return true;
     }
 
