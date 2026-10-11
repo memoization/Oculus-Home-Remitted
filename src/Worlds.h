@@ -57,7 +57,7 @@ namespace worlds
     bool ExportHome(const std::string& worldId, const std::wstring& outPath);
 
     // Extract a .ochome file into store\worlds.
-    bool ImportHome(const std::wstring& inPath, std::string* importedWorldId = nullptr);
+    bool ImportHome(const std::wstring& inPath);
 
     // Remove an imported UGC def by id everywhere, same as the backend salvage. Only safe while Home is not running, since clashes can happen w/ the backend
     // Drops placed instances from every world config, for a place template, it also clears customizations.UGCBase and the entry-point object so the world reverts to the default room.
