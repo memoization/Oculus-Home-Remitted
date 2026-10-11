@@ -62,7 +62,7 @@
       "max_objects_in_mutation": 60,
       "max_number_of_worlds": 200,
       "world_auto_capture_period": 10,
-      "max_ugc_file_size": 15728640,
+      "max_ugc_file_size": 524288000,
       "max_mb_ugc_in_world": 250,
       "max_mp_guests": 7,
       "item_def_id_achievement": "412458069155458",
