@@ -38,10 +38,10 @@ If you opened or used Oculus Home during the time window of these being featured
 _Any public efforts to help with this would be greatly appreciated!_
 
 # Setup Guide
-This tool only supports a specific version of Oculus Home. It can be downloaded from [archive.org](https://archive.org/download/oculus-worlds/worlds-2021-03-29.zip)
+This tool only supports a specific version of Oculus Home. **It can be downloaded [here](https://archive.org/download/oculus-worlds/worlds-2021-03-29.zip).**
 
 1. Extract the *oculus-worlds* folder at any location.
-2. Download the latest version of the [tool](https://github.com/memoization/Oculus-Home-Remitted/releases/latest). The tool is portable as there is no installer.
+2. Download the latest version of the [tool](https://github.com/memoization/Oculus-Home-Remitted/releases/latest). This is portable as there is no installer.
 3. Extract and launch *Home2Remitted.exe*.
 4. Use the *Set Executable* option then navigate to the *oculus-worlds* folder you extracted and select `Home2-Win64-Shipping.exe` located at `Home2\Binaries\Win64`. `Home2.exe` at the root should be ignored.
 5. Launch the Meta Link software and have its dash running. You will need to enable "Unknown sources" in the settings page.
