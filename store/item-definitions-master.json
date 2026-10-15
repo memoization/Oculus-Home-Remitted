@@ -11136,7 +11136,7 @@
   "2021500501311667": {
     "__typename": "WorldsItemDefinition",
     "id": "2021500501311667",
-    "name": "Lion Statue",
+    "name": "King of the Concrete Jungle",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
@@ -11190,7 +11190,7 @@
   "2027734250648687": {
     "__typename": "WorldsItemDefinition",
     "id": "2027734250648687",
-    "name": "Cat Table Lamp",
+    "name": "Cat's Meow Table Lamp",
     "item_description": "",
     "is_scalable": true,
     "is_unlimited": true,
