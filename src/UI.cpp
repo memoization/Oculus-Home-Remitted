@@ -350,6 +350,7 @@ void UI::LoadPreferences()
 
     autoLaunchEnabled = prefs.GetPrefBool("autoLaunchEnabled", "wrapper", false);
     launchWithRevive = prefs.GetPrefBool("launchWithRevive", "wrapper", false);
+    loadSteamVRApps = prefs.GetPrefBool("loadSteamVRApps", "wrapper", false);
     loadRandomHome = prefs.GetPrefBool("loadRandomHome", "", false);
 
     autoLaunchGracePeriodS = prefs.GetPrefFloat("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
@@ -960,8 +961,10 @@ void UI::DoApps()
     {
         applibraries::RebuildResult r = appsScanFuture.get();
         appsScanRunning = false;
-        appsFoundCount = r.owned;
-        appsInstalledCount = r.installed;
+        ocAppsFoundCount = r.ocOwned;
+        ocAppsInstalledCount = r.ocInstalled;
+        steamAppsInstalledCount = r.steamInstalled;
+        int total = ocAppsInstalledCount + steamAppsInstalledCount;
         if (!r.error.empty())
         {
             appsScanResultMsg = r.error;
@@ -969,10 +972,10 @@ void UI::DoApps()
         }
         else
         {
-            appsScanResultMsg = "Refreshed " + std::to_string(r.owned) + " owned app(s), " + std::to_string(r.installed) + " installed.";
+            appsScanResultMsg = "Refreshed all app(s). Found " + std::to_string(total) + " installed.";
             appsScanResultOk = true;
         }
-        homeLogger.write() << "Apps Library: build finished, owned " << r.owned << " installed " << r.installed << " image failures " << r.imageFailures << std::endl;
+        homeLogger.write() << "Apps Library: scan build finished: oculus installed" << r.ocInstalled << " steam installed" << r.steamInstalled << " image failures " << r.imageFailures << std::endl;
     }
 
     // On page open, refresh the counts from the current apps-library.json.
@@ -987,8 +990,9 @@ void UI::DoApps()
         else
         {
             applibraries::LibraryCounts counts = applibraries::CountApps();
-            appsFoundCount = counts.owned;
-            appsInstalledCount = counts.installed;
+            ocAppsFoundCount = counts.oculusOwned;
+            ocAppsInstalledCount = counts.oculusInstalled;
+            steamAppsInstalledCount = counts.steamInstalled;
         }
         refreshAppCountOnOpen = false;
     }
@@ -1001,12 +1005,6 @@ void UI::DoApps()
 
     ImGui::Dummy(iScale.Vec2(0, 25));
 
-    ImGui::PushFont(fontHeader);
-    ImGui::Text("Owned Apps: %d | Installed Apps: %d", appsFoundCount, appsInstalledCount);
-    ImGui::PopFont();
-
-    ImGui::Dummy(iScale.Vec2(0, 14));
-
     // Library Locations list, rendered with the shared Screen-Sources list widget
     const int kLibraryKind = 2;
     std::vector<SourceRowVM> rows;
@@ -1016,33 +1014,80 @@ void UI::DoApps()
         rows.push_back({ (uint64_t)(i + 1), libraryPaths[i].c_str() });
     }
 
-    float listW = iScale.F(600);
+    float listW = iScale.F(500);
     float listH = iScale.F(240);
-    SourceColumn("Library Locations", kLibraryKind, rows, ImVec2(listW, listH), (int)iScale.F(560));
+    SourceColumn("Oculus Library Locations", kLibraryKind, rows, ImVec2(listW, listH), (int)iScale.F(460));
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(180));
+    ImGui::SameLine();
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + iScale.F(41));
+
+    ImGui::BeginGroup();
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
+    ImGui::BeginChild("##appStats", iScale.Vec2(330, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
+
+    ImGui::Text("Owned Oculus Apps: %d", ocAppsFoundCount);
+    ImGui::Text("Installed Oculus Apps: %d", ocAppsInstalledCount);
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::Text("Installed Steam Apps: %d", steamAppsInstalledCount);
+    ImGui::Spacing();
+
+    bool val = loadSteamVRApps;
+    ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
+
+    pushedStyles = PushCheckboxStyle();
+    ImGui::Checkbox("##steamToggle", &val);
+    ImGui::PopStyleColor(pushedStyles);
+
+    ImGui::SetWindowFontScale(1);
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + iScale.F(3));
+    ImGui::Text("Scan Steam Apps");
+
+    // Persist the opt in and rebuild so the steamapps list appears or clears right away
+    if (val != loadSteamVRApps)
+    {
+        loadSteamVRApps = val;
+        prefs.SetPref<bool>("loadSteamVRApps", "wrapper", val);
+        RebuildAppsLibrary();
+    }
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    ImGui::EndGroup();
+
+    ImGui::SetCursorPosY(avail.y - iScale.F(166));
     ImGui::TextWrapped("Add any \"Oculus Apps\" folders containing \"Manifests\" and \"Software\" so your installed apps are found.\nOnly installed apps can be launched from Oculus Home portals or game consoles.");
 
     bool hasSelection = env.sourceKind == kLibraryKind && env.selectedSourceId >= 1 && env.selectedSourceId <= libraryPaths.size();
 
-    ImGui::SetCursorPosY(avail.y - iScale.F(130));
+    ImGui::SetCursorPosY(avail.y - iScale.F(116));
 
     // Live build status
     if (appsScanRunning)
     {
         int done = appsScanProgress.done.load();
         int total = appsScanProgress.total.load();
+        bool scanningSteam = appsScanProgress.phase.load() == applibraries::ScanPhaseSteam;
 
         ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
         if (total > 0)
         {
-            std::string appFetchProgress = "Fetching apps...  " + std::to_string(done) + " / " + std::to_string(total);
+            std::string appFetchProgress = std::string(scanningSteam ? "Scanning Steam apps" : "Scanning Oculus apps") + "...  " + std::to_string(done) + " / " + std::to_string(total);
 
             CenteredText(appFetchProgress, true);
         }
         else
         {
-            CenteredText("Reading the Oculus app cache...", true);
+            CenteredText(scanningSteam ? "Scanning Steam apps..." : "Reading the Oculus app cache...", true);
         }
         ImGui::PopStyleColor();
 
@@ -1115,7 +1160,7 @@ void UI::DoApps()
     ImGui::EndDisabled();
 
     pushedStyles = PushSubTextStyle();
-    CenteredText("Owned apps are detected automatically for the first time. Use \"Refresh Apps\" if there is a new app.", true);
+    CenteredText("Apps are detected automatically for the first time. Use \"Refresh Apps\" if there is a new app.", true);
     ImGui::PopStyleColor(pushedStyles);
 }
 
@@ -1126,11 +1171,12 @@ void UI::DoAchievements()
     // On page open, load the saved achievement index and refresh the app-library count
     if (reloadAchievementsOnOpen)
     {
-        if (appsFoundCount == 0)
+        if ((ocAppsFoundCount + steamAppsInstalledCount) == 0)
         {
             applibraries::LibraryCounts counts = applibraries::CountApps();
-            appsFoundCount = counts.owned;
-            appsInstalledCount = counts.installed;
+            ocAppsFoundCount = counts.oculusOwned;
+            ocAppsInstalledCount = counts.oculusInstalled;
+            steamAppsInstalledCount = counts.steamInstalled;
         }
 
         achievementList = fetchworlds::LoadAchievements();
@@ -1179,10 +1225,10 @@ void UI::DoAchievements()
     pushedStyles = PushButtonStyleGrey();
     if (ImGui::Button("Fetch Achievements", ImVec2(btnW, btnH)))
     {
-        if (appsFoundCount <= 0)
+        if ((ocAppsFoundCount + steamAppsInstalledCount) <= 0)
         {
             // Achievements are looked up per app so an empty library can't fetch.
-            env.noticeMessage = "Add your Oculus apps first on the \"Apps Library\" page. Achievements are fetched for the apps found there.";
+            env.noticeMessage = "Add your apps first on the \"Apps Library\" page. Achievements are fetched for the apps found there.";
             env.nextPopup = "Notice";
         }
         else
@@ -2418,7 +2464,7 @@ void UI::DoPopups(Env& env)
 
     // Fetch Achievements: download them from graphql request into store\achievements
     ImGui::SetNextWindowPos(center, ImGuiCond_Always, pivot);
-    ImGui::SetNextWindowSize(iScale.Vec2(850, (achievementFallbackToFields ? 540 : 245)), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(iScale.Vec2(850, (achievementFallbackToFields ? 570 : 250)), ImGuiCond_Always);
     if (ImGui::BeginPopupModal("Fetch Achievements", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
     {
         ImGui::Dummy(iScale.Vec2(0, 10));
@@ -2467,13 +2513,14 @@ void UI::DoPopups(Env& env)
 
         ImGui::BeginChild("AccountFields", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
         {
-            ImGui::TextWrapped("Download your app achievements from the Oculus backend while they still exist. Achievements are saved locally and show up in the \"App Items\" category. One credential from your Meta (Oculus) account will be used.");
+            ImGui::TextWrapped("Download your app achievements from Oculus or Steam. Achievements are saved locally and show up in the \"App Items\" category.");
+            ImGui::TextWrapped("One credential from your Meta (Oculus) account will be used for finding Oculus achievements.\nThe Steam achievements found will only be from your installed Steam apps.");
             ImGui::Spacing();
 
             if (achievementFallbackToFields)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.ErrorText);
-                ImGui::TextWrapped("Unable to fetch your achievements automatically! Manually provide your account token using the steps below:");
+                ImGui::TextWrapped("Unable to fetch your Oculus achievements automatically! Manually provide your account token using the steps below:");
                 ImGui::PopStyleColor();
 
                 ImGui::PushTextWrapPos(iScale.F(780));
@@ -2528,7 +2575,21 @@ void UI::DoPopups(Env& env)
 
                 fetchFuture = std::async(std::launch::async,
                     [token = fetchToken, this]()
-                    { return fetchworlds::FetchMyAchievements(token, &fetchProgress); });
+                    {
+                        fetchProgress.phase.store(0);
+                        fetchworlds::Result r = fetchworlds::FetchOculusAchievements(token, &fetchProgress);
+
+                        // Steam achievements are gathered from local files and need no token.
+                        fetchProgress.phase.store(1);
+                        fetchProgress.total.store(0);
+                        fetchProgress.done.store(0);
+                        applibraries::SteamAchievementsResult sa = applibraries::ScanSteamAchievements(&fetchProgress);
+
+                        r.achievementsSaved += sa.saved;
+                        if (sa.saved > 0) r.ok = true;
+                        if (r.error.empty() && !sa.error.empty()) r.error = sa.error;
+                        return r;
+                    });
             }
         }
         else
@@ -2553,7 +2614,21 @@ void UI::DoPopups(Env& env)
 
                 fetchFuture = std::async(std::launch::async,
                     [token = userCreds.token, this]()
-                    { return fetchworlds::FetchMyAchievements(token, &fetchProgress); });
+                    {
+                        fetchProgress.phase.store(0);
+                        fetchworlds::Result r = fetchworlds::FetchOculusAchievements(token, &fetchProgress);
+
+                        // Steam achievements are gathered from local files and need no token.
+                        fetchProgress.phase.store(1);
+                        fetchProgress.total.store(0);
+                        fetchProgress.done.store(0);
+                        applibraries::SteamAchievementsResult sa = applibraries::ScanSteamAchievements(&fetchProgress);
+
+                        r.achievementsSaved += sa.saved;
+                        if (sa.saved > 0) r.ok = true;
+                        if (r.error.empty() && !sa.error.empty()) r.error = sa.error;
+                        return r;
+                    });
             }
         }
         ImGui::PopStyleColor(pushedStyles);
@@ -2563,14 +2638,16 @@ void UI::DoPopups(Env& env)
         {
             int done = fetchProgress.done.load();
             int total = fetchProgress.total.load();
+            bool steamPhase = fetchProgress.phase.load() == 1;
+            const char* label = steamPhase ? "Fetching Steam achievements" : "Fetching Oculus achievements";
             if (total > 0)
             {
-                std::string achievementProgress = "Fetching achievements...  " + std::to_string(done) + " / " + std::to_string(total);
+                std::string achievementProgress = std::string(label) + "...  " + std::to_string(done) + " / " + std::to_string(total);
                 CenteredText(achievementProgress);
             }
             else
             {
-                CenteredText("Contacting the backend...");
+                CenteredText(steamPhase ? "Fetching Steam achievements..." : "Contacting the backend...");
             }
         }
         else if (!fetchResultMsg.empty())
