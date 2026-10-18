@@ -58,7 +58,7 @@ namespace home2hook {
         std::string BuildOafLibraryReply(const std::string& seq, const std::string& ts) const;
 
         // Resolve a launchable app to a full exe path and its launch parameters. Returns false when the app or its launch info is absent.
-        bool FindAppLaunch(const std::string& key, std::wstring& exePath, std::string& params) const;
+        bool FindAppLaunch(const std::string& key, std::wstring& exePath, std::string& params, bool& isSteam) const;
 
         // OAF PACKAGE_INFO push for the offline App Library. Built from apps-library.json. Returns "" when the library is empty. ts is this exchange's OafIpc timestamp.
         std::string BuildPackageInfoPush(const std::string& ts) const;

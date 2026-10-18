@@ -642,20 +642,22 @@ namespace home2hook {
             {
                 if (parsed.is_array())
                     appLibrary = json11::Json(json11::Json::object{ { "apps", parsed } });
-                else if (parsed.is_object() && parsed["apps"].is_array())
+                else if (parsed.is_object())
                     appLibrary = parsed;
-                
-                appLibraryLoaded = appLibrary["apps"].is_array() && !appLibrary["apps"].array_items().empty();
             }
         }
 
         // apps-library.json stores image fields as store-relative paths (apps/images/<file>).
         // Resolve them to absolute file:// uris so every serve path (PACKAGE_INFO, app_images, worlds_apps) hands the game a loadable uri and the library remains fully portable.
-        if (appLibraryLoaded)
+        // The oculus "apps" and the opt in steam "steamapps" lists are merged into a single apps list
+ 
+        static const char* const kImageFields[] = { "SquareURI", "PortraitURI", "LandscapeURI", "IconURI", "Screenshot0URI", "Screenshot1URI" };
+        json11::Json::array resolvedApps;
+
+        auto resolveInto = [&](const json11::Json& list)
         {
-            static const char* const kImageFields[] = { "SquareURI", "PortraitURI", "LandscapeURI", "IconURI", "Screenshot0URI", "Screenshot1URI" };
-            json11::Json::array resolvedApps;
-            for (const auto& app : appLibrary["apps"].array_items())
+            if (!list.is_array()) return;
+            for (const auto& app : list.array_items())
             {
                 json11::Json::object o = app.object_items();
                 for (const char* field : kImageFields)
@@ -669,11 +671,20 @@ namespace home2hook {
                 }
                 resolvedApps.push_back(json11::Json(o));
             }
-            appLibrary = json11::Json(json11::Json::object{ { "apps", resolvedApps } });
-        }
+        };
 
-        // Fetched achievement definitions linked to library apps.
-        // The icon is composed into a file:// UnlockedURI
+        resolveInto(appLibrary["apps"]);
+        size_t steamStart = resolvedApps.size();
+        resolveInto(appLibrary["steamapps"]);
+        size_t steamMerged = resolvedApps.size() - steamStart;
+
+        appLibrary = json11::Json(json11::Json::object{ { "apps", resolvedApps } });
+        appLibraryLoaded = !resolvedApps.empty();
+
+        LogLine("store: app_library_merged apps=" + std::to_string(resolvedApps.size()) + " steam=" + std::to_string(steamMerged));
+
+
+        // Achievement definitions linked to library apps
         std::string achText;
         if (ReadFileText(root / "achievements" / "app-achievements.json", achText))
         {
@@ -681,7 +692,13 @@ namespace home2hook {
             json11::Json aj = json11::Json::parse(achText, aerr);
             if (aerr.empty())
             {
-                for (const auto& e : aj["achievements"].array_items())
+                const json11::Json& oculus = aj["oculus"].is_array() ? aj["oculus"] : aj["achievements"];
+                for (const auto& e : oculus.array_items())
+                {
+                    std::string appId = e["app_id"].string_value();
+                    if (!appId.empty()) appAchievements[appId].push_back(e);
+                }
+                for (const auto& e : aj["steam"].array_items())
                 {
                     std::string appId = e["app_id"].string_value();
                     if (!appId.empty()) appAchievements[appId].push_back(e);
@@ -689,7 +706,7 @@ namespace home2hook {
             }
         }
 
-        // Load the user's uploaded-UGC catalog once. Seeded into ugcDefs each loadWorlds so item-defs resolve every UGC def even if a world's own manifest is incomplete.
+        // Load the uploaded-UGC catalog once
         // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldObjects" and not from this catalog.
         std::string gtext;
         if (ReadFileText(root / "uploaded-ugc" / "import-hashes-global.json", gtext))
@@ -3642,6 +3659,7 @@ namespace home2hook {
         }
 
         std::vector<json11::Json> elems; //each element is a serialized app object held as a string
+        int achTotal = 0;
         if (appLibraryLoaded)
         {
             for (const auto& app : appLibrary["apps"].array_items())
@@ -3649,13 +3667,17 @@ namespace home2hook {
                 if (!app.is_object()) continue;
                 if (!want.empty() && want.count(app["ID"].string_value()) == 0) continue; // serve only the apps this world actually placed
 
-                json11::Json node = buildAppNode(appWithAchievements(app));
+                json11::Json withAch = appWithAchievements(app);
+                achTotal += (int)withAch["Achievements"].array_items().size();
+
+                json11::Json node = buildAppNode(withAch);
                 if (node.is_object())
                 {
                     elems.push_back(json11::Json(node.dump()));
                 }
             }
         }
+
         std::string inner = json11::Json(elems).dump(); // "[]" or "[\"{...}\",...]"
         return "{\"data\":{\"worlds_apps_and_achievements\":\"" + JsonEscape(inner) + "\"}}";
     }
@@ -3903,17 +3925,31 @@ namespace home2hook {
         };
     }
 
-    bool ResponseStore::FindAppLaunch(const std::string& key, std::wstring& exePath, std::string& params) const
+    bool ResponseStore::FindAppLaunch(const std::string& key, std::wstring& exePath, std::string& params, bool& isSteam) const
     {
+        isSteam = false;
         if (key.empty() || !appLibraryLoaded) return false;
 
         for (const auto& app : appLibrary["apps"].array_items())
         {
             if (app["Canonical"].string_value() != key && app["ID"].string_value() != key) continue;
 
-            std::string dir = app["InstallDir"].string_value();
             std::string file = app["LaunchFile"].string_value();
-            if (dir.empty() || file.empty()) return false; // known app but no launch info
+            if (file.empty()) return false; // known app but no launch info
+
+            // A steam app launches by its steam:// uri through a shell and not as a local exe.
+            if (app["Source"].string_value() == "steam")
+            {
+                isSteam = true;
+                int n = MultiByteToWideChar(CP_UTF8, 0, file.c_str(), -1, nullptr, 0);
+                exePath.assign(n > 1 ? (size_t)n - 1 : 0, L'\0');
+                if (n > 1) MultiByteToWideChar(CP_UTF8, 0, file.c_str(), -1, &exePath[0], n);
+                params.clear();
+                return true;
+            }
+
+            std::string dir = app["InstallDir"].string_value();
+            if (dir.empty()) return false;
 
             exePath = (std::filesystem::u8path(dir) / std::filesystem::u8path(file)).wstring();
             params = app["LaunchParameters"].string_value();
