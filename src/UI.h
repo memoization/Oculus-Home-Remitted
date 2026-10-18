@@ -199,6 +199,7 @@ struct UI
     bool launchWithRevive = false;
     bool loadRandomHome = false;
     bool autoLaunchEnabled = false;
+    bool loadSteamVRApps = false;
     float autoLaunchGracePeriodS = 10.0f;
     const char* appVersion = "0.0.0";
 
@@ -220,8 +221,9 @@ struct UI
 
     // Apps Library: user's Oculus library roots
     std::vector<std::string> libraryPaths;
-    int appsFoundCount = 0; // owned apps, the whole library
-    int appsInstalledCount = 0; // owned apps that also have a local manifest, launchable
+    int ocAppsFoundCount = 0; // owned apps, the whole library
+    int ocAppsInstalledCount = 0; // owned apps that also have a local manifest, launchable
+    int steamAppsInstalledCount = 0; // the set of gathered steam apps that are installed
     bool refreshAppCountOnOpen = true;
 
     // Build status of the apps library

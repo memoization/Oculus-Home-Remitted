@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <filesystem>
+
+namespace fetchworlds { struct Progress; }
 
 // Oculus app-library reconstruction for the offline "Apps Library" page.
 //
@@ -9,7 +12,7 @@
 // While offline that list is empty, and the game can crash reading a missing field as a string. This module rebuilds the list from what the local machine already knows.
 //
 // Two tiers:
-//   1 - Fetching all owned apps. They are sourced from the Oculus offline cache %APPDATA%\Oculus\sessions\_oaf\data.sqlite (Objects rows typename Application), which provides the appId, canonical name and display name. Every cached app becomes a library entry whether or not it is installed, so the user can point a portal at any app they own. The store art (square, landscape, portrait and screenshots) is fetched per app from the live backend.
+//   1 - Fetching all owned apps. They are sourced from the Oculus offline cache or local Steam library. Every cached app becomes a library entry whether or not it is installed, so the user can point a portal at any app they own. The store art (square, landscape, portrait and screenshots) is fetched per app from the live backend.
 //   2 - Installed apps are the owned apps that also have a local manifest under a library root's Manifests folder. The manifest inserts crucial launch details such as launchFile, launchParameters and the install folder so the backend can launch the app manually. An owned app with no matching manifest stays in the library but has no launch fields.
 // The default location "C:\Program Files\Oculus\Software" is always scanned plus any user-added library folders. Manifests for apps not present in the oaf cache are ignored.
 namespace applibraries {
@@ -30,6 +33,7 @@ namespace applibraries {
         std::string launchFile;       // manifest launchFile being the exe name
         std::string launchParameters; // manifest launchParameters, empty for some apps
         std::string installDir;       // <root>\Software\<canonical title>, the folder the exe lives in, empty when not installed
+        std::string source = "oculus"; // "oculus" or "steam" to separate the two app libraries apart
     };
 
     // The graph.oculus.com queries for an app's store art. All need a valid access_token and take the numeric app id.
@@ -60,31 +64,40 @@ namespace applibraries {
     // Define owned vs installed split for the Apps Library page
     struct LibraryCounts
     {
-        int owned = 0;
-        int installed = 0;
+        int oculusOwned = 0;
+        int oculusInstalled = 0;
+        int steamInstalled = 0;
     };
+
+    // Which library the builder is currently scanning for the progress label.
+    enum ScanPhase { ScanPhaseOculus = 0, ScanPhaseSteam = 1 };
 
     // Live progress for the app builder
     struct Progress
     {
         std::atomic<int> total{ 0 };
         std::atomic<int> done{ 0 };
+        std::atomic<int> phase{ ScanPhaseOculus };
     };
 
     struct RebuildResult
     {
         bool success = false; // the apps-library.json file was written
-        int owned = 0; // apps written
-        int installed = 0; // apps that also have launch fields
+        int ocOwned = 0; // apps written
+        int ocInstalled = 0; // apps that also have launch fields
+        int steamInstalled = 0; // the set that are installed
         int imageFailures = 0; // covers with a uri that failed to download
         std::string error;
     };
+
+    // Refetch a cached app asset upon rebuild if the file is older than a day
+    static const long long ImageMaxAgeSec = 24 * 60 * 60;
 
     // The default Oculus download location (in UTF-8)
     static std::string DefaultRoot = "C:\\Program Files\\Oculus\\Software";
 
     // Build the app list. Every app in the oaf offline cache becomes an entry, then manifests under DefaultRoot and userRoots key launch details into the ones that are installed.
-    std::vector<AppEntry> Scan(const std::vector<std::string>& userRoots, Progress* progress = nullptr, int* imageFailures = nullptr, std::string* oafError = nullptr);
+    std::vector<AppEntry> ScanOculus(const std::vector<std::string>& userRoots, Progress* progress = nullptr, int* imageFailures = nullptr, std::string* oafError = nullptr);
 
     // Count the apps in the current store\apps\apps-library.json without rescanning. Zeroes uf the file is missing or empty.
     LibraryCounts CountApps();
@@ -92,7 +105,34 @@ namespace applibraries {
     // True when store\apps\apps-library.json exists, telling missing (never built) apart from a built but empty library. The Apps page uses it to auto-build on first visit.
     bool LibraryFileExists();
 
-    // Scan and rewrite <AppDir>\store\apps\apps-library.json ( "{"apps":[...]}" )
+    // Scan and rewrite <AppDir>\store\apps\apps-library.json ( "{"apps":[...],"steamapps":[...]}" )
     RebuildResult Rebuild(const std::vector<std::string>& userRoots, Progress* progress = nullptr);
+
+    std::string FindCachedImage(const std::vector<std::string>& files, const std::string& id, const std::string& suffix);
+
+    bool CachedImageFresh(const std::filesystem::path& imagesDir, const std::string& storeRel);
+
+    bool DownloadImage(const std::string& url, const std::filesystem::path& dest, long long maxAgeSec);
+
+    std::string ReadFileUtf8(const std::filesystem::path& path);
+
+    long long FileUnixTime(const std::filesystem::path& p);
+
+    std::string ImageExtFromUrl(const std::string& url);
+
+    // Enumerate installed Steam apps that are VR titles and resolve their covers
+    // Sources the information from the local Steam library (registry SteamPath, libraryfolders.vdf, appmanifest_*.acf)
+    std::vector<AppEntry> ScanSteam(Progress* progress = nullptr, int* imageFailures = nullptr);
+
+    struct SteamAchievementsResult
+    {
+        bool success = false; // steam-achievements.json was written
+        int saved = 0; // achievement entries written
+        std::string error;
+    };
+
+    // Scan Steam achievements for the Steam VR apps already in store\apps\apps-library.json
+    // Definitions come from %Steam%\appcache\stats\UserGameStatsSchema_<appid>.bin and unlock times from UserGameStats_<accountid>_<appid>.bin. Both are binary KeyValues. Icons are downloaded from the Steam cdn.
+    SteamAchievementsResult ScanSteamAchievements(fetchworlds::Progress* progress = nullptr);
 
 }

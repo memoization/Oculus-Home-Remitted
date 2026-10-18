@@ -102,4 +102,99 @@ namespace imageconv
         return true;
     }
 
+    bool SquareWithBlurFillPngFile(const std::wstring& srcPath, const std::wstring& dstPath)
+    {
+        if (!EnsureGdiplus()) return false;
+
+        bool ok = false;
+        {
+            Gdiplus::Bitmap src(srcPath.c_str());
+            if (src.GetLastStatus() != Gdiplus::Ok) return false;
+
+            INT w = (INT)src.GetWidth();
+            INT h = (INT)src.GetHeight();
+            if (w <= 0 || h <= 0) return false;
+
+            INT side = max(w, h);
+
+            // A hard downscale then an upscale with smooth interpolation is a cheap blur for the background fill.
+            Gdiplus::Bitmap tiny(24, 24, PixelFormat32bppARGB);
+            {
+                Gdiplus::Graphics gt(&tiny);
+                gt.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBilinear);
+                gt.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
+                gt.DrawImage(&src, Gdiplus::Rect(0, 0, 24, 24), 0, 0, w, h, Gdiplus::UnitPixel);
+            }
+
+            Gdiplus::Bitmap dst(side, side, PixelFormat32bppARGB);
+            {
+                Gdiplus::Graphics g(&dst);
+                g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
+
+                // Background the blurred fill stretched to cover the whole square.
+                g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+                g.DrawImage(&tiny, Gdiplus::Rect(0, 0, side, side), 0, 0, 24, 24, Gdiplus::UnitPixel);
+
+                // A light dark overlay so the foreground reads against a busy fill. The foreground is drawn after, so only the letterbox area stays shaded.
+                Gdiplus::SolidBrush shade(Gdiplus::Color(64, 0, 0, 0));
+                g.FillRectangle(&shade, 0, 0, side, side);
+
+                // Foreground the source fit and centered at the full resolution
+                double scale = (w >= h) ? (double)side / w : (double)side / h;
+                INT fw = (INT)(w * scale + 0.5);
+                INT fh = (INT)(h * scale + 0.5);
+                INT fx = (side - fw) / 2;
+                INT fy = (side - fh) / 2;
+                g.DrawImage(&src, Gdiplus::Rect(fx, fy, fw, fh), 0, 0, w, h, Gdiplus::UnitPixel);
+            } // the Graphics must release its lock on dst before Save!
+
+            CLSID clsid;
+            if (GetPngEncoderClsid(clsid))
+            {
+                std::wstring tmp = dstPath + L".tmp";
+                if (dst.Save(tmp.c_str(), &clsid, nullptr) == Gdiplus::Ok &&
+                    MoveFileExW(tmp.c_str(), dstPath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+                {
+                    ok = true;
+                }
+                else
+                {
+                    DeleteFileW(tmp.c_str());
+                }
+            }
+        }
+
+        return ok;
+    }
+
+    bool Rotate90PngFile(const std::wstring& srcPath, const std::wstring& dstPath)
+    {
+        if (!EnsureGdiplus()) return false;
+
+        bool ok = false;
+        {
+            Gdiplus::Bitmap src(srcPath.c_str());
+            if (src.GetLastStatus() != Gdiplus::Ok) return false;
+
+            if (src.RotateFlip(Gdiplus::Rotate90FlipNone) != Gdiplus::Ok) return false; // 90 degrees clockwise
+
+            CLSID clsid;
+            if (GetPngEncoderClsid(clsid))
+            {
+                std::wstring tmp = dstPath + L".tmp";
+                if (src.Save(tmp.c_str(), &clsid, nullptr) == Gdiplus::Ok &&
+                    MoveFileExW(tmp.c_str(), dstPath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+                {
+                    ok = true;
+                }
+                else
+                {
+                    DeleteFileW(tmp.c_str());
+                }
+            }
+        }
+
+        return ok;
+    }
+
 }

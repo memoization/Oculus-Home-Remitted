@@ -4,9 +4,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tlhelp32.h>
+#include <shellapi.h>
 #include "MinHook.h"
 
-#pragma comment(lib, "user32.lib") // for EnumDisplayMonitors / GetMonitorInfo
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "shell32.lib")
 
 #include <cstdint>
 #include <deque>
@@ -499,6 +501,16 @@ namespace home2backend {
         }
     }
 
+    // Launch a Steam title by its steam:// uri
+    static void LaunchSteamUri(const std::wstring& uri)
+    {
+        HINSTANCE h = ShellExecuteW(nullptr, L"open", uri.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+        if ((INT_PTR)h <= 32)
+        {
+            LogLine("oaf-rewrite: ShellExecute failed (" + std::to_string((INT_PTR)h) + ") for the steam app launch");
+        }
+    }
+
     bool IsUnderRevive()
     {
         EnsureReviveDetected();
@@ -585,11 +597,19 @@ namespace home2backend {
 
                         std::wstring exePath;
                         std::string params;
+                        bool isSteam = false;
                         bool launchedApp = false;
 
-                        if (!key.empty() && home2hook::GStore.FindAppLaunch(key, exePath, params))
+                        if (!key.empty() && home2hook::GStore.FindAppLaunch(key, exePath, params, isSteam))
                         {
-                            LaunchApp(exePath, params);
+                            if (isSteam)
+                            {
+                                LaunchSteamUri(exePath);
+                            }
+                            else
+                            {
+                                LaunchApp(exePath, params);
+                            }
                             LogLine("oaf-rewrite: /library/launch '" + key + "' launched " + Utf8FromWide(exePath.c_str()) + (params.empty() ? "" : (" " + params)));
                             launchedApp = true;
                         }

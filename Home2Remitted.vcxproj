@@ -158,6 +158,7 @@
     <ClInclude Include="src\OVRLogWatch.h" />
     <ClInclude Include="src\BroadcastSource.h" />
     <ClInclude Include="src\FetchWorlds.h" />
+    <ClInclude Include="src\SteamLibrary.h" />
     <ClInclude Include="src\UpdateCheck.h" />
     <ClInclude Include="src\HomeLogger.h" />
     <ClInclude Include="src\IconPak.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="src\OVRLogWatch.cpp" />
     <ClCompile Include="src\BroadcastSource.cpp" />
     <ClCompile Include="src\FetchWorlds.cpp" />
+    <ClCompile Include="src\SteamLibrary.cpp" />
     <ClCompile Include="src\UpdateCheck.cpp" />
     <ClCompile Include="src\HomeLogger.cpp" />
     <ClCompile Include="src\ImageConv.cpp" />

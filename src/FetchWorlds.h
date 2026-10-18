@@ -12,7 +12,8 @@ namespace fetchworlds
     struct Progress
     {
         std::atomic<int> total{ 0 }; // worlds discovered (0 until the list request returns)
-        std::atomic<int> done{ 0 };// worlds written so far 
+        std::atomic<int> done{ 0 };// worlds written so far
+        std::atomic<int> phase{ 0 }; // 0: oculus, 1: steam
     };
 
     struct Result
@@ -62,7 +63,7 @@ namespace fetchworlds
     static const char* kDefaultLipMaterial = "405251680018234";
 
     // Fetch achievements for every app in store\apps-library.json via worlds_apps_and_achievements then download the icons and app thumbnails into store\achievements\icons, and write store\achievements\app-achievements.json.
-    Result FetchMyAchievements(std::string token, Progress* progress);
+    Result FetchOculusAchievements(std::string token, Progress* progress);
 
     // Load the saved achievement index for the Achievements page. Returns an empty list when the file is missing.
     std::vector<AchievementInfo> LoadAchievements();
