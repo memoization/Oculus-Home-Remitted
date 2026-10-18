@@ -2,7 +2,6 @@
 #include "AppLibraries.h"
 #include "Prefs.h"
 #include <windows.h>
-#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <map>
@@ -14,6 +13,9 @@
 #include <cpr/cpr.h>
 #include "HomeLogger.h"
 #include "FetchWorlds.h"
+#include "ImageConv.h"
+#include "SteamLibrary.h"
+#include "UI.h"
 
 namespace fs = std::filesystem;
 
@@ -149,7 +151,7 @@ namespace applibraries {
         return out;
     }
 
-    static std::string ReadFileUtf8(const fs::path& path)
+    std::string ReadFileUtf8(const fs::path& path)
     {
         std::ifstream f(path, std::ios::binary);
         if (!f) return std::string();
@@ -216,7 +218,7 @@ namespace applibraries {
 
     // Manifest last-write time as unix seconds. A value for "AcquiredTime" field.
     // The game reads AcquiredTime and throws a warning "Null used as a String" if it is absent.
-    static long long FileUnixTime(const fs::path& p)
+    long long FileUnixTime(const fs::path& p)
     {
         WIN32_FILE_ATTRIBUTE_DATA fad{};
         if (GetFileAttributesExW(p.wstring().c_str(), GetFileExInfoStandard, &fad))
@@ -249,7 +251,7 @@ namespace applibraries {
     }
 
     // Image extension from a url's path (before the query), defaults to .png.
-    static std::string ImageExtFromUrl(const std::string& url)
+    std::string ImageExtFromUrl(const std::string& url)
     {
         size_t q = url.find('?');
         std::string path = (q == std::string::npos) ? url : url.substr(0, q);
@@ -260,12 +262,18 @@ namespace applibraries {
         return ".png";
     }
 
-    // Download url to dest. Skips the fetch if the file already exists. Returns true if the file is present afterward.
-    static bool DownloadImage(const std::string& url, const fs::path& dest)
+    // Download url to dest, atomically. The fetch is skipped when dest already exists and either maxAgeSec is 0 or the file is younger than maxAgeSec.
+    // A stale file is re-fetched, but kept as-is if the fetch fails
+    bool DownloadImage(const std::string& url, const fs::path& dest, long long maxAgeSec = 0)
     {
         std::error_code ec;
-        if (fs::is_regular_file(dest, ec)) return true;
-        if (url.empty()) return false;
+        bool exists = fs::is_regular_file(dest, ec);
+        if (exists)
+        {
+            if (maxAgeSec <= 0) return true;
+            if ((long long)std::time(nullptr) - FileUnixTime(dest) < maxAgeSec) return true; // fresh enough
+        }
+        if (url.empty()) return exists;
 
         std::string downloadUrl = url;
 
@@ -283,17 +291,49 @@ namespace applibraries {
         if (r.status_code != 200 || r.text.empty())
         {
             homeLogger.write() << "AppLibraries: Failed to download image from url: " << downloadUrl.c_str() << " | err: " << r.error.message.c_str() << std::endl;
-            return false;
+            return exists; // keep any current file
         }
 
-        std::ofstream f(dest, std::ios::binary);
-        if (!f) return false;
-        f.write(r.text.data(), (std::streamsize)r.text.size());
-        return f.good();
+        // Write a temp file then atomically replace so a stale cover is swapped only on a successful fetch.
+        fs::path tmp = dest;
+        tmp += L".tmp";
+        {
+            std::ofstream f(tmp, std::ios::binary | std::ios::trunc);
+            if (!f) return exists;
+            f.write(r.text.data(), (std::streamsize)r.text.size());
+            if (!f.good())
+            {
+                f.close();
+                std::error_code e2;
+                fs::remove(tmp, e2);
+                return exists;
+            }
+        }
+
+        if (!MoveFileExW(tmp.wstring().c_str(), dest.wstring().c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+        {
+            std::error_code e2;
+            fs::remove(tmp, e2);
+            return exists;
+        }
+        return true;
+    }
+
+    // True when a image path points to a file that exists and is younger than ImageMaxAgeSec.
+    bool CachedImageFresh(const fs::path& imagesDir, const std::string& storeRel)
+    {
+        if (storeRel.empty()) return false;
+
+        std::string fn = storeRel.substr(storeRel.find_last_of('/') + 1);
+        fs::path p = imagesDir / prefs.Widen(fn);
+
+        std::error_code ec;
+        if (!fs::is_regular_file(p, ec)) return false;
+        return ((long long)std::time(nullptr) - FileUnixTime(p)) < ImageMaxAgeSec;
     }
 
     // Relative store path of a downloaded app image named "<id><suffix>.<ext>", or "" when none is cached.
-    static std::string FindCachedImage(const std::vector<std::string>& files, const std::string& id, const std::string& suffix)
+    std::string FindCachedImage(const std::vector<std::string>& files, const std::string& id, const std::string& suffix)
     {
         std::string prefix = id + suffix + ".";
         for (const auto& name : files)
@@ -367,7 +407,7 @@ namespace applibraries {
         return art;
     }
 
-    std::vector<AppEntry> Scan(const std::vector<std::string>& userRoots, Progress* progress, int* imageFailures, std::string* oafError)
+    std::vector<AppEntry> ScanOculus(const std::vector<std::string>& userRoots, Progress* progress, int* imageFailures, std::string* oafError)
     {
         int failures = 0; // covers with a uri that failed to download
 
@@ -435,10 +475,10 @@ namespace applibraries {
             std::string shot1Uri     = FindCachedImage(cachedImageFiles, id, "_shot1");
 
             ArtWants want;
-            want.square    = squareUri.empty();
-            want.landscape = landscapeUri.empty();
-            want.portrait  = portraitUri.empty();
-            want.shots     = shot0Uri.empty() || shot1Uri.empty();
+            want.square    = !CachedImageFresh(imagesDir, squareUri);
+            want.landscape = !CachedImageFresh(imagesDir, landscapeUri);
+            want.portrait  = !CachedImageFresh(imagesDir, portraitUri);
+            want.shots     = !CachedImageFresh(imagesDir, shot0Uri) || !CachedImageFresh(imagesDir, shot1Uri);
 
             if (!creds.token.empty() && (want.square || want.landscape || want.portrait || want.shots))
             {
@@ -447,31 +487,31 @@ namespace applibraries {
                 if (want.square && !art.squareUrl.empty())
                 {
                     std::string fn = id + "_square" + ImageExtFromUrl(art.squareUrl);
-                    if (DownloadImage(art.squareUrl, imagesDir / fn)) squareUri = "apps/images/" + fn;
+                    if (DownloadImage(art.squareUrl, imagesDir / fn, ImageMaxAgeSec)) squareUri = "apps/images/" + fn;
                     else ++failures;
                 }
                 if (want.landscape && !art.landscapeUrl.empty())
                 {
                     std::string fn = id + "_landscape" + ImageExtFromUrl(art.landscapeUrl);
-                    if (DownloadImage(art.landscapeUrl, imagesDir / fn)) landscapeUri = "apps/images/" + fn;
+                    if (DownloadImage(art.landscapeUrl, imagesDir / fn, ImageMaxAgeSec)) landscapeUri = "apps/images/" + fn;
                     else ++failures;
                 }
                 if (want.portrait && !art.portraitUrl.empty())
                 {
                     std::string fn = id + "_portrait" + ImageExtFromUrl(art.portraitUrl);
-                    if (DownloadImage(art.portraitUrl, imagesDir / fn)) portraitUri = "apps/images/" + fn;
+                    if (DownloadImage(art.portraitUrl, imagesDir / fn, ImageMaxAgeSec)) portraitUri = "apps/images/" + fn;
                     else ++failures;
                 }
                 if (want.shots && !art.shot0Url.empty())
                 {
                     std::string fn = id + "_shot0" + ImageExtFromUrl(art.shot0Url);
-                    if (DownloadImage(art.shot0Url, imagesDir / fn)) shot0Uri = "apps/images/" + fn;
+                    if (DownloadImage(art.shot0Url, imagesDir / fn, ImageMaxAgeSec)) shot0Uri = "apps/images/" + fn;
                     else ++failures;
                 }
                 if (want.shots && !art.shot1Url.empty())
                 {
                     std::string fn = id + "_shot1" + ImageExtFromUrl(art.shot1Url);
-                    if (DownloadImage(art.shot1Url, imagesDir / fn)) shot1Uri = "apps/images/" + fn;
+                    if (DownloadImage(art.shot1Url, imagesDir / fn, ImageMaxAgeSec)) shot1Uri = "apps/images/" + fn;
                     else ++failures;
                 }
             }
@@ -569,13 +609,354 @@ namespace applibraries {
         return out;
     }
 
+    std::vector<AppEntry> ScanSteam(Progress* progress, int* imageFailures)
+    {
+        int failures = 0;
+        std::vector<AppEntry> out;
+
+        std::string steamRoot = steamLib.SteamRoot();
+        if (steamRoot.empty())
+        {
+            homeLogger.write() << "AppLibraries: Steam install not found, skipping Steam scan." << std::endl;
+            if (imageFailures) *imageFailures = 0;
+            return out;
+        }
+
+        std::vector<SteamLibrary::SteamInstalled> installed = steamLib.EnumerateSteamInstalled(steamLib.SteamLibraryRoots(steamRoot));
+        homeLogger.write() << "AppLibraries: Steam reports " << installed.size() << " installed app(s)." << std::endl;
+
+        fs::path imagesDir = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"images";
+        std::error_code ecdir;
+        fs::create_directories(imagesDir, ecdir);
+
+        std::vector<std::string> cachedImageFiles;
+        {
+            std::error_code ec;
+            for (fs::directory_iterator it(imagesDir, ec), end; it != end; it.increment(ec))
+            {
+                if (ec) break;
+                if (it->is_regular_file(ec)) cachedImageFiles.push_back(it->path().filename().string());
+            }
+        }
+
+        bool cacheDirty = false;
+        for (const auto& s : installed)
+        {
+            SteamLibrary::SteamDetails d;
+            std::string idKey = "steam_" + s.appId;
+
+            d = steamLib.FetchSteamDetails(s.appId);
+
+            // Gentle throttle so a large library does not trip the storefront rate limit.
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+ 
+            if (d.known)
+            {
+                SteamLibrary::SteamCovers cov = steamLib.BuildSteamCovers(s.appId, d, imagesDir, cachedImageFiles, failures);
+
+                AppEntry e;
+                e.id = s.appId;
+                e.canonical = s.name.empty() ? s.appId : s.name; // never empty, it is the /library/launch key and gates PACKAGE_INFO inclusion
+                e.title = s.name.empty() ? s.appId : s.name;
+                e.acquiredTime = s.acquiredTime;
+                e.squareUri = cov.square;
+                e.portraitUri = cov.portrait;
+                e.landscapeUri = cov.landscape;
+                e.iconUri = cov.square;
+                e.screenshot0Uri = cov.shot0;
+                e.screenshot1Uri = cov.shot1;
+                e.launchFile = "steam://rungameid/" + s.appId; // a steam url, launched differently than an oculus exe
+                e.installDir = prefs.Narrow(s.installDir.wstring());
+                e.source = "steam";
+
+                homeLogger.write() << "AppLibraries: Steam VR app: " << e.title.c_str() << " " << e.id.c_str() << std::endl;
+                out.push_back(std::move(e));
+            }
+
+            if (progress) progress->done.fetch_add(1);
+        }
+
+        std::sort(out.begin(), out.end(), [](const AppEntry& a, const AppEntry& b)
+        {
+            return _stricmp(a.title.c_str(), b.title.c_str()) < 0;
+        });
+
+        if (imageFailures) *imageFailures = failures;
+        return out;
+    }
+
+    SteamAchievementsResult ScanSteamAchievements(fetchworlds::Progress* progress)
+    {
+        SteamAchievementsResult res;
+
+        // The steam achievements scanned for are the ones currently installed
+        std::string libText = ReadFileUtf8(fs::path(prefs.AppDir()) / L"store" / L"apps" / L"apps-library.json");
+        std::string perr;
+        json11::Json lib = json11::Json::parse(libText, perr);
+        const json11::Json& steamApps = lib["steamapps"];
+
+        std::string steamRoot = steamLib.SteamRoot();
+        fs::path statsDir = fs::path(prefs.Widen(steamRoot)) / L"appcache" / L"stats";
+
+        std::error_code ec;
+        fs::path iconDir = fs::path(prefs.AppDir()) / L"store" / L"achievements" / L"icons";
+        fs::create_directories(iconDir, ec);
+
+        json11::Json::array index;
+
+        // One achievement schema collected in a parse pass
+        struct Gathered
+        {
+            std::string appId, appTitle, appCanon, appSquareRel;
+            std::string bitIndex, title, desc, iconFile;
+            long long unlockTime = 0;
+        };
+        std::vector<Gathered> gathered;
+
+        // Read each app's schema plus user stats once and collect its earned achievements.
+        for (const auto& app : steamApps.array_items())
+        {
+            std::string appId = app["ID"].string_value();
+            if (appId.empty()) continue;
+
+            std::string appTitle = app["Title"].string_value();
+            std::string appCanon = app["Canonical"].string_value();
+            std::string appSquare = app["SquareURI"].string_value(); // stored relative: "apps/images/..."
+            std::string appSquareRel = appSquare.empty() ? std::string() : ("store/" + appSquare); // achievements index paths are appdir relative
+
+            std::string schemaBytes = ReadFileUtf8(statsDir / prefs.Widen("UserGameStatsSchema_" + appId + ".bin"));
+            if (schemaBytes.empty()) continue; // no schema cached for this app
+
+            SteamLibrary::KvNode schemaRoot;
+            if (!steamLib.KvParseBinary(schemaBytes, schemaRoot)) continue;
+
+            const SteamLibrary::KvNode* appNode = schemaRoot.child(appId.c_str());
+            if (!appNode && !schemaRoot.children.empty()) appNode = &schemaRoot.children[0];
+            if (!appNode) continue;
+
+            const SteamLibrary::KvNode* stats = appNode->child("stats");
+            if (!stats) continue;
+
+            // The unlock times are optional. cache[statId].AchievementTimes[bitIndex] = unix seconds.
+            SteamLibrary::KvNode userRoot;
+            const SteamLibrary::KvNode* cacheNode = nullptr;
+            {
+                fs::path userPath = steamLib.FindUserStatsFile(statsDir, appId);
+                if (!userPath.empty())
+                {
+                    std::string ub = ReadFileUtf8(userPath);
+                    if (!ub.empty() && steamLib.KvParseBinary(ub, userRoot))
+                    {
+                        cacheNode = userRoot.child("cache");
+                        if (!cacheNode)
+                        {
+                            const SteamLibrary::KvNode* uapp = userRoot.child(appId.c_str()); // some files wrap under the appid
+                            if (!uapp && userRoot.children.size() == 1)
+                            {
+                                uapp = &userRoot.children[0];
+                            }
+                            if (uapp)
+                            {
+                                cacheNode = uapp->child("cache");
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (const auto& statNode : stats->children)
+            {
+                // Achievements live in the stat that carries a "bits" group (the type 4 bitfield stat). Relying on bits is robust to how the type is stored.
+                const SteamLibrary::KvNode* bits = statNode.child("bits");
+                if (!bits) continue;
+
+                const SteamLibrary::KvNode* times = nullptr;
+                if (cacheNode)
+                {
+                    const SteamLibrary::KvNode* grp = cacheNode->child(statNode.name.c_str());
+                    if (grp) times = grp->child("AchievementTimes");
+                }
+
+                for (const auto& bit : bits->children)
+                {
+                    // Get only the achievements a user actually earned. The unlock time comes from the user stats file, a positive value means unlocked
+                    long long unlockTime = 0;
+                    if (times)
+                    {
+                        const SteamLibrary::KvNode* t = times->child(bit.name.c_str());
+                        if (t)
+                        {
+                            try { unlockTime = std::stoll(t->value); }
+                            catch (...) { unlockTime = 0; }
+                        }
+                    }
+                    if (unlockTime <= 0) continue;
+
+                    const SteamLibrary::KvNode* nameN = bit.child("name"); // the api name
+                    const SteamLibrary::KvNode* disp = bit.child("display");
+
+                    Gathered g;
+                    g.appId = appId;
+                    g.appTitle = appTitle;
+                    g.appCanon = appCanon;
+                    g.appSquareRel = appSquareRel;
+                    g.bitIndex = bit.name;
+                    g.unlockTime = unlockTime;
+                    if (disp)
+                    {
+                        g.title = steamLib.LocalizedValue(disp->child("name"));
+                        g.desc = steamLib.LocalizedValue(disp->child("desc"));
+                        const SteamLibrary::KvNode* ic = disp->child("icon"); // the unlocked icon
+                        if (ic)
+                        {
+                            g.iconFile = ic->value;
+                        }
+                    }
+                    if (g.title.empty()) g.title = nameN ? nameN->value : std::string();
+
+                    gathered.push_back(std::move(g));
+                }
+            }
+        }
+
+        if (progress)
+        {
+            progress->total.store((int)gathered.size());
+        }
+
+        // Download the icon and build the index entry for each collected achievement.
+        for (const auto& g : gathered)
+        {
+            std::string iconRel;
+            if (!g.iconFile.empty())
+            {
+                std::string url = "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/" + g.appId + "/" + g.iconFile;
+                std::string name = "steam_ach_" + g.appId + "_" + g.bitIndex + ImageExtFromUrl(g.iconFile);
+                if (DownloadImage(url, iconDir / prefs.Widen(name))) iconRel = "store/achievements/icons/" + name;
+            }
+
+            index.push_back(json11::Json::object{
+                { "id", steamLib.SyntheticAchievementId(g.appId, g.bitIndex) }, // unique numeric id
+                { "title", g.title },
+                { "description", g.desc },
+                { "unlock_time", (double)g.unlockTime },
+                { "icon", iconRel },
+                { "app_id", g.appId },
+                { "app_title", g.appTitle },
+                { "app_canonical", g.appCanon },
+                { "app_square", g.appSquareRel },
+            });
+
+            if (progress)
+            {
+                progress->done.fetch_add(1);
+            }
+        }
+
+        // No steam achievements remain as every steam app was removed from the library, so remove the gathered steam achievement icons
+        if (index.empty())
+        {
+            std::error_code e2;
+            for (fs::directory_iterator it(iconDir, e2), end; it != end; it.increment(e2))
+            {
+                if (e2) break;
+                if (!it->is_regular_file(e2)) continue;
+
+                if (it->path().filename().string().rfind("steam_ach_", 0) == 0)
+                {
+                    fs::remove(it->path(), e2);
+                }
+            }
+        }
+
+        fs::path achDir = fs::path(prefs.AppDir()) / L"store" / L"achievements";
+        fs::create_directories(achDir, ec);
+        fs::path outPath = achDir / L"app-achievements.json";
+
+        // Merge into app-achievements.json under the "steam" key and preserving the "oculus" entries
+        json11::Json::object doc;
+        doc["steam"] = json11::Json(index);
+        {
+            std::string existing = ReadFileUtf8(outPath);
+            if (!existing.empty())
+            {
+                std::string eerr;
+                json11::Json ej = json11::Json::parse(existing, eerr);
+                if (eerr.empty())
+                {
+                    if (ej["oculus"].is_array())
+                    {
+                        doc["oculus"] = ej["oculus"];
+                    }
+                    else if (ej["achievements"].is_array())
+                    {
+                        doc["oculus"] = ej["achievements"]; // migrate legacy file key
+                    }
+                }
+            }
+        }
+
+        fs::path tmp = outPath;
+        tmp += L".tmp";
+        {
+            std::ofstream f(tmp, std::ios::binary | std::ios::trunc);
+            if (!f)
+            {
+                res.error = "Could not write app-achievements.json.";
+                return res;
+            }
+            f << json11::Json(doc).dump();
+        }
+
+        if (!MoveFileExW(tmp.wstring().c_str(), outPath.wstring().c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+        {
+            res.error = "Could not write app-achievements.json.";
+            return res;
+        }
+
+        res.success = true;
+        res.saved = (int)index.size();
+        homeLogger.write() << "AppLibraries: saved " << res.saved << " Steam achievement(s)." << std::endl;
+        return res;
+    }
+
+    // Clear Home's own image cache for one file extension
+    static int ClearHomeImageCache(const std::wstring& targetExtension)
+    {
+        wchar_t localAppData[MAX_PATH];
+        DWORD n = GetEnvironmentVariableW(L"LOCALAPPDATA", localAppData, MAX_PATH);
+        if (n == 0 || n >= MAX_PATH) return 0;
+
+        fs::path dir = fs::path(localAppData) / L"Home2" / L"ImageCache";
+        std::error_code ec;
+        if (!fs::is_directory(dir, ec)) return 0;
+
+        int deleted = 0;
+        for (fs::directory_iterator it(dir, ec), end; it != end; it.increment(ec))
+        {
+            if (ec) break;
+            if (!it->is_regular_file(ec)) continue;
+
+            if (it->path().extension() == targetExtension)
+            {
+                std::error_code rm;
+                if (fs::remove(it->path(), rm))
+                {
+                    ++deleted;
+                }
+            }
+        }
+        return deleted;
+    }
+
     RebuildResult Rebuild(const std::vector<std::string>& userRoots, Progress* progress)
     {
         RebuildResult res;
 
         int failures = 0;
         std::string oafError;
-        std::vector<AppEntry> apps = Scan(userRoots, progress, &failures, &oafError);
+        if (progress) progress->phase.store(ScanPhaseOculus);
+        std::vector<AppEntry> apps = ScanOculus(userRoots, progress, &failures, &oafError);
 
         int installed = 0;
 
@@ -599,19 +980,97 @@ namespace applibraries {
                 { "LaunchFile", a.launchFile },
                 { "LaunchParameters", a.launchParameters },
                 { "InstallDir", a.installDir },
+                { "Source", a.source },
             });
         }
-        json11::Json doc = json11::Json::object{ { "apps", arr } };
 
-        res.owned = (int)apps.size();
-        res.installed = installed;
+        // Optional Steam VR apps branch
+        json11::Json::array steamArr;
+        int steamCount = 0;
+        int steamInstalledCount = 0;
+        if (ui.loadSteamVRApps)
+        {
+            if (progress)
+            {
+                // The scanning status tracks the installed Steam apps
+                std::string sr = steamLib.SteamRoot();
+                int steamTotal = sr.empty() ? 0 : (int)steamLib.EnumerateSteamInstalled(steamLib.SteamLibraryRoots(sr)).size();
+
+                progress->done.store(0);
+                progress->total.store(steamTotal);
+                progress->phase.store(ScanPhaseSteam);
+            }
+
+            int steamFailures = 0;
+            std::vector<AppEntry> steamApps = ScanSteam(progress, &steamFailures);
+            failures += steamFailures;
+
+            std::vector<std::string> vrIds;
+            vrIds.reserve(steamApps.size());
+            for (const auto& a : steamApps)
+            {
+                vrIds.push_back(a.id);
+            }
+
+            steamArr.reserve(steamApps.size());
+            for (const auto& a : steamApps)
+            {
+                steamArr.push_back(json11::Json::object{
+                    { "ID", a.id },
+                    { "Canonical", a.canonical },
+                    { "Title", a.title },
+                    { "AcquiredTime", (double)a.acquiredTime },
+                    { "SquareURI", a.squareUri },
+                    { "PortraitURI", a.portraitUri },
+                    { "LandscapeURI", a.landscapeUri },
+                    { "IconURI", a.iconUri },
+                    { "Screenshot0URI", a.screenshot0Uri },
+                    { "Screenshot1URI", a.screenshot1Uri },
+                    { "LaunchFile", a.launchFile },
+                    { "LaunchParameters", a.launchParameters },
+                    { "InstallDir", a.installDir },
+                    { "Source", a.source },
+                });
+            }
+            steamCount = (int)steamApps.size();
+            for (const auto& a : steamApps)
+            {
+                ++steamInstalledCount;
+            }
+        }
+
+        // Prune any orphaned steam cover images. Includes any store/apps/images/steam_<id>_* whose id is no longer in the steam library
+        std::set<std::string> keepSteamIds;
+        for (const auto& e : steamArr) keepSteamIds.insert(e["ID"].string_value());
+
+        fs::path imagesDir = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"images";
+        std::error_code ec2;
+        for (fs::directory_iterator it(imagesDir, ec2), end; it != end; it.increment(ec2))
+        {
+            if (ec2) break;
+            if (!it->is_regular_file(ec2)) continue;
+
+            std::string fn = it->path().filename().string();
+            if (fn.rfind("steam_", 0) != 0) continue;
+
+            size_t p = fn.find('_', 6); // the appid sits between "steam_" and the next underscore
+            if (p == std::string::npos) continue;
+
+            std::string id = fn.substr(6, p - 6);
+            if (!keepSteamIds.count(id)) fs::remove(it->path(), ec2);
+        }
+
+        json11::Json doc = json11::Json::object{ { "apps", arr }, { "steamapps", steamArr } };
+
+        res.ocOwned = (int)apps.size();
+        res.ocInstalled = installed;
+        res.steamInstalled = steamInstalledCount;
         res.imageFailures = failures;
 
         fs::path out = fs::path(prefs.AppDir()) / L"store" / L"apps" / L"apps-library.json";
         std::error_code ec;
         fs::create_directories(out.parent_path(), ec);
 
-        // Atomic replace so the running backend read won't see a torn file
         fs::path tmp = out;
         tmp += L".tmp";
         {
@@ -632,6 +1091,13 @@ namespace applibraries {
 
         res.success = true;
 
+        // Home caches cover textures itself, so after rebuilding the library clear its image cache for the cover extensions
+        int cleared = ClearHomeImageCache(L".jpg") + ClearHomeImageCache(L".png");
+        if (cleared > 0)
+        {
+            homeLogger.write() << "AppLibraries: cleared " << cleared << " Home image cache file(s)." << std::endl;
+        }
+
         // Surface any errors.
         // A missing oaf cache branches since it means no apps at all compared to failed cover downloads.
         if (!oafError.empty())
@@ -640,7 +1106,7 @@ namespace applibraries {
         }
         else if (failures > 0)
         {
-            res.error = std::to_string(failures) + " app image(s) could not be downloaded. Open Meta Link and view your apps library then try \"Refresh Apps\" again.";
+            res.error = std::to_string(failures) + " app image(s) could not be downloaded.";
         }
 
         return res;
@@ -659,14 +1125,22 @@ namespace applibraries {
         if (!err.empty()) return counts;
 
         const json11::Json& apps = j["apps"];
-        if (!apps.is_array()) return counts;
-
-        counts.owned = (int)apps.array_items().size();
-        for (const auto& a : apps.array_items())
+        if (apps.is_array())
         {
-            // an installed app is one a manifest gave a launch exe to
-            if (!a["LaunchFile"].string_value().empty()) ++counts.installed;
+            counts.oculusOwned = (int)apps.array_items().size();
+            for (const auto& a : apps.array_items())
+            {
+                // an installed app is one a manifest gave a launch exe to
+                if (!a["LaunchFile"].string_value().empty()) ++counts.oculusInstalled;
+            }
         }
+
+        const json11::Json& steam = j["steamapps"];
+        if (steam.is_array())
+        {
+            counts.steamInstalled = (int)steam.array_items().size();
+        }
+
         return counts;
     }
 

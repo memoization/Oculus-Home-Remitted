@@ -346,6 +346,7 @@ void Prefs::SeedDefaultsIfMissing()
     wrapper["launchWithRevive"] = false;
     wrapper["autoLaunchEnabled"] = false;
     wrapper["autoLaunchGracePeriodS"] = 10.0f;
+    wrapper["loadSteamVRApps"] = false;
 
     json11::Json::object identity;
     identity["userId"] = std::string("111111111111111");

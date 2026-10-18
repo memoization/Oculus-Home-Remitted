@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <set>
+#include <map>
 #include <vector>
 #include <cctype>
 #include <cstring>
@@ -537,6 +538,7 @@ namespace fetchworlds
     std::vector<AchievementInfo> LoadAchievements()
     {
         std::vector<AchievementInfo> out;
+
         std::string txt = ReadFile(fs::path(prefs.AppDir()) / "store" / "achievements" / "app-achievements.json");
         if (txt.empty()) return out;
 
@@ -544,24 +546,30 @@ namespace fetchworlds
         json11::Json j = json11::Json::parse(txt, perr);
         if (!perr.empty()) return out;
 
-        for (const auto& a : j["achievements"].array_items())
+        auto loadArray = [&](const json11::Json& arr)
         {
-            AchievementInfo info;
-            info.id = a["id"].string_value();
-            info.title = a["title"].string_value();
-            info.description = a["description"].string_value();
-            info.unlockTime = a["unlock_time"].is_number() ? (long long)a["unlock_time"].number_value() : 0;
-            info.iconPath = a["icon"].string_value();
-            info.appId = a["app_id"].string_value();
-            info.appTitle = a["app_title"].string_value();
-            info.appCanonical = a["app_canonical"].string_value();
-            info.appSquarePath = a["app_square"].string_value();
-            out.push_back(std::move(info));
-        }
+            for (const auto& a : arr.array_items())
+            {
+                AchievementInfo info;
+                info.id = a["id"].string_value();
+                info.title = a["title"].string_value();
+                info.description = a["description"].string_value();
+                info.unlockTime = a["unlock_time"].is_number() ? (long long)a["unlock_time"].number_value() : 0;
+                info.iconPath = a["icon"].string_value();
+                info.appId = a["app_id"].string_value();
+                info.appTitle = a["app_title"].string_value();
+                info.appCanonical = a["app_canonical"].string_value();
+                info.appSquarePath = a["app_square"].string_value();
+                out.push_back(std::move(info));
+            }
+        };
+
+        loadArray(j["oculus"].is_array() ? j["oculus"] : j["achievements"]);
+        loadArray(j["steam"]);
         return out;
     }
 
-    Result FetchMyAchievements(std::string token, Progress* progress)
+    Result FetchOculusAchievements(std::string token, Progress* progress)
     {
         Result res;
         if (token.empty())
@@ -636,6 +644,23 @@ namespace fetchworlds
         std::error_code ec;
         fs::create_directories(iconDir, ec);
 
+        // Map each oculus app id to the square cover the app scan already downloaded into "apps/images" so achievements link to it instead of fetching a duplicate.
+        std::map<std::string, std::string> librarySquares;
+        {
+            std::string libTxt = ReadFile(fs::path(prefs.AppDir()) / "store" / "apps" / "apps-library.json");
+            std::string lerr;
+            json11::Json lib = libTxt.empty() ? json11::Json() : json11::Json::parse(libTxt, lerr);
+            if (lerr.empty())
+            {
+                for (const auto& a : lib["apps"].array_items())
+                {
+                    std::string id = a["ID"].string_value();
+                    std::string sq = a["SquareURI"].string_value();
+                    if (!id.empty() && !sq.empty()) librarySquares[id] = sq;
+                }
+            }
+        }
+
         json11::Json::array index;
         int done = 0;
 
@@ -648,20 +673,11 @@ namespace fetchworlds
             std::string appTitle = app["Title"].string_value();
             std::string appCanon = app["Canonical"].string_value();
 
-            // The app square thumbnail is shared by all of this app's achievements, so download it once. URIs arrive base64-encoded.
+            // The app's square cover already lives in apps/images from the app scan
             std::string appSquareRel;
             {
-                std::string url = Base64Decode(app["SquareURI"].string_value());
-                if (!url.empty())
-                {
-                    std::string bytes = Download(url);
-                    if (!bytes.empty())
-                    {
-                        std::string name = "app_" + appId + GuessImageExt(url);
-                        if (WriteFileAtomic(iconDir / name, bytes))
-                            appSquareRel = "store/achievements/icons/" + name;
-                    }
-                }
+                auto it = librarySquares.find(appId);
+                if (it != librarySquares.end()) appSquareRel = "store/" + it->second;
             }
 
             for (const auto& ach : achs)
@@ -701,8 +717,20 @@ namespace fetchworlds
             }
         }
 
-        json11::Json out = json11::Json::object{ { "achievements", json11::Json(index) } };
-        if (!WriteFileAtomic(achDir / "app-achievements.json", out.dump()))
+        // Merge into app-achievements.json under the "oculus" key
+        json11::Json::object doc;
+        doc["oculus"] = json11::Json(index);
+        {
+            std::string existing = ReadFile(achDir / "app-achievements.json");
+            if (!existing.empty())
+            {
+                std::string eerr;
+                json11::Json ej = json11::Json::parse(existing, eerr);
+                if (eerr.empty() && ej["steam"].is_array()) doc["steam"] = ej["steam"];
+            }
+        }
+
+        if (!WriteFileAtomic(achDir / "app-achievements.json", json11::Json(doc).dump()))
         {
             res.error = "Could not write app-achievements.json.";
             return res;
