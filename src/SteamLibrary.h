@@ -92,7 +92,7 @@ public:
     SteamDetails FetchSteamDetails(const std::string& appId);
 
     // Resolve an app's portrait cover url via the storefront IStoreBrowseService/GetItems endpoint
-    std::string FetchSteamPotraitUrl(const std::string& appId);
+    std::string FetchSteamPortraitUrl(const std::string& appId);
 
     // Download/build a steam app's covers under the shared image cache and return their store paths
     SteamCovers BuildSteamCovers(const std::string& appId, const SteamDetails& d, const fs::path& imagesDir, std::vector<std::string>& cachedImageFiles, int& failures);

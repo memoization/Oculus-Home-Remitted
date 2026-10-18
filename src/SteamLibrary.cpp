@@ -157,7 +157,7 @@ SteamLibrary::SteamDetails SteamLibrary::FetchSteamDetails(const std::string& ap
     return d;
 }
 
-std::string SteamLibrary::FetchSteamPotraitUrl(const std::string& appId)
+std::string SteamLibrary::FetchSteamPortraitUrl(const std::string& appId)
 {
     std::string input = "{\"ids\":[{\"appid\":" + appId + "}],\"context\":{\"language\":\"english\",\"country_code\":\"US\",\"steam_realm\":1},\"data_request\":{\"include_assets\":true}}";
 
@@ -215,7 +215,7 @@ SteamLibrary::SteamCovers SteamLibrary::BuildSteamCovers(const std::string& appI
     // Prefer the real portrait (library capsule). Its url is not in appdetails, so resolve it from GetItems
     if (!applibraries::CachedImageFresh(imagesDir, portraitUri))
     {
-        std::string portraitUrl = FetchSteamPotraitUrl(appId);
+        std::string portraitUrl = FetchSteamPortraitUrl(appId);
         if (!portraitUrl.empty())
         {
             std::string fn = idKey + "_portrait" + applibraries::ImageExtFromUrl(portraitUrl);
