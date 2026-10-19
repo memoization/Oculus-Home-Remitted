@@ -11,10 +11,11 @@ Meta shutdown access to Oculus Home years ago evicting many users of their digit
 - Set a custom profile name and icon. Both can appear in VR.
 - Locally stored list of homes which allows setting what default home you land in at startup. Editing a home's object layout or changing its information persists offline. VR actions such as naming a home, creating a home, or deleting a home are supported.
 - Includes a feature for fetching your old homes from your Oculus (Meta) account. This will only work while Meta has these endpoints and data still available. ***Best to act on that now if you want to preserve your old experiences!***
-- Supports loading your Oculus app library offline.
-- Supports fetching all of your Oculus app achievements.
+- Supports loading in your Oculus and Steam app libraries.
+- Supports fetching all of your Oculus app achievements and your achievements for installed Steam apps.
 - Allows usage of embedded-panels (or broadcasting to screens). This enables viewing your desktop with officially interactive screen objects in VR.
 - Auto-launch Oculus Home from either Oculus or SteamVR dashboard, similar to the old Oculus Dash behavior.
+- Supports all UGC custom import features. Importing a UGC asset will register it locally to use offline.
 
 # Help Wanted: Finding Lost Contest Assets
 Many years ago, Oculus Medium held two contests for users to submit their handmade sculptures: "_Pumpkin Sculpting Competition_" and "_Snowman Sculpting Competition_".
@@ -53,7 +54,7 @@ This tool only supports a specific version of Oculus Home. **It can be downloade
 2. Go to the Oculus program files *Support* directory in explorer: `C:\Program Files\Oculus\Support`
 3. Take the *oculus-worlds* folder you downloaded earlier and place it into that Oculus directory in explorer.
 4. In the *Oculus Home Remitted* tool, go to *Settings* and enable *Launch with Revive*. Then set the location of *ReviveInjector.exe*.
-5. You can now run Oculus Home with your SteamVR headset. Having Meta Link software running is not required!
+5. You can now run Oculus Home with your SteamVR headset. Having Meta Link software running is not required but **it does need to be installed**!
 
 *While using Revive, controller inputs may be a bit off by default compared to running a native Oculus headset. Adjust your bindings using SteamVR's *Manage Controller Bindings* for the running app.*
 
