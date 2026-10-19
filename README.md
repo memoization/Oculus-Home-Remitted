@@ -18,27 +18,6 @@ Meta shutdown access to Oculus Home years ago evicting many users of their digit
 - Supports all UGC custom import features. Importing a UGC asset will register it locally to use offline.
 - Using the old Oculus 2.0 avatars. Customize your appearance with all of the available editor options. You can also fetch your old appearance tied to your Oculus (Meta) account. 
 
-# Help Wanted: Finding Lost Contest Assets
-Many years ago, Oculus Medium held two contests for users to submit their handmade sculptures: "_Pumpkin Sculpting Competition_" and "_Snowman Sculpting Competition_".
-The top winners were given a 3D print of their submission and their sculpture to be featured in Oculus Home for a limited time. Unfortunately, the time window was very short to fetch these assets.
-
-The *Pumpkin Sculpting Competition* winners have been archived already:
-- `Halloween Pumpkin`
-- `Pumpkin Ghoul`
-
-👉 The *Snowman Sculpting Competition* sculpture winner models are not archived and likely to become lost media:
-- `Snowman Attack`
-- `Snowmen Decorating`
-
-If you opened or used Oculus Home during the time window of these being featured, you may have seen them in your imports list and thus may be on-file in present day. 
-1. Check WorldsCache by pasting this path in Explorer `%UserProfile%/AppData/Local/Home2/WorldsCache` and see if any `.zst` files are around the date of `1/18/2019 - 1/31/2019`. If you have any from around those dates, compress the file(s) to a `.zip` then submit [an issue](https://github.com/memoization/Oculus-Home-Remitted/issues/new?template=BLANK_ISSUE) with the file uploaded.
-2. If one of your fetched homes you downloaded from your account has either of these assets, export your home from the *Homes* page and compress the `.ochome` file to `.zip` then submit [an issue](https://github.com/memoization/Oculus-Home-Remitted/issues/new?template=BLANK_ISSUE) with the file uploaded.
-3. If your *My Imports* list has these listed while in Oculus Home, check the `Documents\Oculus Home\_Import` location for them. If you see them, compress the file(s) to a `.zip` then submit [an issue](https://github.com/memoization/Oculus-Home-Remitted/issues/new?template=BLANK_ISSUE) with the file uploaded.
-
-<img src="https://github.com/user-attachments/assets/5e3e9911-a124-428b-9075-fe1acb980dd5" width="600" alt="Asset Examples">
-
-_Any public efforts to help with this would be greatly appreciated!_
-
 # Setup Guide
 This tool only supports a specific version of Oculus Home. **It can be downloaded [here](https://archive.org/download/oculus-worlds/worlds-2021-03-29.zip).**
 
