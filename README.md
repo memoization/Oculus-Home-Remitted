@@ -16,6 +16,7 @@ Meta shutdown access to Oculus Home years ago evicting many users of their digit
 - Allows usage of embedded-panels (or broadcasting to screens). This enables viewing your desktop with officially interactive screen objects in VR.
 - Auto-launch Oculus Home from either Oculus or SteamVR dashboard, similar to the old Oculus Dash behavior.
 - Supports all UGC custom import features. Importing a UGC asset will register it locally to use offline.
+- Using the old Oculus 2.0 avatars. Customize your appearance with all of the available editor options. You can also fetch your old appearance tied to your Oculus (Meta) account. 
 
 # Help Wanted: Finding Lost Contest Assets
 Many years ago, Oculus Medium held two contests for users to submit their handmade sculptures: "_Pumpkin Sculpting Competition_" and "_Snowman Sculpting Competition_".
