@@ -60,7 +60,7 @@ static std::string ReadFileUtf8(const std::wstring& path)
 }
 
 template<typename T>
-void Prefs::SetPref(std::string pField, std::string atCategory, const T& newValue)
+void Prefs::SetPref(std::string pField, std::string atCategory, const T& newValue, bool silentWrite)
 {
     std::string text = ReadFileUtf8(PrefsPath());
     std::string err;
@@ -83,14 +83,18 @@ void Prefs::SetPref(std::string pField, std::string atCategory, const T& newValu
     if (f)
     {
         f << json11::Json(root).dump();
-        prefs.g_saveTick.fetch_add(1, std::memory_order_relaxed);
+
+        if (!silentWrite)
+        {
+            prefs.g_saveTick.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 }
-template void Prefs::SetPref<int>(std::string, std::string, const int&);
-template void Prefs::SetPref<bool>(std::string, std::string, const bool&);
-template void Prefs::SetPref<float>(std::string, std::string, const float&);
-template void Prefs::SetPref<double>(std::string, std::string, const double&);
-template void Prefs::SetPref<std::string>(std::string, std::string, const std::string&);
+template void Prefs::SetPref<int>(std::string, std::string, const int&, bool);
+template void Prefs::SetPref<bool>(std::string, std::string, const bool&, bool);
+template void Prefs::SetPref<float>(std::string, std::string, const float&, bool);
+template void Prefs::SetPref<double>(std::string, std::string, const double&, bool);
+template void Prefs::SetPref<std::string>(std::string, std::string, const std::string&, bool);
 
 std::string Prefs::GetPrefString(std::string pField, std::string indexedCategory)
 {

@@ -14,6 +14,7 @@
 #include "Watcher.h"
 #include "LaunchHandler.h"
 #include "OVRLogWatch.h"
+#include "VRPresenceRewarder.h"
 #include "Prefs.h"
 #include "Tray.h"
 #include "UpdateCheck.h"
@@ -92,6 +93,9 @@ int main(int argc, char* argv[])
     // Auto launch Home when the headset is idle in the SteamVR or Oculus dashboard void
     g_launchHandler.Start();
 
+    // Earn reward boxes from time spent in VR apps
+    g_vrPresenceRewarder.Start();
+
     // Sys tray presence so closing the window keeps the frontend in background
     tray::Install(glfwGetWin32Window(ui.window));
 
@@ -99,6 +103,7 @@ int main(int argc, char* argv[])
     ui.Run(); // Blocks the main() thread until execution stops.
 
     tray::Remove();
+    g_vrPresenceRewarder.Stop();
     g_launchHandler.Stop();
     g_ovrLogWatch.Stop();
     g_homeWatcher.Stop();
