@@ -18,6 +18,7 @@ struct RecorderFlags
     bool oafCapture = false;
     bool vertsCapture = false;
     bool graphqlCapture = false;
+    bool gkRewrite = false;
 };
 
 // Reads identity.{userId,oculusId,displayName} from the preferences.json at prefsPath.

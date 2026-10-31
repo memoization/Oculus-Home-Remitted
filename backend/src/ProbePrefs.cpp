@@ -55,9 +55,12 @@ namespace home2backend {
         if (!err.empty() || !j.is_object()) return false;
 
         const json11::Json& wrapper = j["wrapper"];
+        if (wrapper.is_null() || !wrapper.is_object()) return false;
+
         out.oafCapture = wrapper["flagOafCapture"].bool_value();
         out.vertsCapture = wrapper["flagVertsCapture"].bool_value();
         out.graphqlCapture = wrapper["flagGraphqlCapture"].bool_value();
+        out.gkRewrite = wrapper["flagGkRewrite"].bool_value();
         return true;
     }
 

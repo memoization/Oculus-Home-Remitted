@@ -17,6 +17,7 @@ public:
         bool flagOafCapture;
         bool flagVertsCapture;
         bool flagGraphqlCapture;
+        bool flagGkRewrite;
     };
 
     // Directory of the running exe
@@ -24,7 +25,7 @@ public:
     void SetExePath(std::string pathField, const std::string& path);
 
     template<typename T>
-    void SetPref(std::string pField, std::string atCategory, const T& newValue);
+    void SetPref(std::string pField, std::string atCategory, const T& newValue, bool silentWrite = false);
     std::string GetPrefString(std::string pField, std::string indexedCategory);
     float GetPrefFloat(std::string pField, std::string indexedCategory, float fDefault);
     bool GetPrefBool(std::string pField, std::string indexedCategory, bool bDefault);

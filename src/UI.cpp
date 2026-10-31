@@ -352,6 +352,7 @@ void UI::LoadPreferences()
     launchWithRevive = prefs.GetPrefBool("launchWithRevive", "wrapper", false);
     loadSteamVRApps = prefs.GetPrefBool("loadSteamVRApps", "wrapper", false);
     loadRandomHome = prefs.GetPrefBool("loadRandomHome", "", false);
+    rewardMode = prefs.GetPrefBool("rewardMode", "", false);
 
     autoLaunchGracePeriodS = prefs.GetPrefFloat("autoLaunchGracePeriodS", "wrapper", autoLaunchGracePeriodS);
 }
@@ -1214,7 +1215,7 @@ void UI::DoAchievements()
     }
 
     float listW = iScale.F(800);
-    float listH = iScale.F(240);
+    float listH = iScale.F(320);
     SourceColumn("Achievements", kAchievementsKind, rows, ImVec2(listW, listH), (int)iScale.F(760));
 
     ImGui::SetCursorPosY(avail.y - iScale.F(75));
@@ -1418,9 +1419,122 @@ void UI::DoSettings()
 
     ImGui::Dummy(iScale.Vec2(0, 25));
 
-    auto panePosAnchor = ImGui::GetCursorPos();
     float colGap = iScale.F(24);
 
+    // Game group
+    ImGui::BeginGroup();
+    ImGui::PushFont(fontHeader);
+    ImGui::Text("Game");
+    ImGui::PopFont();
+    ImGui::Dummy(iScale.Vec2(0, 4));
+
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
+    ImGui::BeginChild("##paneG", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
+
+    for (int t = 0; t < gameSettings.size(); t++)
+    {
+        auto toggle = gameSettings[t];
+
+        bool val = toggle.get();
+        ImGui::PushID(toggle.name.c_str());
+        ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
+
+        pushedStyles = PushCheckboxStyle();
+        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
+        ImGui::PopStyleColor(pushedStyles);
+
+        ImGui::SetWindowFontScale(1);
+        ImGui::SameLine();
+        auto cursorPos = ImGui::GetCursorPos();
+
+        ImGui::SetCursorPosY(cursorPos.y - iScale.F(6));
+        ImGui::Text(toggle.name.c_str());
+
+        ImGui::SetWindowFontScale(0.8f);
+        ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + iScale.F(17)));
+        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
+        ImGui::TextWrapped(toggle.desc.c_str());
+        ImGui::PopID();
+        ImGui::PopStyleColor();
+        ImGui::SetWindowFontScale(1);
+
+        if (toggle.get() != val)
+        {
+            toggle.set(val);
+        }
+        ImGui::Dummy(iScale.Vec2(0, 10));
+    }
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    ImGui::EndGroup();
+
+    float gameAnchorPoint = ImGui::GetCursorPosY();
+
+    ImGui::SameLine(0.0f, colGap);
+
+    // Dev tools
+    ImGui::BeginGroup();
+    ImGui::PushFont(fontHeader);
+    ImGui::Text("Develop Tools");
+    ImGui::PopFont();
+    ImGui::Dummy(iScale.Vec2(0, 4));
+
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
+    ImGui::BeginChild("##paneDev", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
+
+    for (int t = 0; t < devSettings.size(); t++)
+    {
+        auto toggle = devSettings[t];
+
+        bool val = toggle.get();
+        ImGui::PushID(toggle.name.c_str());
+        ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
+
+        pushedStyles = PushCheckboxStyle();
+        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
+        ImGui::PopStyleColor(pushedStyles);
+
+        ImGui::SetWindowFontScale(1);
+        ImGui::SameLine();
+        auto cursorPos = ImGui::GetCursorPos();
+
+        ImGui::SetCursorPosY(cursorPos.y - iScale.F(6));
+        ImGui::Text(toggle.name.c_str());
+
+        ImGui::SetWindowFontScale(0.8f);
+        ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + iScale.F(17)));
+        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
+        ImGui::TextWrapped(toggle.desc.c_str());
+        ImGui::PopID();
+        ImGui::PopStyleColor();
+        ImGui::SetWindowFontScale(1);
+
+        if (toggle.get() != val)
+        {
+            toggle.set(val);
+        }
+        ImGui::Dummy(iScale.Vec2(0, 10));
+    }
+
+    ImGui::SetWindowFontScale(0.8f);
+    ImGui::TextWrapped("Capture tools should only be used for recording an online session of Oculus Home. Enabling any develop tools will disable offline features. Home should be launched through the old Oculus Client dashboard to go online.");
+    ImGui::SetWindowFontScale(1);
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    ImGui::EndGroup();
+
+
+    ImGui::SetCursorPosY(gameAnchorPoint);
+
+    // Launch behavior
     ImGui::BeginGroup();
     ImGui::PushFont(fontHeader);
     ImGui::Text("Launch Behavior");
@@ -1430,7 +1544,7 @@ void UI::DoSettings()
     ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneLeft", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
+    ImGui::BeginChild("##paneLaunch", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
 
     for (int t = 0; t < launchBehaviorSettings.size(); t++)
     {
@@ -1509,62 +1623,6 @@ void UI::DoSettings()
             ImGui::PopStyleColor();
         }
     }
-
-    ImGui::EndChild();
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor();
-    ImGui::EndGroup();
-
-    ImGui::SameLine(0.0f, colGap);
-
-    ImGui::BeginGroup();
-    ImGui::PushFont(fontHeader);
-    ImGui::Text("Develop Tools");
-    ImGui::PopFont();
-    ImGui::Dummy(iScale.Vec2(0, 4));
-
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, UIConsts.SourceListFill);
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, iScale.F(8));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, iScale.Vec2(8, 8));
-    ImGui::BeginChild("##paneRight", iScale.Vec2(400, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY);
-
-    for (int t = 0; t < devSettings.size(); t++)
-    {
-        auto toggle = devSettings[t];
-
-        bool val = toggle.get();
-        ImGui::PushID(toggle.name.c_str());
-        ImGui::SetWindowFontScale(UIConsts.CheckboxScale);
-
-        pushedStyles = PushCheckboxStyle();
-        ImGui::Checkbox(("##" + toggle.id).c_str(), &val);
-        ImGui::PopStyleColor(pushedStyles);
-
-        ImGui::SetWindowFontScale(1);
-        ImGui::SameLine();
-        auto cursorPos = ImGui::GetCursorPos();
-
-        ImGui::SetCursorPosY(cursorPos.y - iScale.F(6));
-        ImGui::Text(toggle.name.c_str());
-
-        ImGui::SetWindowFontScale(0.8f);
-        ImGui::SetCursorPos(ImVec2(cursorPos.x, cursorPos.y + iScale.F(17)));
-        ImGui::PushStyleColor(ImGuiCol_Text, UIConsts.SubText);
-        ImGui::TextWrapped(toggle.desc.c_str());
-        ImGui::PopID();
-        ImGui::PopStyleColor();
-        ImGui::SetWindowFontScale(1);
-
-        if (toggle.get() != val)
-        {
-            toggle.set(val);
-        }
-        ImGui::Dummy(iScale.Vec2(0, 10));
-    }
-
-    ImGui::SetWindowFontScale(0.8f);
-    ImGui::TextWrapped("Capture tools should only be used for recording an online session of Oculus Home. Enabling any captures will disable the offline feature. Home should be launched through the old Oculus Client dashboard to go online.");
-    ImGui::SetWindowFontScale(1);
 
     ImGui::EndChild();
     ImGui::PopStyleVar(2);
@@ -2035,7 +2093,7 @@ void UI::DrawContent()
     {
         ImVec2 uv0, uv1;
         CoverUV(backgroundW, backgroundH, imgP1.x - imgP0.x, imgP1.y - imgP0.y, uv0, uv1);
-        drawList->AddImage(ToTexId(background), imgP0, imgP1, uv0, uv1);
+        drawList->AddImage(ToTexId(background), imgP0, imgP1, uv0, uv1, IM_COL32(210, 210, 210, 255));
     }
     else
     {
@@ -3084,6 +3142,32 @@ void UI::Run()
             {
                 prefs.SetPref("flagOafCapture", "wrapper", v);
                 setCaptureFlags.flagOafCapture = v;
+            }
+        },
+        {
+            "flagGkRewrite",
+            "Override Feature Flags",
+            "Control feature flags in a online session.\nThis requires a created file into the \"store\" folder. Copy the \"oaf_gk.tsv\" file as \"oaf_gk_overrides.tsv\".",
+            [&]() { return setCaptureFlags.flagGkRewrite; },
+            [&](bool v)
+            {
+                prefs.SetPref("flagGkRewrite", "wrapper", v);
+                setCaptureFlags.flagGkRewrite = v;
+            }
+        }
+    };
+
+    gameSettings =
+    {
+        {
+            "rewardMode",
+            "Classic Reward Mode",
+            "Earn rewards for spending time in VR games. You begin with the starting inventory then you progressively earn items. Rewards are limited at 8 per week with 2 per day.\nThe tool must remain running in order to collect your time spent in VR.",
+            [&]() { return rewardMode; },
+            [&](bool v)
+            {
+                prefs.SetPref("rewardMode", "", v);
+                rewardMode = v;
             }
         }
     };

@@ -200,11 +200,13 @@ struct UI
     bool loadRandomHome = false;
     bool autoLaunchEnabled = false;
     bool loadSteamVRApps = false;
+    bool rewardMode = false;
     float autoLaunchGracePeriodS = 10.0f;
     const char* appVersion = "0.0.0";
 
     std::vector<SettingsToggle> launchBehaviorSettings;
     std::vector<SettingsToggle> devSettings;
+    std::vector<SettingsToggle> gameSettings;
 
     // "Changes have been saved!" toast above Launch Home. Flashes up when preferences.json is written to
     unsigned lastSavedTick = 0;

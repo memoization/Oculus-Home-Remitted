@@ -156,6 +156,7 @@
     <ClInclude Include="src\AppLibraries.h" />
     <ClInclude Include="src\LaunchHandler.h" />
     <ClInclude Include="src\OVRLogWatch.h" />
+    <ClInclude Include="src\VRPresenceRewarder.h" />
     <ClInclude Include="src\BroadcastSource.h" />
     <ClInclude Include="src\FetchWorlds.h" />
     <ClInclude Include="src\SteamLibrary.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="src\AppLibraries.cpp" />
     <ClCompile Include="src\LaunchHandler.cpp" />
     <ClCompile Include="src\OVRLogWatch.cpp" />
+    <ClCompile Include="src\VRPresenceRewarder.cpp" />
     <ClCompile Include="src\BroadcastSource.cpp" />
     <ClCompile Include="src\FetchWorlds.cpp" />
     <ClCompile Include="src\SteamLibrary.cpp" />

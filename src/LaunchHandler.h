@@ -13,6 +13,7 @@ public:
 
     bool LaunchPending() const { return launchPending_.load(); }
     bool ClosePending() const { return closePending_.load(); }
+    bool HasFocusedApp() const { return !focusedApp.empty(); }
 
 private:
     void Loop();

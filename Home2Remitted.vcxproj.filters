@@ -114,6 +114,9 @@
     <ClInclude Include="src\OVRLogWatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\VRPresenceRewarder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\SteamLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -204,6 +207,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OVRLogWatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VRPresenceRewarder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SteamLibrary.cpp">

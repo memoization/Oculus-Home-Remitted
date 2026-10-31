@@ -5,7 +5,7 @@
       "client_mutation_id": "__CMID__",
       "user_options": "__USER_OPTIONS__",
       "events": [
-        "{\"Type\":\"RewardNotifications\",\"Param\":\"[]\"}",
+        "{\"Type\":\"RewardNotifications\",\"Param\":\"__REWARD_NOTIFS__\"}",
         "{\"Type\":\"CurrentAppCatalog\",\"Param\":\"{}\"}",
         "{\"Type\":\"WorldsDeletedByAdminAlert\",\"Param\":\"[]\"}",
         "{\"Type\":\"UnlinkedOwnerWorldsMadePrivate\",\"Param\":\"[]\"}"
