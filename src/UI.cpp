@@ -1215,7 +1215,7 @@ void UI::DoAchievements()
     }
 
     float listW = iScale.F(800);
-    float listH = iScale.F(240);
+    float listH = iScale.F(320);
     SourceColumn("Achievements", kAchievementsKind, rows, ImVec2(listW, listH), (int)iScale.F(760));
 
     ImGui::SetCursorPosY(avail.y - iScale.F(75));

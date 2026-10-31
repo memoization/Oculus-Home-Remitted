@@ -716,14 +716,13 @@ namespace home2hook {
             if (!fs::exists(ownedPath, invEc))
             {
                 std::string baseText;
-                if (ReadFileText(root / "templates" / "inventory_starter.json", baseText) &&
-                    writeFileAtomic(ownedPath.wstring(), baseText))
+                if (ReadFileText(root / "templates" / "inventory_starter.json", baseText) && writeFileAtomic(ownedPath.wstring(), baseText))
                 {
-                    LogLine("store: reward mode seeded inventory-owned-rewarded.json from templates\\inventory_starter.json");
+                    LogLine("store: reward mode created inventory-owned-rewarded.json from templates\\inventory_starter.json");
                 }
                 else
                 {
-                    LogLine("store: reward mode WARN could not seed inventory-owned-rewarded.json from templates\\inventory_starter.json");
+                    LogLine("store: reward mode could not create inventory-owned-rewarded.json from templates\\inventory_starter.json");
                 }
             }
         }
