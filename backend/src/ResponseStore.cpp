@@ -67,6 +67,9 @@ namespace home2hook {
     static const char* kDocWorldsApps      = home2hook::doc::WorldsApps;
     static const char* kDocWorldsGuestApps = home2hook::doc::WorldsGuestApps;
     static const char* kDocNuxModules      = home2hook::doc::NuxModules;
+    static const char* kDocRewardAcceptOpen= home2hook::doc::RewardAcceptOpen;
+    static const char* kDocRewardCollectAll= home2hook::doc::RewardCollectAll;
+    static const char* kDocWorldsMarkSeen  = home2hook::doc::WorldsMarkSeen;
 
     // The canonical starter-world content template. Its objects.nodes[] holds roughly 71 nodes and its decoded customizations seed every world_create config.json
     static const char* kCanonicalTemplateStem = "2021902227865170__1000000000000001";
@@ -125,6 +128,15 @@ namespace home2hook {
     // Served owned_count per inventory node. Large so a placement never drives owned toward 0 and the game's on-reload owned/used reconciliation can't run away into the loading-void hang.
     static const int kOwnedCount = 9999;
 
+    // Reward loot drop weights by rarity
+    struct RewardRarityWeight { const char* rarity; int weight; };
+    static const RewardRarityWeight kRewardRarityWeights[] = {
+        { "COMMON", 72 },
+        { "UNCOMMON", 20 },
+        { "RARE", 7 },
+        { "MASTERPIECE", 1 },
+    };
+
     const char* ActionName(ResponseAction action)
     {
         switch (action)
@@ -153,6 +165,7 @@ namespace home2hook {
         case ResponseAction::DeletePortalData:return "delete_world_portal_data";
         case ResponseAction::NodeById:        return "node_by_id";
         case ResponseAction::AppImages:       return "app_images";
+        case ResponseAction::MarkItemsSeen:   return "worlds_mark_items_seen";
         default:                              return "passthrough";
         }
     }
@@ -411,6 +424,8 @@ namespace home2hook {
                     defaultWorldId = pj["defaultWorldId"].string_value();
                 if (pj["loadRandomHome"].is_bool())
                     loadRandomHome = pj["loadRandomHome"].bool_value();
+                if (pj["rewardMode"].is_bool())
+                    rewardMode = pj["rewardMode"].bool_value();
             }
         }
 
@@ -619,8 +634,111 @@ namespace home2hook {
             masterLoaded = err.empty() && masterDb.is_object();
         }
 
+        // Build the reward box pool from the master item db.
+        // A reward box may only drop items tagged Decorations, Object, or Special, never a Starter item, and never anything already handed out in the starter inventory
+        rewardCandidatesByRarity.clear();
+        if (masterLoaded)
+        {
+            std::unordered_set<std::string> starterIds;
+            std::string starterText;
+            if (ReadFileText(root / "templates" / "inventory_starter.json", starterText))
+            {
+                std::string serr;
+                json11::Json sj = json11::Json::parse(starterText, serr);
+                if (serr.empty() && sj["owned"].is_array())
+                {
+                    for (const auto& e : sj["owned"].array_items())
+                    {
+                        const std::string did = e["item_def_id"].string_value();
+                        if (!did.empty()) starterIds.insert(did);
+                    }
+                }
+            }
+
+            // Specific item ids blocked from the loot pool
+            static const char* const kRewardBlockedIds[] = { "168636150455009", "2216581015021733", "1789344384707026" };
+            // Only these category tags are eligible, and the Starter tag disqualifies an item.
+            static const char* const kRewardCategoryTags[] = { "Decorations", "Object", "Special" };
+
+            int poolTotal = 0;
+            for (const auto& kv : masterDb.object_items())
+            {
+                const std::string& id = kv.first;
+                const json11::Json& node = kv.second;
+
+                if (node["asset_key"].string_value().empty()) continue;
+                if (starterIds.count(id)) continue;
+
+                bool blocked = false;
+                for (const char* b : kRewardBlockedIds)
+                {
+                    if (id == b) { blocked = true; break; }
+                }
+                if (blocked) continue;
+
+                bool inCategory = false;
+                bool isStarter = false;
+                for (const auto& t : node["tags"].array_items())
+                {
+                    const std::string tag = t.string_value();
+                    if (tag == "Starter")
+                    {
+                        isStarter = true;
+                        break;
+                    }
+
+                    for (const char* c : kRewardCategoryTags)
+                    {
+                        if (tag == c)
+                        {
+                            inCategory = true;
+                            break;
+                        }
+                    }
+                }
+                if (isStarter || !inCategory) continue;
+
+                std::string rarity = node["rarity"].string_value();
+                if (rarity.empty()) rarity = "COMMON";
+                rewardCandidatesByRarity[rarity].push_back(id);
+                ++poolTotal;
+            }
+
+            LogLine("store: reward loot pool built, " + std::to_string(poolTotal) + " candidate item def(s) across " + std::to_string(rewardCandidatesByRarity.size()) + " rarities");
+        }
+
+        // In reward mode, the user starts from the barebones inventory and earns items from reward boxes
+        std::error_code invEc;
+        fs::path ownedPath;
+        if (rewardMode)
+        {
+            ownedPath = root / "inventory-owned-rewarded.json";
+            if (!fs::exists(ownedPath, invEc))
+            {
+                std::string baseText;
+                if (ReadFileText(root / "templates" / "inventory_starter.json", baseText) &&
+                    writeFileAtomic(ownedPath.wstring(), baseText))
+                {
+                    LogLine("store: reward mode seeded inventory-owned-rewarded.json from templates\\inventory_starter.json");
+                }
+                else
+                {
+                    LogLine("store: reward mode WARN could not seed inventory-owned-rewarded.json from templates\\inventory_starter.json");
+                }
+            }
+        }
+        else
+        {
+            ownedPath = root / "inventory-owned-all.json";
+            if (!fs::exists(ownedPath, invEc))
+            {
+                ownedPath = root / "inventory-owned.json"; // legacy
+            }
+        }
+        ownedInventoryPath = ownedPath.wstring();
+
         std::string ownedText;
-        if (ReadFileText(root / "inventory-owned.json", ownedText))
+        if (ReadFileText(ownedPath, ownedText))
         {
             std::string err;
             json11::Json parsed = json11::Json::parse(ownedText, err);
@@ -630,6 +748,7 @@ namespace home2hook {
                 ownedLoaded = true;
             }
         }
+        LogLine("store: inventory rewardMode=" + std::string(rewardMode ? "on" : "off") + " loaded=" + std::string(ownedLoaded ? "yes" : "no") + " items=" + std::to_string(ownedItems.is_array() ? ownedItems.array_items().size() : 0));
 
         // Optional: the user's local Oculus app library. When present it lets the "worlds_apps_and_achievements" handlers reconstruct real titles and thumbnails for placed GameBox, cartridge, and achievement tiles.
         // When absent the handlers serve the empty form so tiles render blank without a crash. Accept either a bare {"apps":[...]} object or an [...] array.
@@ -707,7 +826,7 @@ namespace home2hook {
         }
 
         // Load the uploaded-UGC catalog once
-        // Placed ownership for the inventory comes from each world's actual objects "augmentInventoryFromWorldObjects" and not from this catalog.
+        // UGC ownership for the inventory comes from each world's placed UGC objects "augmentInventoryFromWorldObjects" plus this catalog's own blobs "augmentInventoryFromGlobalUgc".
         std::string gtext;
         if (ReadFileText(root / "uploaded-ugc" / "import-hashes-global.json", gtext))
         {
@@ -721,9 +840,8 @@ namespace home2hook {
 
         loadWorlds();
 
-        // Make each world's placed objects owned in the offline inventory.
-        // Without it the object is not found in inventory error causes a readonly state for some objects where edits do not persist.
-        // Repoint catalogued objects at the catalog's existing owned entry so they are editable without duplicating, then own every world's placed objects (including placed UGC) by their real inventory_item.id.
+        // Repoint catalogued objects at the catalog's existing owned entry so an owned item stays editable without duplicating.
+        // own any placed UGC by its real inventory_item.id, and own uploaded UGC defs from the global catalog.
         normalizePlacedObjectEntryIds();
         augmentInventoryFromWorldObjects();
         augmentInventoryFromGlobalUgc();
@@ -942,6 +1060,12 @@ namespace home2hook {
             return ResponseAction::WorldsGuestApps;
         if (docId == kDocSetUserOptions)
             return ResponseAction::SetUserOptions;
+        if (docId == kDocRewardAcceptOpen)
+            return ResponseAction::RewardAcceptOpen;
+        if (docId == kDocRewardCollectAll)
+            return ResponseAction::RewardCollectAll;
+        if (docId == kDocWorldsMarkSeen)
+            return ResponseAction::MarkItemsSeen;
         if (cannedDocIds.count(docId) != 0)
             return ResponseAction::Canned;
         
@@ -961,13 +1085,85 @@ namespace home2hook {
             opts = userOptionsJson;
         }
         body = ReplaceAll(body, "__USER_OPTIONS__", JsonEscape(opts));
+        // serve RewardNotifications entries per the "pendingRewardBoxes" amount from preferences.json
+        int boxes = readPendingRewardBoxes();
+        body = ReplaceAll(body, "__REWARD_NOTIFS__", JsonEscape(JsonEscape(buildRewardNotificationsParam(boxes))));
         return body;
+    }
+
+    // Synthesize a RewardNotifications Param array with n "LOGIN" entries with each being a unique numeric id so the client does not collapse them into one
+    std::string ResponseStore::buildRewardNotificationsParam(int n) const
+    {
+        if (n <= 0) return "[]";
+
+        long long now = NowUnix();
+        std::string arr = "[";
+        for (int i = 0; i < n; ++i)
+        {
+            if (i != 0)
+            {
+                arr += ",";
+            }
+
+            std::string id = std::to_string(9000000000000001LL + i);
+            arr += "{\"type\":\"LOGIN\",\"id\":\"" + id + "\",\"reward_time\":" + std::to_string(now) +
+                   ",\"nux_module_id\":\"\",\"source_app_id\":\"\"}";
+        }
+        arr += "]";
+        return arr;
+    }
+
+    int ResponseStore::readPendingRewardBoxes() const
+    {
+        if (prefsPath.empty()) return 0;
+
+        std::lock_guard<std::mutex> fileLock(prefsFileMutex);
+        std::string text;
+        if (!ReadFileText(prefsPath, text) || text.empty()) return 0;
+
+        std::string err;
+        json11::Json j = json11::Json::parse(text, err);
+        if (!err.empty() || !j.is_object()) return 0;
+
+        int n = j["pendingRewardBoxes"].is_number() ? j["pendingRewardBoxes"].int_value() : 0;
+        return n < 0 ? 0 : n;
+    }
+
+    // Deduct the claimed boxes from the pending count in preferences
+    int ResponseStore::deductPendingRewardBoxes(int by) const
+    {
+        if (prefsPath.empty() || by <= 0) return 0;
+
+        std::lock_guard<std::mutex> fileLock(prefsFileMutex);
+        std::string text;
+        ReadFileText(prefsPath, text);
+        std::string err;
+        json11::Json existing = text.empty() ? json11::Json() : json11::Json::parse(text, err);
+        json11::Json::object root = existing.is_object() ? existing.object_items() : json11::Json::object();
+
+        int cur = root["pendingRewardBoxes"].is_number() ? root["pendingRewardBoxes"].int_value() : 0;
+        int next = cur - by;
+        if (next < 0) next = 0;
+        root["pendingRewardBoxes"] = next;
+
+        std::wstring tmp = prefsPath + L".tmp";
+        {
+            std::ofstream f(tmp, std::ios::binary | std::ios::trunc);
+            if (!f) return cur;
+            f << json11::Json(root).dump();
+        }
+
+        if (!MoveFileExW(tmp.c_str(), prefsPath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+        {
+            DeleteFileW(tmp.c_str());
+            return cur;
+        }
+        return next;
     }
 
     std::string ResponseStore::buildKeepAlive(const std::string& clientMutationId) const
     {
-        std::string body = "{\"data\":{\"world_keep_alive\":{\"events\":[],"
-                           "\"client_mutation_id\":\"";
+        std::string body = "{\"data\":{\"world_keep_alive\":{\"events\":[],\"client_mutation_id\":\"";
         body += JsonEscape(clientMutationId);
         body += "\",\"server_time\":";
         body += std::to_string(NowUnix());
@@ -1499,6 +1695,18 @@ namespace home2hook {
     // World content from the folder's config.json: objects verbatim and customizations re-serialized as a raw escaped JSON string
     std::string ResponseStore::buildWorldContent(const std::string& worldNodeId, const std::string& clientMutationId) const
     {
+        // Record the owned item-def ids from the active inventory. Sourcing from the rewarded inventory in reward mode, otherwise the full inventory.
+        // A placed object whose def is not owned is left out of the served objects.
+        std::unordered_set<std::string> ownedDefs;
+        {
+            std::lock_guard<std::mutex> ulk(ugcMutex);
+            for (const auto& item : ownedItems.array_items())
+            {
+                const std::string& d = item["item_def_id"].string_value();
+                if (!d.empty()) ownedDefs.insert(d);
+            }
+        }
+
         std::string name, id;
         json11::Json objects, customizations;
         bool found = false;
@@ -1517,14 +1725,39 @@ namespace home2hook {
 
         if (!found) return buildCanned(kDocWorldContent, clientMutationId, worldNodeId);
 
+        // Serve an object only when its def is owned, or when it has no def id to check.
+        json11::Json::array servedObjects;
+        std::string droppedIds;
+        size_t dropped = 0;
+        for (const auto& obj : objects.array_items())
+        {
+            const std::string& defId = obj["item_definition"]["id"].string_value();
+            if (defId.empty() || ownedDefs.count(defId) != 0)
+            {
+                servedObjects.push_back(obj);
+            }
+            else
+            {
+                if (!droppedIds.empty())
+                {
+                    droppedIds += ", ";
+                }
+                droppedIds += defId;
+                ++dropped;
+            }
+        }
+        if (dropped)
+        {
+            LogLine("store: world_content " + id + " left out " + std::to_string(dropped) + " unowned object(s) from the serve, item def ids: " + droppedIds);
+        }
+
         std::string customizationsStr = customizations.is_null() ? std::string("{}")
                                                                  : customizations.dump();
         json11::Json::object node{
             {"__typename", std::string("World")},
             {"name", name},
             {"id", id},
-            {"objects", json11::Json::object{
-                {"nodes", objects.is_array() ? objects : json11::Json(json11::Json::array{})} }},
+            {"objects", json11::Json::object{ {"nodes", json11::Json(servedObjects)} }},
             {"customizations", customizationsStr},
             {"reported_object_ids", json11::Json::array{}}
         };
@@ -2727,10 +2960,9 @@ namespace home2hook {
         if (fixed) LogLine("store: normalized " + std::to_string(fixed) + " placed object entry id(s) to the owned catalog");
     }
 
-    // Add an owned_items entry per placed object across all loaded worlds, so placed items (fetched and uploaded UGC objects, and a home's base map) are owned and stay editable.
-    // Downloaded worlds can carry the real backend inventory_item.ids, which are not any offline derived '7...' entry ids, so without this the serializer reports "Could not find object in inventory" and edits do not persist.
-    // The base map is owned here too because the UGC-map customization editor (lighting) only sends its update when the placed map's inventory_item.id is an owned node. Removing an uploaded template stays gone because salvage purges the placed map from every world, so nothing owns it again at launch.
-    // These are de-duped by entry id.
+    // Own an owned_items entry per placed UGC object across all loaded worlds, so a user's own uploaded items and UGC maps stay owned and editable.
+    // The UGC base map is owned here too because the UGC map customization editor only sends its update when the placed map's inventory_item.id is an owned node.
+    // Removing an uploaded template stays gone because salvage purges the placed map from every world, so nothing owns it again at launch.
     void ResponseStore::augmentInventoryFromWorldObjects()
     {
         std::unordered_set<std::string> haveEntry;
@@ -2752,6 +2984,11 @@ namespace home2hook {
                 std::string defId = obj["item_definition"]["id"].string_value();
 
                 if (invId.empty() || defId.empty()) continue;
+
+                // Only the user's own UGC placements are owned from worlds
+                bool isUgc = ugcDefs.count(defId) != 0 || globalUgcManifest[defId].is_object();
+                if (!isUgc) continue;
+
                 if (!haveEntry.insert(invId).second) continue; // this inventory_item is already owned
 
                 owned.push_back(json11::Json::object{ {"item_def_id", defId}, {"entry_id", invId} });
@@ -2763,7 +3000,7 @@ namespace home2hook {
         {
             ownedItems = json11::Json(owned);
             ownedLoaded = true;
-            LogLine("store: owned " + std::to_string(added) + " placed object(s) from world");
+            LogLine("store: owned " + std::to_string(added) + " placed UGC object(s) from world");
         }
     }
 
@@ -2854,9 +3091,14 @@ namespace home2hook {
             std::string escEntryId = JsonEscape(entryId);
             std::string escDefId = JsonEscape(defId);
 
-            // An uploaded UGC def carries its upload time in the global manifest, so provide that as "time_first_received" and the inventory Newest/Oldest sort orders uploads by age
+            // "time_first_received" field controls the game's inventory Newest/Oldest sort.
+            // A reward-earned entry carries its own received time, an uploaded UGC def carries its upload time in the global manifest.
             long long timeFirstReceived = kTimeFirstReceived;
-            if (globalUgcManifest.is_object())
+            if (item["time_first_received"].is_number())
+            {
+                timeFirstReceived = (long long)item["time_first_received"].number_value();
+            }
+            else if (globalUgcManifest.is_object())
             {
                 const json11::Json& g = globalUgcManifest[defId];
                 if (g.is_object() && g["created_time"].is_number())
@@ -2865,8 +3107,11 @@ namespace home2hook {
                 }
             }
 
-            nodes += "{\"id\":\"" + escEntryId + "\",\"is_new\":false,"
-                     "\"item_definition_id\":\"" + escDefId + "\",\"owned_count\":" +
+            // "is_new" is the game's inventory card indicator. A reward earned entry is read when the item is grabbed
+            bool isNew = item["is_new"].is_bool() && item["is_new"].bool_value();
+
+            nodes += "{\"id\":\"" + escEntryId + "\",\"is_new\":" + (isNew ? "true" : "false") +
+                     ",\"item_definition_id\":\"" + escDefId + "\",\"owned_count\":" +
                      std::to_string(kOwnedCount) +
                      ",\"used_count\":0,\"time_first_received\":" +
                      std::to_string(timeFirstReceived) +
@@ -3536,6 +3781,363 @@ namespace home2hook {
             }
         }
         return "{\"data\":{\"nodes\":[" + nodes + "]}}";
+    }
+
+    std::vector<std::string> ResponseStore::rollRewardItems(int count) const
+    {
+        std::vector<std::string> picks;
+        if (count <= 0 || rewardCandidatesByRarity.empty())
+        {
+            return picks;
+        }
+
+        // Working with a copy of the rarity buckets so each pick can be removed, which keeps the whole roll free of duplicate ids.
+        // Since one reward box is three items rolled together, that means the three items in a box are always distinct.
+        std::unordered_map<std::string, std::vector<std::string>> buckets;
+        for (const auto& w : kRewardRarityWeights)
+        {
+            auto it = rewardCandidatesByRarity.find(w.rarity);
+            if (it != rewardCandidatesByRarity.end() && !it->second.empty())
+            {
+                buckets[w.rarity] = it->second;
+            }
+        }
+        if (buckets.empty())
+        {
+            return picks;
+        }
+
+        std::random_device rd;
+        std::mt19937 rng(rd());
+
+        for (int i = 0; i < count; ++i)
+        {
+            // Sum the weights of the rarities that still have candidates left
+            int totalWeight = 0;
+            for (const auto& w : kRewardRarityWeights)
+            {
+                auto it = buckets.find(w.rarity);
+                if (it != buckets.end() && !it->second.empty())
+                {
+                    totalWeight += w.weight;
+                }
+            }
+            if (totalWeight <= 0)
+            {
+                break; // exhausted
+            }
+
+            std::uniform_int_distribution<int> wd(0, totalWeight - 1);
+            int roll = wd(rng);
+            const char* chosenRarity = nullptr;
+            for (const auto& w : kRewardRarityWeights)
+            {
+                auto it = buckets.find(w.rarity);
+                if (it == buckets.end() || it->second.empty())
+                {
+                    continue;
+                }
+
+                if (roll < w.weight)
+                {
+                    chosenRarity = w.rarity;
+                    break;
+                }
+                roll -= w.weight;
+            }
+            if (!chosenRarity)
+            {
+                break;
+            }
+
+            std::vector<std::string>& bucket = buckets[chosenRarity];
+            std::uniform_int_distribution<size_t> id(0, bucket.size() - 1);
+            size_t idx = id(rng);
+            picks.push_back(bucket[idx]);
+            bucket.erase(bucket.begin() + idx); // drawn id removed, so no box of 3 ever repeats an the same item
+        }
+
+        return picks;
+    }
+
+    std::string ResponseStore::buildRewardCollect(const std::string& clientMutationId, bool collectAll) const
+    {
+        // Each box has three granted items. An individual accept claims one box, a collect-all claims every pending box all at once.
+        int pending = readPendingRewardBoxes();
+        int boxesClaimed = collectAll ? (pending > 0 ? pending : 1) : 1;
+
+        // The individual accept and the collect-all read different fields
+        auto wrap = [&](const std::string& inner) -> std::string
+        {
+            if (collectAll)
+            {
+                return "{\"data\":{\"collect_all_rewards\":" + inner + ",\"collect_all_worlds_rewards\":" + inner + "}}";
+            }
+
+            return "{\"data\":{\"accept_and_open_reward_notification\":" + inner + "}}";
+        };
+
+        std::string rewardIdsField;
+        if (collectAll)
+        {
+            std::string ids;
+            for (int i = 0; i < boxesClaimed; ++i)
+            {
+                if (i != 0)
+                {
+                    ids += ",";
+                }
+
+                ids += "\"" + std::to_string(9000000000000001LL + i) + "\"";
+            }
+            rewardIdsField = "\"reward_ids\":[" + ids + "],";
+        }
+
+        // reward_definitions is the loot pack contents, the item defs pulled from the master item db.
+        std::string defs;
+        std::string owned;
+        {
+            std::lock_guard<std::mutex> lk(ugcMutex);
+
+            std::vector<std::string> grantIds;
+            if (grantIds.empty())
+            {
+                for (int b = 0; b < boxesClaimed; ++b)
+                {
+                    std::vector<std::string> box = rollRewardItems(3);
+                    grantIds.insert(grantIds.end(), box.begin(), box.end());
+                }
+            }
+
+            // No loot means the master item db was not present so no candidate pool was built.
+            // Report the claim as failed and spend no boxes rather than handing out an empty pack.
+            if (grantIds.empty())
+            {
+                LogLine("store: reward collect found no loot to grant (empty candidate pool), reporting failure");
+                return wrap("{\"success\":false,\"reward_definitions\":[],\"owned_items\":[],\"client_mutation_id\":\"" + JsonEscape(clientMutationId) + "\"}");
+            }
+
+            std::vector<std::pair<std::string, std::string>> granted;
+            long long grantTime = NowUnix(); // received time stamped on each granted item for the new badge and newest sort
+
+            for (const auto& id : grantIds)
+            {
+                if (!defs.empty())
+                {
+                    defs += ",";
+                }
+
+                const json11::Json& node = masterDb[id];
+                granted.emplace_back(id, node.is_object() ? node["asset_key"].string_value() : std::string());
+                if (node.is_object())
+                {
+                    defs += node.dump();
+                }
+                else
+                {
+                    std::string escId = JsonEscape(id);
+                    defs += "{\"__typename\":\"WorldsItemDefinition\",\"id\":\"" + escId +
+                            "\",\"name\":\"\",\"item_description\":\"\",\"is_scalable\":true,"
+                            "\"is_unlimited\":true,\"salvage_value\":0,"
+                            "\"world_placement_cap\":-1,\"stackable\":true,\"tags\":[],"
+                            "\"rarity\":\"COMMON\",\"local_bounds_origin\":{\"x\":\"00000000\","
+                            "\"y\":\"00000000\",\"z\":\"00000000\"},\"local_bounds_extent\":"
+                            "{\"x\":\"00000000\",\"y\":\"00000000\",\"z\":\"00000000\"},"
+                            "\"asset_key\":\"\",\"asset_pack\":null}";
+                }
+
+                // One granted owned_items entry per def, shaped like the inventory and salvage nodes.
+                // is_new marks it freshly awarded, the derived entry id stays distinct from the def id.
+                if (!owned.empty())
+                {
+                    owned += ",";
+                }
+
+                std::string escDefId = JsonEscape(id);
+                std::string escEntryId = JsonEscape(DeriveInventoryEntryId(id));
+                owned += "{\"id\":\"" + escEntryId + "\",\"is_new\":true,"
+                         "\"item_definition_id\":\"" + escDefId + "\",\"owned_count\":" + std::to_string(kOwnedCount) +
+                         ",\"used_count\":0,\"time_first_received\":" + std::to_string(grantTime) +
+                         ",\"time_owned_count_updated\":" + std::to_string(kTimeOwnedUpdated) +
+                         ",\"achievements\":{\"edges\":[]},\"applications\":[]}";
+            }
+
+            // In reward mode the granted items are kept, so persist them into the rewarded inventory on file
+            if (rewardMode && !ownedInventoryPath.empty() && !granted.empty())
+            {
+                auto applyGrant = [&](json11::Json::array& arr)
+                {
+                    for (const auto& g : granted)
+                    {
+                        bool found = false;
+                        for (const auto& e : arr)
+                        {
+                            if (e["item_def_id"].string_value() == g.first)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            // is_new drives the inventory new badge until the item is placed, time_first_received stamps when it was earned so the inventory sorts it among the newest.
+                            arr.push_back(json11::Json(json11::Json::object{
+                                { "item_def_id", g.first },
+                                { "asset_key", g.second },
+                                { "owned_count", 1 },
+                                { "is_new", true },
+                                { "time_first_received", (double)grantTime } }));
+                        }
+                    }
+                };
+
+                json11::Json::array fileArr;
+                std::string invText;
+                if (ReadFileText(ownedInventoryPath, invText))
+                {
+                    std::string perr;
+                    json11::Json pj = json11::Json::parse(invText, perr);
+                    if (perr.empty() && pj["owned"].is_array())
+                    {
+                        fileArr = pj["owned"].array_items();
+                    }
+                }
+
+                applyGrant(fileArr);
+                json11::Json::object fileObj{ { "owned", json11::Json(fileArr) } };
+                if (writeFileAtomic(ownedInventoryPath, json11::Json(fileObj).dump()))
+                {
+                    json11::Json::array memArr = ownedItems.is_array() ? ownedItems.array_items() : json11::Json::array();
+                    applyGrant(memArr);
+                    ownedItems = json11::Json(memArr);
+                    rebuildInventoryReverseMap();
+                    LogLine("store: reward mode persisted " + std::to_string(granted.size()) + " granted item(s) to the rewarded inventory");
+                }
+            }
+        }
+
+        // The claim spends the earned boxes, so deduct them from the pending count the next login serves from
+        if (boxesClaimed > 0)
+        {
+            int left = deductPendingRewardBoxes(boxesClaimed);
+            LogLine("store: reward claim spent " + std::to_string(boxesClaimed) + " box(es), pendingRewardBoxes now " + std::to_string(left));
+        }
+
+        // success must be true or the client logs "AcceptAndOpenRewardNotifications failed" and never reads the reward_definitions.
+        std::string inner = "{\"success\":true," + rewardIdsField + "\"reward_definitions\":[" + defs +
+                            "],\"owned_items\":[" + owned +
+                            "],\"client_mutation_id\":\"" + JsonEscape(clientMutationId) + "\"}";
+
+        return wrap(inner);
+    }
+
+    std::string ResponseStore::buildMarkItemsSeen(const std::string& variablesJson) const
+    {
+        std::string userId = !identityUserId.empty() ? identityUserId : std::string("0");
+        std::string ack = "{\"data\":{\"worlds_mark_items_seen\":{\"viewer\":{\"user\":{\"id\":\"" + JsonEscape(userId) + "\"}}}}}";
+
+        // owned_item_ids[] are inventory node ids (entry ids, not def ids). mark_all_items clears the badge on every owned item at once.
+        bool markAll = false;
+        std::vector<std::string> ownedItemIds;
+        {
+            std::string err;
+            json11::Json vars = json11::Json::parse(variablesJson, err);
+            if (err.empty() && vars.is_object())
+            {
+                markAll = vars["mark_all_items"].is_bool() && vars["mark_all_items"].bool_value();
+                for (const auto& e : vars["owned_item_ids"].array_items())
+                {
+                    if (e.is_string() && !e.string_value().empty())
+                    {
+                        ownedItemIds.push_back(e.string_value());
+                    }
+                }
+            }
+        }
+
+        // The new badge only lives on the reward-mode rewarded inventory, so there is nothing to clear in any other mode
+        if (!rewardMode || ownedInventoryPath.empty())
+        {
+            return ack;
+        }
+
+        std::lock_guard<std::mutex> lk(ugcMutex);
+
+        // Resolve the requested inventory node ids back to their def ids. The per-id set is only needed when not marking all.
+        std::unordered_set<std::string> clearDefIds;
+        if (!markAll)
+        {
+            for (const auto& entryId : ownedItemIds)
+            {
+                auto it = inventoryEntryToDefId.find(entryId);
+                if (it != inventoryEntryToDefId.end())
+                {
+                    clearDefIds.insert(it->second);
+                }
+            }
+
+            if (clearDefIds.empty())
+            {
+                return ack; // nothing to clear
+            }
+        }
+
+        auto shouldClear = [&](const std::string& defId) -> bool
+        {
+            return markAll || clearDefIds.count(defId) != 0;
+        };
+
+        // Clear is_new on the matching in-memory owned entries. No entry was actually new means no file write.
+        bool wasNew = false;
+        json11::Json::array memArr = ownedItems.is_array() ? ownedItems.array_items() : json11::Json::array();
+        for (auto& e : memArr)
+        {
+            if (shouldClear(e["item_def_id"].string_value()) && e["is_new"].is_bool() && e["is_new"].bool_value())
+            {
+                json11::Json::object o = e.object_items();
+                o["is_new"] = false;
+                e = json11::Json(o);
+                wasNew = true;
+            }
+        }
+
+        if (!wasNew)
+        {
+            return ack;
+        }
+        ownedItems = json11::Json(memArr);
+
+        // Clear it on disk
+        json11::Json::array fileArr;
+        std::string invText;
+        if (ReadFileText(ownedInventoryPath, invText))
+        {
+            std::string perr;
+            json11::Json pj = json11::Json::parse(invText, perr);
+            if (perr.empty() && pj["owned"].is_array())
+            {
+                fileArr = pj["owned"].array_items();
+            }
+        }
+
+        int cleared = 0;
+        for (auto& e : fileArr)
+        {
+            if (shouldClear(e["item_def_id"].string_value()) && e["is_new"].is_bool() && e["is_new"].bool_value())
+            {
+                json11::Json::object o = e.object_items();
+                o["is_new"] = false;
+                e = json11::Json(o);
+                ++cleared;
+            }
+        }
+
+        json11::Json::object fileObj{ { "owned", json11::Json(fileArr) } };
+        writeFileAtomic(ownedInventoryPath, json11::Json(fileObj).dump());
+        LogLine("store: worlds_mark_items_seen cleared the new flag on " + std::to_string(cleared) + " item(s)" + std::string(markAll ? " (mark_all)" : ""));
+
+        return ack;
     }
 
     // Requested app ids from the query variables. The wire uses non-standard JSON with an unquoted key `app_ids` and single-quoted ids.
@@ -4244,6 +4846,15 @@ namespace home2hook {
             break;
         case ResponseAction::WorldsGuestApps:
             body = buildWorldsGuestApps(variablesJson);
+            break;
+        case ResponseAction::RewardAcceptOpen:
+            body = buildRewardCollect(clientMutationId, false);
+            break;
+        case ResponseAction::RewardCollectAll:
+            body = buildRewardCollect(clientMutationId, true);
+            break;
+        case ResponseAction::MarkItemsSeen:
+            body = buildMarkItemsSeen(variablesJson);
             break;
         case ResponseAction::Canned:
             // The two world-template doc_ids feed the create-from-template request. Serve uploaded UGC places there or else the empty canned list.

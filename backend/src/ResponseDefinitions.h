@@ -67,6 +67,10 @@ inline constexpr const char* UsersBatch       = "2970898679591058";
 inline constexpr const char* NodeById         = "2305014842947625";
 inline constexpr const char* RegisterRanking  = "2638687409503988";
 
+// G. Reward packs (or loot box) collection
+inline constexpr const char* RewardAcceptOpen = "2868842209806159";
+inline constexpr const char* RewardCollectAll = "3138948416121839";
+
 }
 
 // ---- Registry: doc_id to short name and one-line purpose ----
@@ -77,7 +81,7 @@ struct DocIdInfo
     std::string_view purpose; // one-line human-readable purpose
 };
 
-inline constexpr std::array<DocIdInfo, 42> kDocRegistry = {{
+inline constexpr std::array<DocIdInfo, 44> kDocRegistry = {{
     // A. Session / login / config
     { doc::WorldLogin,       "world_login",            "startup config/login: server_time, limits, default material defs, user_options, nux (failure blocks startup)" },
     { doc::SetUserOptions,   "set_user_options",       "persist client prefs (user_options = base64 JSON)" },
@@ -126,6 +130,9 @@ inline constexpr std::array<DocIdInfo, 42> kDocRegistry = {{
     { doc::UsersBatch,       "users_batch",            "batch user profiles (user_ids[])" },
     { doc::NodeById,         "node_by_id",             "single node fetch by id, for a WorldObjectInstance it carries portal_data (a portal object)" },
     { doc::RegisterRanking,  "register_world_ranking_event","world-tile impression telemetry" },
+    // G. Reward packs
+    { doc::RewardAcceptOpen, "accept_and_open_reward_notification","collect one reward pack by pending_id, then returns reward_definitions[] and owned_items[]" },
+    { doc::RewardCollectAll, "collect_all_rewards",    "collect every pending reward pack all at once. Returns reward_definitions[] and owned_items[]" },
 }};
 
 

@@ -35,7 +35,10 @@ namespace home2hook {
         UpsertPortalData,// 2421017851295011 (persist a portal's destination into the owning world's config.json portals array)
         DeletePortalData,// 2495919857138744 (remove a portal's destination from the owning world's config.json portals array)
         NodeById,        // 2305014842947625 (node fetch, example: for the world objects returns the WorldObjectInstance with its portal_data)
-        AppImages        // 2841468849260027 / 2562966287070020 (Application node images by app_id, the art a portal shows for an app destination)
+        AppImages,       // 2841468849260027 / 2562966287070020 (Application node images by app_id, the art a portal shows for an app destination)
+        RewardAcceptOpen,// 2868842209806159 (collect one reward pack by pending_id and returns reward_definitions with owned_items)
+        RewardCollectAll,// 3138948416121839 (collect all reward packs and returns reward_definitions with owned_items)
+        MarkItemsSeen    // 2451059878250562 (clear the new badge on owned items by their inventory node ids or all of them)
     };
 
     const char* ActionName(ResponseAction action);
@@ -43,7 +46,7 @@ namespace home2hook {
     // DLL-owned Response Store: loaded from the store directory next to the DLL. Holds the world_login template, the canned template set, the Master Item DB, and the Owned set
     class ResponseStore {
     public:
-        // storeDir contains: templates\ (world_login.json, default_world.json, doc-id-named canned responses), item-definitions-master.json, inventory-owned.json.
+        // storeDir contains: templates\ (world_login.json, default_world.json, inventory_starter.json, doc-id-named canned responses), item-definitions-master.json, and the owned inventory (inventory-owned-all.json or inventory-owned-rewarded.json in reward mode).
         // Returns true if it loaded enough to be useful w/ a world_login template present.
         bool Load(const std::wstring& storeDir);
 
@@ -103,6 +106,12 @@ namespace home2hook {
         };
         std::string worldLoginTemplate;
         bool worldLoginLoaded = false;
+
+        // Item def ids eligible to drop from a reward box and grouped by rarity so a roll can weight the pick by rarity.
+        std::unordered_map<std::string, std::vector<std::string>> rewardCandidatesByRarity;
+
+        bool rewardMode = false; // The user starts from the barebones inventory and earns items from reward boxes.
+        std::wstring ownedInventoryPath;
 
         // The framed response for GET /avatar_v2_editor_layout, the __AVATAR_ASSETS__ tags already resolved to the file:// base of store\avatar-assets.
         // Empty when the template or assets folder is missing.
@@ -203,6 +212,19 @@ namespace home2hook {
         //Maps a served inventory-entry id back to its def id (or "" if unknown), used by the world_batch_update create path to fill item_definition.id.
         std::string defIdForInventoryEntry(const std::string& entryId) const;
         std::string buildItemDefs(const std::vector<std::string>& itemDefIds) const;
+
+        // Reward pack collect response being reward_definitions[] (the granted item defs) and owned_items[] under the mutation field.
+        std::string buildRewardCollect(const std::string& clientMutationId, bool collectAll) const;
+
+        // Pick a random set of items to grant from the collected pool of item ids
+        std::vector<std::string> rollRewardItems(int count) const;
+
+        std::string buildRewardNotificationsParam(int n) const; // n LOGIN notifications with unique ids, else "[]"
+        int readPendingRewardBoxes() const; // new read of the pending count, 0 when absent
+        int deductPendingRewardBoxes(int by) const; // when claimed, subtract from the pending count
+
+        // Clear the new badge on the owned items named by their inventory node ids or on every owned item when mark_all_items is true
+        std::string buildMarkItemsSeen(const std::string& variablesJson) const;
 
         // App/achievement tile metadata (GameBox / cartridge / achievement objects)
         std::string buildWorldsApps(const std::string& variablesJson) const; // non-guest: string("[{...},...]")

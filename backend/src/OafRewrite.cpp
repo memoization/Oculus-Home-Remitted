@@ -56,16 +56,22 @@ namespace home2backend {
     static std::mutex GMutex;
     static std::unordered_map<std::string, std::string> GReplies;  // route to full reply json
     static std::unordered_map<std::string, std::string> GGkMap; // gatekeeper to "true"/"false"
+    static std::unordered_map<std::string, std::string> GGkOverrides; // modules to force "true"/"false" that apply to the real features/check req
+    
     static std::deque<std::string> GInjectQueue; // synthetic messages to deliver via GetReply
     static std::unordered_set<std::string> GPanelSeqs; // panel_embedding seqs whose real reply to drop
     static std::unordered_set<std::string> GAnsweredSeqs; // seqs answered on send whose real reply to drop if one ever arrives
     static volatile long GProactiveCount = 0;
     static volatile long GProactiveMiss = 0;
     static volatile long GPanelIdCounter = 0;
+    static volatile long GGkOverrideMode = 0; // 1 only rewrites GK values in the real reply and no offline answering
     static const char kPanelMonitorId[] = "65537"; // captured monitor handle
     static std::unordered_set<void*> GMine; // the substitute buffers
     static volatile long GRewriteInstalled = 0;
     static volatile long GRepliesLoaded = 0;
+
+    // used by DetourGetReply in the GK-override path above its definition.
+    static bool ApplyGkOverride(std::string& json, const std::string& module, const std::string& val);
 
     static std::string GetField(const std::string& j, const char* key)
     {
@@ -676,22 +682,58 @@ namespace home2backend {
 
     static int DetourGetReply(wchar_t** outReply, int* outStatus)
     {
-        // Deliver any injected messages (the panel_embedding flow) before real replies.
+        if (GGkOverrideMode)
         {
-            std::lock_guard<std::mutex> l(GMutex);
-            if (!GInjectQueue.empty())
+            int ret = GOrigGetReply(outReply, outStatus);
+            if (outReply && *outReply)
             {
-                std::string msg = GInjectQueue.front();
-                GInjectQueue.pop_front();
-                wchar_t* mine = WideDupUtf8(msg);
-                GMine.insert(mine);
-                if (outReply)
-                    *outReply = mine;
-                if (outStatus)
-                    *outStatus = 0;
+                std::string u = Utf8FromWide(*outReply);
+                if (u.find("\"payloadType\":\"GK_UPDATE\"") != std::string::npos)
+                {
+                    bool changed = false;
+                    {
+                        std::lock_guard<std::mutex> l(GMutex);
+                        for (const auto& kv : GGkOverrides)
+                        {
+                            changed |= ApplyGkOverride(u, kv.first, kv.second);
+                        }
+                    }
 
-                return 1; // a message is present
+                    if (changed)
+                    {
+                        GOrigFree(*outReply);
+                        wchar_t* mine = WideDupUtf8(u);
+                        {
+                            std::lock_guard<std::mutex> l(GMutex);
+                            GMine.insert(mine);
+                        }
+                        *outReply = mine;
+
+                        long n = InterlockedIncrement(&GProactiveCount);
+                        if (n <= 20)
+                        {
+                            LogLine("oaf-rewrite: GK-override rewrote a features/check reply");
+                        }
+                    }
+                }
             }
+            return ret;
+        }
+
+        // Deliver any injected messages (the panel_embedding flow) before real replies.
+        std::lock_guard<std::mutex> l(GMutex);
+        if (!GInjectQueue.empty())
+        {
+            std::string msg = GInjectQueue.front();
+            GInjectQueue.pop_front();
+            wchar_t* mine = WideDupUtf8(msg);
+            GMine.insert(mine);
+            if (outReply)
+                *outReply = mine;
+            if (outStatus)
+                *outStatus = 0;
+
+            return 1; // a message is present
         }
 
         int ret = GOrigGetReply(outReply, outStatus);
@@ -798,6 +840,22 @@ namespace home2backend {
         void* pGet = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_GetReply"));
         void* pFree = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_FreeReplyMessage"));
 
+        // Live GK-override mode hooks only GetReply and FreeReplyMessage
+        if (GGkOverrideMode)
+        {
+            bool okGk = pGet && pFree;
+            if (okGk)
+            {
+                okGk &= MH_CreateHook(pGet, reinterpret_cast<void*>(&DetourGetReply), reinterpret_cast<void**>(&GOrigGetReply)) == MH_OK;
+                okGk &= MH_CreateHook(pFree, reinterpret_cast<void*>(&DetourFree), reinterpret_cast<void**>(&GOrigFree)) == MH_OK;
+                MH_QueueEnableHook(pGet);
+                MH_QueueEnableHook(pFree);
+                okGk &= MH_ApplyQueued() == MH_OK;
+            }
+            LogLine(std::string("oaf-rewrite: GK-override hooks on OafIpc.dll (GetReply+FreeReplyMessage) ") + (okGk ? "ok" : "failed") + ", live OAF channel otherwise untouched");
+            return;
+        }
+
         // Connection surface is forced to report connected so the game sends its OAF requests without OVRServer needing to be active
         void* pConnect = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_Connect"));
         void* pConnectLoose = reinterpret_cast<void*>(GetProcAddress(mod, "OafIpc_ConnectLoosePerms"));
@@ -851,6 +909,81 @@ namespace home2backend {
             Sleep(15);
         }
         return 0;
+    }
+
+    // Live GK-override mode forces one feature module's isPassing value inside the real GK_UPDATE reply
+    static bool ApplyGkOverride(std::string& json, const std::string& module, const std::string& val)
+    {
+        std::string namePat = "\"name\":\"" + module + "\"";
+        size_t namePos = json.find(namePat);
+        if (namePos == std::string::npos) return false;
+
+        size_t objStart = json.rfind('{', namePos);
+        size_t objEnd = json.find('}', namePos);
+        const std::string ipKey = "\"isPassing\":\"";
+
+        // isPassing within this same project object and searched from its opening brace.
+        size_t ipPos = (objStart == std::string::npos) ? json.find(ipKey) : json.find(ipKey, objStart);
+        if (ipPos == std::string::npos || (objEnd != std::string::npos && ipPos > objEnd)) return false;
+
+        size_t valStart = ipPos + ipKey.size();
+        size_t valEnd = json.find('"', valStart);
+        if (valEnd == std::string::npos) return false;
+
+        if (json.compare(valStart, valEnd - valStart, val) == 0) return false; // already the target value
+        json.replace(valStart, valEnd - valStart, val);
+        return true;
+    }
+
+    static int LoadGkOverrides(const std::wstring& tsvPath)
+    {
+        HANDLE f = CreateFileW(tsvPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (f == INVALID_HANDLE_VALUE)
+        {
+            LogLine("oaf-rewrite: WARN oaf_gk_overrides.tsv missing, GK-override mode does nothing");
+            return 0;
+        }
+
+        std::string data;
+        char buf[16384];
+        DWORD r = 0;
+        while (ReadFile(f, buf, sizeof(buf), &r, nullptr) && r > 0)
+        {
+            data.append(buf, r);
+        }
+        CloseHandle(f);
+
+        int count = 0;
+        size_t pos = 0;
+        while (pos < data.size())
+        {
+            size_t nl = data.find('\n', pos);
+            std::string line = data.substr(pos, nl == std::string::npos ? std::string::npos : nl - pos);
+            pos = (nl == std::string::npos) ? data.size() : nl + 1;
+            if (!line.empty() && line.back() == '\r')
+            {
+                line.pop_back();
+            }
+
+            size_t tab = line.find('\t');
+            if (tab == std::string::npos) continue;
+
+            std::string name = line.substr(0, tab);
+            std::string val = line.substr(tab + 1);
+            // normalize to a bare true/false token
+            if (val.find("true") != std::string::npos) val = "true";
+            else if (val.find("false") != std::string::npos) val = "false";
+            else continue;
+
+            if (!name.empty())
+            {
+                GGkOverrides[name] = val;
+                ++count;
+            }
+        }
+
+        LogLine("oaf-rewrite: loaded " + std::to_string(count) + " GK override(s)");
+        return count;
     }
 
     static void LoadGkMap(const std::wstring& tsvPath)
@@ -914,6 +1047,22 @@ namespace home2backend {
             CloseHandle(t);
         }
 
+        return true;
+    }
+
+    bool InstallOafGkRewrite(const std::wstring& dir)
+    {
+        LoadGkOverrides(dir + L"\\store\\oaf_gk_overrides.tsv");
+        GGkOverrideMode = 1;
+        GRepliesLoaded = 1;
+
+        HANDLE t = CreateThread(nullptr, 0, RewriteWaiter, nullptr, 0, nullptr);
+        if (t)
+        {
+            CloseHandle(t);
+        }
+
+        LogLine("oaf-rewrite: GK-override live mode armed. Only features/check GK values are rewritten");
         return true;
     }
 
