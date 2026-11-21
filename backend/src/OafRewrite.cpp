@@ -720,22 +720,23 @@ namespace home2backend {
             return ret;
         }
 
-        // Deliver any injected messages (the panel_embedding flow) before real replies.
-        std::lock_guard<std::mutex> l(GMutex);
-        if (!GInjectQueue.empty())
+            // Deliver any injected messages (the panel_embedding flow) before real replies.
         {
-            std::string msg = GInjectQueue.front();
-            GInjectQueue.pop_front();
-            wchar_t* mine = WideDupUtf8(msg);
-            GMine.insert(mine);
-            if (outReply)
-                *outReply = mine;
-            if (outStatus)
-                *outStatus = 0;
+            std::lock_guard<std::mutex> l(GMutex);
+            if (!GInjectQueue.empty())
+            {
+                std::string msg = GInjectQueue.front();
+                GInjectQueue.pop_front();
+                wchar_t* mine = WideDupUtf8(msg);
+                GMine.insert(mine);
+                if (outReply)
+                    *outReply = mine;
+                if (outStatus)
+                    *outStatus = 0;
 
-            return 1; // a message is present
+                return 1; // a message is present
+            }
         }
-
         int ret = GOrigGetReply(outReply, outStatus);
 
         // Swallow OVRServer's real (denied) reply for panel seqs we've already answered by injection, so the game doesn't also see the error.
